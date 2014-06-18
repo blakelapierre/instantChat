@@ -1,14 +1,14 @@
 {
-  "name": "instantFile",
+  "name": "instantChat",
   "version": "0.0.0",
-  "description": "The easiest to use, encrypted, P2P file transfer software the world has seen to-date.",
+  "description": "Hashtag-based Party Chat via WebRTC",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/blakelapierre/instantFile.git"
+    "url": "git://github.com/blakelapierre/instantChat.git"
   },
   "keywords": [
     "encrypted",
@@ -22,18 +22,14 @@
   "author": "Blake La Pierre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/blakelapierre/instantFile/issues"
+    "url": "https://github.com/blakelapierre/instantChat/issues"
   },
   "dependencies": {
     "socket.io": "~1.0.2",
-    "webrtc.io": "0.0.4",
     "express": "~4.3.2",
     "request": "~2.36.0",
-    "ws": "~0.4.31",
     "lodash": "~2.4.1",
-    "node-uuid": "~1.4.1",
-    "traceur": "0.0.42",
-    "di": "0.0.1"
+    "traceur": "0.0.42"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

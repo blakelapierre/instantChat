@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       },
       site: {
         files: ['src/app.js', 'src/**/*.*', 'dist/index.html'],
-        tasks: ['preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantFile', 'express:dev'],
+        tasks: ['preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
         options: {
           livereload: {
             port: 2775,
@@ -77,16 +77,14 @@ module.exports = function(grunt) {
     copy: {
       libs: {
         files: [
-          // For some reason the version of this file that comes from npm doesn't work. I've put
-          // my modified version directly into dist/libs...it works :) You want something better? Do it.
-          //{src: ['node_modules/webrtc.io-client/lib/webrtc.io.js'], dest: './dist/libs/webrtc.io.js'}
+          {expand: true, flatten: true, src: ['./src/frontend/libs/**/*'], dest: './dist/libs/'}
         ]
       }
     },
     browserify: {
-      instantFile: {
+      instantChat: {
         files: {
-          'dist/instantFile.js': ['src/frontend/app.js']
+          'dist/instantChat.js': ['src/frontend/app.js']
         }
       }
     },
@@ -149,10 +147,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('serve', 'test', function() {
-    grunt.task.run('copy:libs', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantFile', 'express:prod', 'watch:prod');
+    grunt.task.run('copy:libs', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
   });
 
   grunt.registerTask('debug', 'test', function() {
-    grunt.task.run('copy:libs', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantFile', 'express:dev', 'watch:site');
+    grunt.task.run('copy:libs', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
   });
 };

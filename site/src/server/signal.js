@@ -1,7 +1,6 @@
 // based off of webrtc.io
 
-var _ = require('lodash'),
-    uuid = require('node-uuid');
+var _ = require('lodash');
 
 function HashList(idProperty) {
   _.extend(this.prototype, {
@@ -150,7 +149,6 @@ module.exports = function(io) {
   };
 
   io.sockets.on('connection', function(socket) {
-    //socket.peerID = uuid.v4();
     socket.emit('your_id', socket.id);
 
     socket.rooms = new HashList('_self');

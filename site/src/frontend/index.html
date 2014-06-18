@@ -1,8 +1,8 @@
 <!doctype html>
-<html ng-app="instantFile">
+<html ng-app="instantChat">
 <head>
-  <title>instaFile.io - Encrypted Peer-to-Peer (P2P) File Transfer</title>
-    <meta name="Description" content="Encrypted peer to peer (P2P) file sharing in your browser using WebRTC. Send any file to any one any where in the world privately and for free!" />
+  <title>instaChat.io - Hashtag-based Party Chat via WebRTC</title>
+    <meta name="Description" content="Encrypted peer to peer (P2P) video chat via WebRTC."/>
 
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
@@ -13,7 +13,7 @@
   <script type="text/javascript" src="/libs/traceur-runtime.js"></script>
   <script type="text/javascript" src="/libs/fittext.js"></script>
   
-  <script type="text/javascript" src="/instantFile.js"></script>
+  <script type="text/javascript" src="/instantChat.js"></script>
 
 <!-- @if DEBUG -->
   <script src="//localhost:2775/livereload.js"></script>
@@ -25,15 +25,15 @@
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    ga('create', 'UA-50390707-2', 'instafile.io');
+    ga('create', 'UA-52028516-1', 'instachat.io');
     ga('send', 'pageview');
 
-  </script>  
+  </script> 
 
   <link rel="stylesheet" href="/style.css"></link>
 <head>  
 <body>
   <span class="alpha">Alpha</span>
-  <instant-file file-drop-area="droppedFile" ng-click="activateInstantFile()"></instant-file>
+  <instant-chat></instant-chat>
 </body>
 </html>
