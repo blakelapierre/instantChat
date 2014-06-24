@@ -22,7 +22,9 @@ class Channel {
       return;
     }
 
-    this.channel.addEventListener(event, (event) => listener(this, event));
+    this.channel.addEventListener(event, event => listener(this, event));
+
+    return this;
   }
   /*
   -  Event Handling

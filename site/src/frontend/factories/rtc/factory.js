@@ -55,8 +55,8 @@ function fire(event) {
 -  Event Handling
 */
 
-function createPeer(id, emit, fire) {
-  var peer = new Peer(id, {
+function createPeer(id, config, emit, fire) {
+  var peer = new Peer(id, config, {
     negotiation_needed: (e) => {
       sendOffer(e.target);
       fire('peer negotiation_needed', peer, e);
@@ -113,6 +113,7 @@ function createPeer(id, emit, fire) {
 +  Signalling
 */
 function connectToSignal(server, onReady) {
+  server = server || 
   console.log('connecting to', server);
   var socket = io(server);
 
@@ -136,8 +137,10 @@ function connectToSignal(server, onReady) {
         return peersHash[id];
       };
 
-      function addPeer(id) {
-        var peer = createPeer(id, emit, fire);
+      function addPeer(id, config) {
+        config = config || {isExistingPeer: false};
+
+        var peer = createPeer(id, config, emit, fire);
         peers.push(peer);
         peersHash[id] = peer;
         
@@ -146,17 +149,17 @@ function connectToSignal(server, onReady) {
 
       function removePeerByID(id) {
         var peer = getPeer(id);
-        peer.close();
-        _.remove(peers, function(peer) { return peer.id === id; });
-        delete peersHash[id];
-        fire('peer removed', peer);
+        if (peer) {
+          peer.close();
+          _.remove(peers, function(peer) { return peer.id === id; });
+          delete peersHash[id];
+          fire('peer removed', peer);
+        }
       };
 
       function addIceCandidate(peerID, candidate) {
         var peer = getPeer(peerID),
             connection = peer.connection;
-
-        console.log('####adding candidate', peer, candidate);
 
         connection.addIceCandidate(new RTCIceCandidate(candidate), function() {
           fire('peer ice_candidate accepted', peer, candidate);
@@ -206,12 +209,12 @@ function connectToSignal(server, onReady) {
       };
 
       _.each({
-        'peer list': (data) => _.each(data.peerIDs, addPeer),
-        'peer join': (id) => addPeer(id),
-        'peer leave': (id) => removePeerByID(id),
-        'peer ice_candidate': (data) => addIceCandidate(data.peerID, data),
-        'peer offer': (data) => sendAnswer(data.peerID, data.offer),
-        'peer answer': (data) => receiveAnswer(data.peerID, data.answer)
+        'peer list': data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
+        'peer join': id => addPeer(id),
+        'peer leave': id => removePeerByID(id),
+        'peer ice_candidate': data => addIceCandidate(data.peerID, data),
+        'peer offer': data => sendAnswer(data.peerID, data.offer),
+        'peer answer': data => receiveAnswer(data.peerID, data.answer)
       }, (handler, name) => socket.on(name, function() {
         handler.apply(this, arguments);
         fire(name, ...arguments);
@@ -241,7 +244,8 @@ function connectToSignal(server, onReady) {
     off: off,
     joinRoom: joinRoom,
     leaveRoom: leaveRoom,
-    leaveRooms: leaveRooms
+    leaveRooms: leaveRooms,
+    currentRooms: socket.rooms
   };
 
   return signal;

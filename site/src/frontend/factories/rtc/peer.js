@@ -1,4 +1,5 @@
 import {Channel} from './channel';
+import {Stream} from './stream';
 
 var _ = require('lodash');
 
@@ -12,11 +13,13 @@ var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state
                          'data_channel'];
 
 class Peer {
-  constructor(id, connectionListeners, sendOffer) {
+  constructor(id, config, connectionListeners, sendOffer) {
     this._id = id;
+    this._config = config;
     this._channels = [];
     this._historicalChannels = [];
-    this._streams = [];
+    this._localStreams = [];
+    this._remoteStreams = [];
     this._events = {};
     this._connectionListeners = connectionListeners;
 
@@ -26,18 +29,18 @@ class Peer {
   }
 
   connect(onConnect) {
-    var connection = new RTCPeerConnection({
+    var connection = this._connection = new RTCPeerConnection({
       iceServers: [{url: 'stun:stun.l.google.com:19302'}]
     });
 
-    _.each(this._connectionListeners, 
-      (listener, eventName) => connection.addEventListener(eventName.replace(/\_/g, ''), listener));
+    this.on(this._connectionListeners);
+    // _.each(this._connectionListeners, 
+    //   (listener, eventName) => connection.addEventListener(eventName.replace(/\_/g, ''), listener));
 
-    connection.addEventListener('datachannel', 
-      event => {
-        console.log('****datachannel', event);
-        this._addChannel(new Channel(this, event.channel, { }));
-      });
+    this.on({
+      'data_channel': event => this._addChannel(new Channel(this, event.channel, { })),
+      'add_stream':   event => this._addRemoteStream(new Stream(this, 'remote **change me to real id**', event.stream))
+    });
   
     if (onConnect) {
       var connectWatcher = event => {
@@ -51,7 +54,7 @@ class Peer {
       connection.addEventListener('iceconnectionstatechange', connectWatcher);
     }
 
-    this._connection = connection;
+    if (this._localStreams.length > 0) _.each(this._localStreams, localStream => this._addLocalStream(localStream.stream));
   }
 
   addChannel(label, options, channelListeners) {
@@ -74,8 +77,14 @@ class Peer {
     });
   }
 
-  addStream() {
+  addLocalStream(id, stream) {
+    var localStream = new Stream(this, id, stream);
+    
+    this._localStreams.push(localStream);
 
+    if (this._connection) this._addLocalStream(stream);
+  
+    return localStream;
   }
 
   close() {
@@ -83,7 +92,8 @@ class Peer {
   }
 
   get id() { return this._id; }
-  get streams() { return this._streams; }
+  get config() { return this._config; }
+  get localStreams() { return this._localStreams; }
   get channels() { return this._channels; }
 
   channel(label) { return _.find(this._channels, {'label': label}); }
@@ -105,6 +115,18 @@ class Peer {
     return channel;
   }
 
+  _addLocalStream(stream) {
+    this._connection.addStream(stream);
+    this.fire('localStream added', stream);
+    return stream;
+  }
+
+  _addRemoteStream(stream) {
+    this._remoteStreams.push(stream);
+    this.fire('remoteStream added', stream);
+    return stream;
+  }
+
   /*
   +  Event Handling
   */
@@ -116,8 +138,8 @@ class Peer {
       return;
     }
 
-    if (this.peerConnection && CONNECTION_EVENTS.indexOf(event) != -1) {
-      this.peerConnection.addEventListener(event.replace(/_/g, ''), listener);
+    if (this._connection && CONNECTION_EVENTS.indexOf(event) != -1) {
+      this._connection.addEventListener(event.replace(/_/g, ''), listener);
       return;
     }
 
