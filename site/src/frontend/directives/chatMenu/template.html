@@ -1,0 +1,11 @@
+<div class="expanded-view" ng-mouseenter="mouseEnterExpandedView()" ng-mouseleave="mouseLeftExpandedView()" ng-click="collapse()">
+  <div class="overlay"></div>
+  <div class="menu-content">
+    <ul>
+      <li ng-click="invite()">+ Invite Person</li>
+      <li ng-click="subscribe()">+ Receive Join Notifications</li>
+    </ul>
+  </div>
+</div>
+<div class="collapsed-view" ng-click="expand()">
+</div>

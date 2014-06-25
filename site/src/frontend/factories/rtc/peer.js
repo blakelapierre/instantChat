@@ -30,7 +30,11 @@ class Peer {
 
   connect(onConnect) {
     var connection = this._connection = new RTCPeerConnection({
-      iceServers: [{url: 'stun:stun.l.google.com:19302'}]
+      iceServers: navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}]
+    }, {
+      optional: [{
+        DtlsSrtpKeyAgreement: true
+      }]
     });
 
     this.on(this._connectionListeners);

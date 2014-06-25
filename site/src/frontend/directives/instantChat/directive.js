@@ -25,9 +25,7 @@ module.exports = () => {
 
                 $scope.$apply();
               }
-            ).catch(
-              error => console.log(error)
-            );
+            ).catch(error => console.log('*** Error getting local media stream', error));
 
             if (peer.config.isExistingPeer) {
               peer.connect(peer => {

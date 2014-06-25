@@ -1,0 +1,87 @@
+chat-menu {
+  .expanded-view {
+    position: absolute;
+
+    right: 0%;
+    bottom: 0%;
+
+    width: 40%;
+    height: 100%;
+
+    transition: bottom 1s, right 1s;
+
+    .overlay {
+      width: 100%;
+      height: 100%;
+
+      background-color: #333;
+
+      opacity: 0.5;
+    }
+
+    .menu-content {
+      position: absolute;
+
+      top: 0%;
+      left: 0%;
+
+      height: 100%;
+      width: 100%;
+
+      display: table;
+
+      ul {
+        display: table-cell;
+
+        vertical-align: middle;
+        margin: 0 auto;
+
+        width: inherit;
+
+        list-style: none;
+
+        li {
+          display: block;
+
+          font-size: x-large;
+
+          cursor: pointer;
+
+          color: #fff;
+        }
+
+        li:not(:last-child) {
+          margin-bottom: 1em;
+        }
+      }
+    }
+  }
+
+  &.collapse .expanded-view {
+    right: -100%;
+    bottom: -100%;
+  }
+
+  .collapsed-view {
+    position: absolute;
+
+    right: 0%;
+    bottom: 0%;
+
+    height: 0%;
+    width: 0%;
+
+    cursor: pointer;
+
+    transition: width 1s, height 1s;
+  }
+
+  &.collapse .collapsed-view {
+    height: 3em;
+    width: 3em;
+
+    background-color: #333;
+
+    opacity: 0.5;
+  }
+}
