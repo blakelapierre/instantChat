@@ -5,6 +5,8 @@ var _ = require('lodash');
 
 
 var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
+var RTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription);
+var RTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
 
 var iceServers = [{url: 'stun:stun.l.google.com:19302'}];
 
@@ -17,7 +19,6 @@ class Peer {
     this._id = id;
     this._config = config;
     this._channels = [];
-    this._historicalChannels = [];
     this._localStreams = [];
     this._remoteStreams = [];
     this._events = {};
@@ -26,6 +27,8 @@ class Peer {
     this.sendOffer = sendOffer;
 
     this._nextChannelID = 0;
+
+    this._log = [];
   }
 
   connect(onConnect) {
@@ -58,7 +61,37 @@ class Peer {
       connection.addEventListener('iceconnectionstatechange', connectWatcher);
     }
 
-    if (this._localStreams.length > 0) _.each(this._localStreams, localStream => this._addLocalStream(localStream.stream));
+    _.each(this._localStreams, localStream => this._addLocalStream(localStream.stream));
+  }
+
+  initiateOffer() {
+    return new Promise((resolve, reject) => {
+      this._connection.createOffer(offer => {
+        this._connection.setLocalDescription(offer, () => resolve(offer), error => reject('peer error set_local_description', this, error, offer));
+      }, error => reject('peer error create offer', peer, error));
+    });
+  }
+
+  receiveOffer(offer) {
+    return new Promise((resolve, reject) => {
+      if (this._connection == null) this.connect();
+
+      this._connection.setRemoteDescription(new RTCSessionDescription(offer), 
+        () => {
+          this._connection.createAnswer(answer => {
+            this._connection.setLocalDescription(answer, () => resolve(answer), err => reject('peer error set_local_description', this, err, answer));
+          }, err => reject('peer error send answer', peer, err, offer));
+        },
+        err => reject('peer error set_remote_description', peer, err, offer));
+    });
+  }
+
+  receiveAnswer(answer) {
+    return new Promise((resolve, reject) => this._connection.setRemoteDescription(new RTCSessionDescription(answer), resolve, reject));
+  }
+
+  addIceCandidate(candidate) {
+    return new Promise((resolve, reject) => this._connection.addIceCandidate(new RTCIceCandidate(candidate), resolve, reject));
   }
 
   addChannel(label, options, channelListeners) {
@@ -74,11 +107,8 @@ class Peer {
   }
 
   removeChannel(label) {
-    var removed = _.remove(this._channels, function(c) { return c.label === label; })
-    if (removed.length > 0) _.each(removed, (channel) => {
-      this._historicalChannels.push(channel);
-      this.fire('channel removed', channel);
-    });
+    var removed = _.remove(this._channels, function(c) { return c.label === label; });
+    _.each(removed, channel => this.fire('channel removed', channel));
   }
 
   addLocalStream(id, stream) {
@@ -92,17 +122,16 @@ class Peer {
   }
 
   close() {
-    if (this.connection) this.connection.close();
+    if (this._connection) this._connection.close();
   }
 
   get id() { return this._id; }
   get config() { return this._config; }
   get localStreams() { return this._localStreams; }
   get channels() { return this._channels; }
+  get log() { return this._log; }
 
   channel(label) { return _.find(this._channels, {'label': label}); }
-
-  get historicalChannels() { return this._historicalChannels; }
 
   // Do we want to expose this?!
   get connection() { return this._connection; }
@@ -129,6 +158,13 @@ class Peer {
     this._remoteStreams.push(stream);
     this.fire('remoteStream added', stream);
     return stream;
+  }
+
+  _log() {
+    this._log.push({
+      at: new Date(), 
+      args: [...arguments]
+    });
   }
 
   /*

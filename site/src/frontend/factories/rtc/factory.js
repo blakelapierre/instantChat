@@ -9,8 +9,6 @@ var _ = require('lodash'),
 var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
 var URL = (window.URL || window.webkitURL || window.msURL || window.oURL);
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
-var RTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
-var RTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription); // order is very important: "RTCSessionDescription" defined in Nighly but useless
 
 /*
 +  Event Handling
@@ -55,8 +53,8 @@ function fire(event) {
 -  Event Handling
 */
 
-function createPeer(id, config, emit, fire) {
-  var peer = new Peer(id, config, {
+function createPeer(peerID, config, emit, fire) {
+  var peer = new Peer(peerID, config, {
     negotiation_needed: (e) => {
       sendOffer(e.target);
       fire('peer negotiation_needed', peer, e);
@@ -66,7 +64,7 @@ function createPeer(id, config, emit, fire) {
 
       if (candidate) {
         emit('ice_candidate', {
-          peerID: id,
+          peerID,
           label: candidate.sdpMLineIndex,
           candidate: candidate.candidate
         });
@@ -88,22 +86,16 @@ function createPeer(id, config, emit, fire) {
   }, sendOffer);
 
 
-  function sendOffer(connection) {
-    //var connection = peer.connection;
-
-    connection.createOffer(function(offer) {
-      connection.setLocalDescription(offer, function() {
-        emit('peer offer', {
-          peerID: id,
-          offer: connection.localDescription
-        });
-        fire('peer send offer', peer, offer);
-      }, function(err) {
-        fire('peer error set_local_description', peer, err, offer);
-      });
-    }, function(err) {
-      fire('peer error create offer', peer, err)
-    });
+  function sendOffer() {
+    peer
+      .initiateOffer()
+      .then(
+        offer => {
+          console.log('!!!!!! got offer');
+          emit('peer offer', {peerID, offer});
+          fire('peer send offer', peer, offer);
+        },
+        ...error => fire(...error));
   };
 
   return peer;
@@ -113,7 +105,6 @@ function createPeer(id, config, emit, fire) {
 +  Signalling
 */
 function connectToSignal(server, onReady) {
-  server = server || 
   console.log('connecting to', server);
   var socket = io(server);
 
@@ -158,53 +149,38 @@ function connectToSignal(server, onReady) {
       };
 
       function addIceCandidate(peerID, candidate) {
-        var peer = getPeer(peerID),
-            connection = peer.connection;
+        var peer = getPeer(peerID);
 
-        connection.addIceCandidate(new RTCIceCandidate(candidate), function() {
-          fire('peer ice_candidate accepted', peer, candidate);
-        }, function(err) {
-          fire('peer error ice_candidate', peer, err, candidate);
-        });
+        peer
+          .addIceCandidate(candidate)
+          .then(
+            () => fire('peer ice_candidate accepted', peer, candidate),
+            () => fire('peer error ice_candidate', peer, err, candidate));
       };
 
       function receiveAnswer(peerID, answer) {
-        var peer = getPeer(peerID),
-            connection = peer.connection;
+        var peer = getPeer(peerID);
 
-        connection.setRemoteDescription(new RTCSessionDescription(answer), function() {
-          fire('peer receive answer', peer, answer);
-        }, function(err) {
-          fire ('peer error answer', peer, answer);
-        });
+        peer
+          .receiveAnswer(answer)
+          .then(
+            () => fire('peer receive answer', peer, answer),
+            () => fire('peer error answer', peer, answer));
       };
 
       function sendAnswer(peerID, offer) {
-        var peer = getPeer(peerID),
-            connection = peer.connection;
+        var peer = getPeer(peerID);
 
-        if (connection == null) {
-          peer.connect();
-          connection = peer.connection;
-        }      
-        
-        connection.setRemoteDescription(new RTCSessionDescription(offer), function() {
-          connection.createAnswer(function(answer) {
-            connection.setLocalDescription(answer, function() {
-              emit('peer answer', {
-                peerID: peerID,
-                answer: answer
-              });
+        peer
+          .receiveOffer(offer)
+          .then(
+            answer => {
+              emit('peer answer', {peerID, answer});
               fire('peer send answer', peer, answer);
-            }, function(err) {
-              fire('peer error set_local_description', peer, err, answer);
-            });
-          }, function(err) {
-            fire('peer error send answer', peer, err, offer);
-          });
-        }, function(err) {
-          fire('peer error set_remote_description', peer, err, offer);
-        });
+            },
+            ...args => fire(...args)
+          );     
+        
         fire('peer receive offer', peer, offer);
       };
 
