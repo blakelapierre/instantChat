@@ -14,10 +14,14 @@ var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state
                          'add_stream', 'remove_stream', 'ice_connection_state_change',
                          'data_channel'];
 
+var iceServers = navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}];
+
 class Peer {
   constructor(id, config, connectionListeners, sendOffer) {
     this._id = id;
     this._config = config;
+    this._localCandidates = [];
+    this._remoteCandidates = [];
     this._channels = [];
     this._localStreams = [];
     this._remoteStreams = [];
@@ -32,21 +36,18 @@ class Peer {
   }
 
   connect(onConnect) {
-    var connection = this._connection = new RTCPeerConnection({
-      iceServers: navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}]
-    }, {
+    var connection = this._connection = new RTCPeerConnection({iceServers}, {
       optional: [{
         DtlsSrtpKeyAgreement: true
       }]
     });
 
     this.on(this._connectionListeners);
-    // _.each(this._connectionListeners, 
-    //   (listener, eventName) => connection.addEventListener(eventName.replace(/\_/g, ''), listener));
 
     this.on({
-      'data_channel': event => this._addChannel(new Channel(this, event.channel, { })),
-      'add_stream':   event => this._addRemoteStream(new Stream(this, 'remote **change me to real id**', event.stream))
+      'ice_candidate':  event => this._localCandidates.push(event.candidate),
+      'data_channel':   event => this._addChannel(new Channel(this, event.channel, { })),
+      'add_stream':     event => this._addRemoteStream(new Stream(this, 'remote **change me to real id**', event.stream))
     });
   
     if (onConnect) {
@@ -66,9 +67,11 @@ class Peer {
 
   initiateOffer() {
     return new Promise((resolve, reject) => {
-      this._connection.createOffer(offer => {
-        this._connection.setLocalDescription(offer, () => resolve(offer), error => reject('peer error set_local_description', this, error, offer));
-      }, error => reject('peer error create offer', peer, error));
+      this._connection.createOffer(
+        offer => {
+          this._connection.setLocalDescription(offer, () => resolve(offer), error => reject('peer error set_local_description', this, error, offer));
+        }, 
+        error => reject('peer error create offer', this, error));
     });
   }
 
@@ -78,11 +81,13 @@ class Peer {
 
       this._connection.setRemoteDescription(new RTCSessionDescription(offer), 
         () => {
-          this._connection.createAnswer(answer => {
-            this._connection.setLocalDescription(answer, () => resolve(answer), err => reject('peer error set_local_description', this, err, answer));
-          }, err => reject('peer error send answer', peer, err, offer));
+          this._connection.createAnswer(
+            answer => {
+              this._connection.setLocalDescription(answer, () => resolve(answer), error => reject('peer error set_local_description', this, error, answer));
+            },
+            error => reject('peer error send answer', this, error, offer));
         },
-        err => reject('peer error set_remote_description', peer, err, offer));
+        error => reject('peer error set_remote_description', this, error, offer));
     });
   }
 
@@ -91,7 +96,13 @@ class Peer {
   }
 
   addIceCandidate(candidate) {
-    return new Promise((resolve, reject) => this._connection.addIceCandidate(new RTCIceCandidate(candidate), resolve, reject));
+    console.log('adding candidate', candidate);
+    return new Promise((resolve, reject) => {
+      this._connection.addIceCandidate(new RTCIceCandidate({candidate: candidate}), () => {
+        this._remoteCandidates.push(candidate);
+        resolve();
+      }, reject);
+    });
   }
 
   addChannel(label, options, channelListeners) {
@@ -150,6 +161,7 @@ class Peer {
 
   _addLocalStream(stream) {
     this._connection.addStream(stream);
+    if (navigator.mozGetUserMedia) this.sendOffer();
     this.fire('localStream added', stream);
     return stream;
   }

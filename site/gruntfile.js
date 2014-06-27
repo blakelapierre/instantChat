@@ -85,6 +85,11 @@ module.exports = function(grunt) {
       instantChat: {
         files: {
           'dist/instantChat.js': ['src/frontend/app.js']
+        },
+        options: {
+          bundleOptions: {
+            debug: true // Source maps
+          }
         }
       }
     },

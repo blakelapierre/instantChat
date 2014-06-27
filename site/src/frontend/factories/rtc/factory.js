@@ -55,12 +55,12 @@ function fire(event) {
 
 function createPeer(peerID, config, emit, fire) {
   var peer = new Peer(peerID, config, {
-    negotiation_needed: (e) => {
-      sendOffer(e.target);
-      fire('peer negotiation_needed', peer, e);
+    negotiation_needed: event => {
+      sendOffer(event.target);
+      fire('peer negotiation_needed', peer, event);
     },
-    ice_candidate: (e) => {
-      var candidate = e.candidate;
+    ice_candidate: event => {
+      var candidate = event.candidate;
 
       if (candidate) {
         emit('ice_candidate', {
@@ -72,17 +72,12 @@ function createPeer(peerID, config, emit, fire) {
         fire('peer ice_candidate', peer, candidate);
       }
     },
-    signaling_state_change: (e) => {
-      fire('peer signaling_state_change', peer, e);
-    },
-    ice_connection_state_change: (e) => fire('peer ice_connection_state_change', peer, e),
-    add_stream: (e) => fire('peer add_stream', peer, e),
-    remove_stream: (e) => fire('peer remove_stream', peer, e),
-    data_channel: (e) => {
-      var channel = e.channel;
-
-      fire('peer data_channel connected', peer, channel);
-    }
+    // Do we want to be passing the raw event here?
+    add_stream:                   event => fire('peer add_stream', peer, event),
+    remove_stream:                event => fire('peer remove_stream', peer, event),
+    data_channel:                 event => fire('peer data_channel connected', peer, event.channel),
+    signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
+    ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
   }, sendOffer);
 
 
@@ -91,7 +86,6 @@ function createPeer(peerID, config, emit, fire) {
       .initiateOffer()
       .then(
         offer => {
-          console.log('!!!!!! got offer');
           emit('peer offer', {peerID, offer});
           fire('peer send offer', peer, offer);
         },
@@ -116,8 +110,8 @@ function connectToSignal(server, onReady) {
     console.log('error', arguments);
   });
 
-  socket.on('connect', function() {
-    socket.on('your_id', function(myID) {
+  socket.on('connect', () => {
+    socket.on('your_id', myID => {
       console.log('your_id');
       var peers = [],
           peersHash = {};
@@ -148,26 +142,6 @@ function connectToSignal(server, onReady) {
         }
       };
 
-      function addIceCandidate(peerID, candidate) {
-        var peer = getPeer(peerID);
-
-        peer
-          .addIceCandidate(candidate)
-          .then(
-            () => fire('peer ice_candidate accepted', peer, candidate),
-            () => fire('peer error ice_candidate', peer, err, candidate));
-      };
-
-      function receiveAnswer(peerID, answer) {
-        var peer = getPeer(peerID);
-
-        peer
-          .receiveAnswer(answer)
-          .then(
-            () => fire('peer receive answer', peer, answer),
-            () => fire('peer error answer', peer, answer));
-      };
-
       function sendAnswer(peerID, offer) {
         var peer = getPeer(peerID);
 
@@ -178,19 +152,42 @@ function connectToSignal(server, onReady) {
               emit('peer answer', {peerID, answer});
               fire('peer send answer', peer, answer);
             },
-            ...args => fire(...args)
+            ...error => fire(...error)
           );     
         
         fire('peer receive offer', peer, offer);
       };
 
+      function receiveAnswer(peerID, answer) {
+        var peer = getPeer(peerID);
+
+        peer
+          .receiveAnswer(answer)
+          .then(
+            () =>     fire('peer receive answer', peer, answer),
+            error =>  fire('peer error answer', peer, error, answer));
+      };
+
+      function addIceCandidate(peerID, candidate) {
+        var peer = getPeer(peerID);
+
+        peer
+          .addIceCandidate(candidate)
+          .then(
+            () =>     fire('peer ice_candidate accepted', peer, candidate),
+            error =>  fire('peer error ice_candidate', peer, error, candidate));
+      };
+
       _.each({
-        'peer list': data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
-        'peer join': id => addPeer(id),
+
+        'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
+        'peer join':  id => addPeer(id),
         'peer leave': id => removePeerByID(id),
-        'peer ice_candidate': data => addIceCandidate(data.peerID, data),
-        'peer offer': data => sendAnswer(data.peerID, data.offer),
-        'peer answer': data => receiveAnswer(data.peerID, data.answer)
+
+        'peer offer':         data => sendAnswer(data.peerID, data.offer),
+        'peer answer':        data => receiveAnswer(data.peerID, data.answer),
+        'peer ice_candidate': data => addIceCandidate(data.peerID, data.candidate)
+
       }, (handler, name) => socket.on(name, function() {
         handler.apply(this, arguments);
         fire(name, ...arguments);
@@ -234,13 +231,11 @@ module.exports = function() {
   var signal;
 
   return {
-    connectToSignal: function(server) {
+    connectToSignal: server => {
       if (signal == null) signal = connectToSignal(server);
       else if (signal.ready) fire('ready', signal.myID); // oof, get me (this line of code) out of here
       return signal;
     },
-    existingSignal: function() {
-      return signal;
-    }
+    existingSignal: () => signal
   };
 };
