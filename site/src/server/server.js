@@ -8,14 +8,6 @@ module.exports = function(config, callback) {
       app = express();
 
   var redirectServer = http.createServer(function requireHTTPS(req, res, next) {
-    if (req.url === '/AE9D3C7D8DF0DC78ADE292D706E0073B.txt') {
-      res.writeHead(200);
-      res.write('726B57D5BF10DC6461DE8AB59AB7A276778C16B7\n');
-      res.write('comodoca.com');
-      res.end();
-      return;
-    }
-
     res.writeHead(302, {
       'Location': 'https://' + req.headers['host'] + req.url
     });

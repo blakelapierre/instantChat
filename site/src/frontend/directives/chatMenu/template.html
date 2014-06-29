@@ -1,8 +1,9 @@
 <div ng-class="{'menu-container': true, 'collapsed': isCollapsed}">
   <div class="expanded-view" ng-mouseenter="mouseEnterExpandedView()" ng-mouseleave="mouseLeftExpandedView()">
     <div class="overlay"></div>
-    <div class="menu-table" ng-click="collapse()">
-      <div class="menu-content">
+    <div class="menu-content">
+      <span class="badge">#{{currentRoom}}</span>
+      <div class="menu-items">
         <ul ng-click="$event.stopPropagation()">
           <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank">+ Invite Person</a></li>
           <li ng-click="subscribe()">+ Receive Join Notifications</li>

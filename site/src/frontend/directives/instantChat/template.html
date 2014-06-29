@@ -1,8 +1,26 @@
-<div class="local-stream-container">
-  <video class="local-stream" src="{{localStreamSrc}}" autoplay></video>
-</div>
-<div class="remote-stream-container">
-  <video class="remote-stream" src="{{remoteStreamSrc}}" autoplay></video>
+<div class="participants participants-count-{{participants.length}}">
+
+  <div ng-repeat="participant in participants"
+    class="participant participant-{{$index}}">
+  
+    <div class="streams streams-count-{{participant.streams.length}}">
+      
+      <div ng-repeat="stream in participant.streams"
+        class="stream stream-{{$index}}">
+          <div class="cell">
+            <video src="{{stream.src}}" autoplay></video>
+          </div>
+          
+          <div class="stream-controls">
+            <span class="control control-off">off</span>
+          </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
 <chat-menu></chat-menu>

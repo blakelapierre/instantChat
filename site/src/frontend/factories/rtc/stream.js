@@ -1,8 +1,8 @@
 class Stream {
-  constructor(peer, id, stream, streamListeners) {
+  constructor(peer, stream, streamListeners) {
     this._peer = peer;
     this._stream = stream;
-    this._id = id;
+    this._id = stream.id;
 
     // this.on(streamListeners);
   }

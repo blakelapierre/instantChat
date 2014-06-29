@@ -1,3 +1,5 @@
+@collapseDuration: 0.4s;
+
 chat-menu {
   .menu-container {
     .expanded-view {
@@ -9,7 +11,9 @@ chat-menu {
       width: 40%;
       height: 100%;
 
-      transition: bottom 1s, right 1s;
+      transform: scale(1);
+
+      transition: bottom @collapseDuration ease, right @collapseDuration ease, transform @collapseDuration ease-in;
 
       .overlay {
         width: 100%;
@@ -18,22 +22,34 @@ chat-menu {
         background-color: #333;
 
         opacity: 0.5;
+
+        transition: background-color @collapseDuration ease, opacity @collapseDuration ease;
       }
 
-      .menu-table {
+      .menu-content {
         position: absolute;
 
-        top: 0%;
         left: 0%;
+        top: 0%;
 
         width: 100%;
         height: 100%;
 
-        display: table;
-    
-        .menu-content {
-          display: table-cell;
-          vertical-align: middle;
+        text-align: center;
+
+        padding-top: 1em;
+
+        color: #fff;
+        text-shadow: 0px 0px 15px #bddfff;
+
+        .badge {
+          font-size: xx-large;
+        }
+
+        .menu-items {
+          margin-top: 2em;
+
+          text-align: left;
 
           ul {
             margin: 0 auto;
@@ -53,21 +69,25 @@ chat-menu {
               font-size: x-large;
 
               cursor: pointer;
-
-              color: #fff;
             }
 
             li:not(:last-child) {
               margin-bottom: 1em;
             }
-          }
+          } 
         }
       }
     }
 
     &.collapsed .expanded-view {
-      right: -100%;
+      right: -40%;
       bottom: -100%;
+      transform: scale(0);
+
+      .overlay {
+        background-color: #bddfff;
+        opacity: 0;
+      }
     }
 
     .collapsed-view {
@@ -85,7 +105,7 @@ chat-menu {
 
       cursor: pointer;
 
-      transition: width 0.5s, height 0.5s;
+      transition: width @collapseDuration ease, height @collapseDuration ease;
 
       .overlay {
         width: 100%;

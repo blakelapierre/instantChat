@@ -4,6 +4,87 @@ instant-chat {
   height: 100%;
   width: 100%;
 
+  .participants {
+    height: 100%;
+    width: 100%;
+
+    .participant {
+      .streams {
+        height: 100%;
+        width: 100%;
+
+        .stream {
+          display: table;
+          border: none;
+          border-spacing: 0;
+
+          .cell {
+            display: table-cell;
+            vertical-align: middle;
+
+            width: 100%;
+
+            video {
+              width: 100%;
+
+              max-height: 100%;
+              max-width: 100%;
+            }
+          }
+
+          .stream-controls {
+            position: absolute;
+
+            left: 0%;
+            bottom: 0%;
+
+            width: 100%;
+            height: 2em;
+          }
+        }
+      }
+    }
+  }
+
+  .participants-count-1 {
+    .participant {
+      position: absolute;
+
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .participants-count-2 {
+    .participant {
+      position: absolute;
+
+      height: 100%;
+      width: 50%;
+    }
+
+    .participant-0 {
+      top: 0%;
+      left: 0%;
+    }
+
+    .participant-1 {
+      top: 0%;
+      left: 50%;
+    }
+  }
+
+  .streams-count-1 {
+    .stream {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .streams-count-2 {
+
+  }
+
   .local-stream-container {
     position: absolute;
 

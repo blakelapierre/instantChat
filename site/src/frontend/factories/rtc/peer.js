@@ -33,9 +33,7 @@ class Peer {
     this._nextChannelID = 0;
 
     this._log = [];
-  }
 
-  connect(onConnect) {
     var connection = this._connection = new RTCPeerConnection({iceServers}, {
       optional: [{
         DtlsSrtpKeyAgreement: true
@@ -47,22 +45,33 @@ class Peer {
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
       'data_channel':   event => this._addChannel(new Channel(this, event.channel, { })),
-      'add_stream':     event => this._addRemoteStream(new Stream(this, 'remote **change me to real id**', event.stream))
+      'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream)) 
     });
-  
-    if (onConnect) {
+
+    this.on('ice_connection_state_change', event => {
+      switch (connection.iceConnectionState) {
+        case 'failed':
+        case 'disconnected':
+        case 'close':
+          this.fire('peer connection')
+      }
+    });
+  }
+
+  connect() {
+    return new Promise((resolve, reject) => {
       var connectWatcher = event => {
-        if (connection.iceConnectionState == 'connected' 
-          || connection.iceConnectionState == 'completed') {
-          onConnect(this);
-          connection.removeEventListener('iceconnectionstatechange', connectWatcher);
+        if (this._connection.iceConnectionState == 'connected') {
+          resolve(this);
+          this._connection.removeEventListener('iceconnectionstatechange', connectWatcher);
+        }
+        else if (true) {
+          //handle failures here
         }
       };
 
-      connection.addEventListener('iceconnectionstatechange', connectWatcher);
-    }
-
-    _.each(this._localStreams, localStream => this._addLocalStream(localStream.stream));
+      this._connection.addEventListener('iceconnectionstatechange', connectWatcher);
+    });
   }
 
   initiateOffer() {
@@ -77,8 +86,6 @@ class Peer {
 
   receiveOffer(offer) {
     return new Promise((resolve, reject) => {
-      if (this._connection == null) this.connect();
-
       this._connection.setRemoteDescription(new RTCSessionDescription(offer), 
         () => {
           this._connection.createAnswer(
@@ -127,18 +134,19 @@ class Peer {
     
     this._localStreams.push(localStream);
 
-    if (this._connection) this._addLocalStream(stream);
+    this._addLocalStream(stream);
   
     return localStream;
   }
 
   close() {
-    if (this._connection) this._connection.close();
+    this._connection.close();
   }
 
   get id() { return this._id; }
   get config() { return this._config; }
   get localStreams() { return this._localStreams; }
+  get remoteStreams() { return this._remoteStreams; }
   get channels() { return this._channels; }
   get log() { return this._log; }
 
