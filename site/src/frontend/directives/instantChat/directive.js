@@ -2,6 +2,9 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
+    link: ($scope, element, attributes) => {
+      $scope.videoLoaded = event => console.log(event);
+    },
     controller: ['$rootScope', '$scope', '$sce', '$location', 'rtc', 'localMedia', ($rootScope, $scope, $sce, $location, rtc, localMedia) => {
       var localParticipant = {
         localParticipant: true,
@@ -10,9 +13,21 @@ module.exports = () => {
 
       $scope.participants = [localParticipant];
 
-      localMedia.getStream()
-        .then(stream => { 
+      localMedia.getStream({
+        audio: true,
+        video: {
+          mandatory: {
+            minWidth: 320,
+            minHeight: 240,
+            maxWidth: 320,
+            maxHeight: 240
+          }
+        }
+      })
+        .then(stream => {
+          console.log('got local stream', stream.getAudioTracks());
           localParticipant.streams.push({
+            isLocal: true,
             stream, 
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
           });

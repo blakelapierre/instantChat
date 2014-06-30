@@ -48,12 +48,21 @@ class Peer {
       'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream)) 
     });
 
-    this.on('ice_connection_state_change', event => {
-      switch (connection.iceConnectionState) {
-        case 'failed':
-        case 'disconnected':
-        case 'close':
-          this.fire('peer connection')
+    this.on({
+      'ice_connection_state_change': event => {
+        switch (connection.iceConnectionState) {
+          case 'failed':
+          case 'disconnected':
+          case 'close':
+            this.fire('peer connection')
+        }
+      },
+      'signaling_state_change': event => {
+        switch (connection.signallingState) {
+          case 'have-local-offer':
+          case 'have-remote-offer':
+            this._readyForIceCandidates();
+        }
       }
     });
   }
@@ -178,6 +187,10 @@ class Peer {
     this._remoteStreams.push(stream);
     this.fire('remoteStream added', stream);
     return stream;
+  }
+
+  _readyForIceCandidates() {
+    _.each(this._remoteCandidates, candidate => this.connection.addIceCandidate(candidate));
   }
 
   _log() {

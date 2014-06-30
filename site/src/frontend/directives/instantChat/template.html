@@ -1,25 +1,8 @@
 <div class="participants participants-count-{{participants.length}}">
 
-  <div ng-repeat="participant in participants"
-    class="participant participant-{{$index}}">
-  
-    <div class="streams streams-count-{{participant.streams.length}}">
-      
-      <div ng-repeat="stream in participant.streams"
-        class="stream stream-{{$index}}">
-          <div class="cell">
-            <video src="{{stream.src}}" autoplay></video>
-          </div>
-          
-          <div class="stream-controls">
-            <span class="control control-off">off</span>
-          </div>
-
-      </div>
-
-    </div>
-
-  </div>
+  <participant ng-repeat="participant in participants"
+    class="participant participant-{{$index}}" participant="participant">
+  </participant>
 
 </div>
 

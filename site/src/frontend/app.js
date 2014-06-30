@@ -6,6 +6,10 @@ module.exports = angular.module('instantChat', ['ngRoute'])
 
   .directive('chatMenu',      require('./directives/chatMenu/directive'))
 
+  .directive('participant',   require('./directives/participant/directive'))
+  
+  .directive('stream',        require('./directives/stream/directive'))
+
   .directive('fitText',       require('./directives/util/fitText/directive'))
   .directive('selectOnClick', require('./directives/util/selectOnClick/directive'))
 
