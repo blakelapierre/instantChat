@@ -29,6 +29,7 @@ class Peer {
     this._connectionListeners = connectionListeners;
 
     this._isReadyForIceCandidates = false;
+    this._iceCandidatePromises = [];
 
     this._nextChannelID = 0;
 
@@ -51,13 +52,6 @@ class Peer {
           case 'disconnected':
           case 'close':
             this.fire('disconnected');
-        }
-      },
-      'signaling_state_change': event => {
-        switch (connection.signallingState) {
-          case 'have-local-offer':
-          case 'have-remote-offer':
-            this._readyForIceCandidates();
         }
       }
     });
@@ -93,6 +87,7 @@ class Peer {
     return new Promise((resolve, reject) => {
       this._connection.setRemoteDescription(new RTCSessionDescription(offer), 
         () => {
+          this._resolveIceCandidatePromises();
           this._connection.createAnswer(
             answer => {
               this._connection.setLocalDescription(answer, () => resolve(answer), error => reject('peer error set_local_description', this, error, answer));
@@ -104,17 +99,31 @@ class Peer {
   }
 
   receiveAnswer(answer) {
-    return new Promise((resolve, reject) => this._connection.setRemoteDescription(new RTCSessionDescription(answer), resolve, reject));
+    return new Promise((resolve, reject) => this._connection.setRemoteDescription(new RTCSessionDescription(answer), () => {
+      this._resolveIceCandidatePromises();
+      resolve();
+    }, reject));
   }
 
   addIceCandidate(candidate) {
     console.log('received candidate', candidate);
     
-    return new Promise((resolve, reject) => {
-      this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
-        this._remoteCandidates.push(candidate);
-        resolve();
-      }, reject);
+    return new Promise((outerResolve, outerReject) => {
+      this._iceCandidatePromises.push(() => {
+        return new Promise((resolve, reject) => {
+          console.log('** adding candidate');
+          this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
+            this._remoteCandidates.push(candidate);
+            resolve();
+            outerResolve();
+          }, error => {
+            reject(error);
+            outerReject(error);
+          });
+        });
+      });
+
+      this._resolveIceCandidatePromises();
     });
   }
 
@@ -184,6 +193,15 @@ class Peer {
     this._remoteStreams.push(stream);
     this.fire('remoteStream added', stream);
     return stream;
+  }
+
+  _resolveIceCandidatePromises() {
+
+    if (this._connection.signalingState != 'have-local-offer' && this._connection.remoteDescription) {
+      console.log('Resolving ice connections', this._iceCandidatePromises);
+      _.each(this._iceCandidatePromises, fn => Promise.resolve(fn()));
+      this._iceCandidatePromises.splice(0);
+    }
   }
 
   _log() {
