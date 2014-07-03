@@ -44,22 +44,23 @@ module.exports = () => {
         'peer removed': peerRemoved,
 
         // 'peer ice_candidate': () => console.log('ICE Candidate Received'),
-        'peer receive offer': () => console.log('Offer Received'),
+        'peer receive offer':  () => console.log('Offer Received'),
         'peer receive answer': () => console.log('Answer Received'),
-        'peer send answer': () => console.log('Answer Sent'),
-        'peer signaling_state_change': (peer) => console.log('Signaling: ' + peer.connection.signalingState),
-        'peer ice_connection_state_change': (peer) => {
-          var state = peer.connection.iceConnectionState;
-          console.log('ICE: ' + state);
-        },
+        
+        'peer send answer':    () => console.log('Answer Sent'),
+
+        'peer signaling_state_change':      peer => console.log('Signaling: ' + peer.connection.signalingState),
+        'peer ice_connection_state_change': peer => console.log('ICE: ' + peer.connection.iceConnectionState),
 
         'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
 
-        'peer error set_local_description': (peer, error, offer) => console.log('peer error set_local_description', peer, error, offer),
-        'peer error create offer': (peer, error) => console.log('peer error create offer', peer, error),
-        'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate),
-        'peer error send answer': (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
+        'peer error set_local_description':  (peer, error, offer) => console.log('peer error set_local_description', peer, error, offer),
         'peer error set_remote_description': (peer, error, offer) => console.log('peer error set_remote_description', peer, error, offer)
+
+        'peer error create offer': (peer, error)        => console.log('peer error create offer', peer, error),
+        'peer error send answer':  (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
+        
+        'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate),
       });
 
       $scope.currentRooms = signal.currentRooms;
