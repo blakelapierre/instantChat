@@ -56,19 +56,15 @@ function fire(event) {
 function createPeer(peerID, config, emit, fire) {
   var peer = new Peer(peerID, config, {
     negotiation_needed: event => {
-      sendOffer(event.target);
+      if (config.isExistingPeer) sendOffer(event.target); // should this if condition be here?
       fire('peer negotiation_needed', peer, event);
     },
     ice_candidate: event => {
       var candidate = event.candidate;
+      console.log('candidate', event);
 
       if (candidate) {
-        emit('ice_candidate', {
-          peerID,
-          label: candidate.sdpMLineIndex,
-          candidate: candidate.candidate
-        });
-
+        emit('ice_candidate', {peerID, candidate});
         fire('peer ice_candidate', peer, candidate);
       }
     },
@@ -180,9 +176,10 @@ function connectToSignal(server, onReady) {
 
       _.each({
 
+        'peer join':    id => addPeer(id),
+        'peer leave':   id => removePeerByID(id),
+
         'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
-        'peer join':  id => addPeer(id),
-        'peer leave': id => removePeerByID(id),
 
         'peer offer':         data => sendAnswer(data.peerID, data.offer),
         'peer answer':        data => receiveAnswer(data.peerID, data.answer),

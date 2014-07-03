@@ -33,7 +33,7 @@ module.exports = () => {
           });
           $scope.$apply();
         })
-        .catch(error => alert(error));
+        .catch(error => console.log(error));
 
       var signal = rtc.connectToSignal('https://' + $location.host());
 

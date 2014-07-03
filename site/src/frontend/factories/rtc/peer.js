@@ -14,7 +14,7 @@ var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state
                          'add_stream', 'remove_stream', 'ice_connection_state_change',
                          'data_channel'];
 
-var iceServers = navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}];
+var iceServers = {iceServers: navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}]};
 
 class Peer {
   constructor(id, config, connectionListeners, sendOffer) {
@@ -28,23 +28,21 @@ class Peer {
     this._events = {};
     this._connectionListeners = connectionListeners;
 
+    this._isReadyForIceCandidates = false;
+
     this.sendOffer = sendOffer;
 
     this._nextChannelID = 0;
 
     this._log = [];
 
-    var connection = this._connection = new RTCPeerConnection({iceServers}, {
-      optional: [{
-        DtlsSrtpKeyAgreement: true
-      }]
-    });
+    var connection = this._connection = new RTCPeerConnection(iceServers);
 
     this.on(this._connectionListeners);
 
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
-      'data_channel':   event => this._addChannel(new Channel(this, event.channel, { })),
+      'data_channel':   event => this._addChannel(new Channel(this, event.channel)),
       'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream)) 
     });
 
@@ -54,7 +52,7 @@ class Peer {
           case 'failed':
           case 'disconnected':
           case 'close':
-            this.fire('peer connection')
+            this.fire('disconnected');
         }
       },
       'signaling_state_change': event => {
@@ -112,9 +110,10 @@ class Peer {
   }
 
   addIceCandidate(candidate) {
-    console.log('adding candidate', candidate);
+    console.log('received candidate', candidate);
+    
     return new Promise((resolve, reject) => {
-      this._connection.addIceCandidate(new RTCIceCandidate({candidate: candidate}), () => {
+      this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
         this._remoteCandidates.push(candidate);
         resolve();
       }, reject);
@@ -178,7 +177,7 @@ class Peer {
 
   _addLocalStream(stream) {
     this._connection.addStream(stream);
-    if (navigator.mozGetUserMedia) this.sendOffer();
+    if (navigator.mozGetUserMedia && this._config.isExistingPeer) this.sendOffer();
     this.fire('localStream added', stream);
     return stream;
   }
@@ -187,10 +186,6 @@ class Peer {
     this._remoteStreams.push(stream);
     this.fire('remoteStream added', stream);
     return stream;
-  }
-
-  _readyForIceCandidates() {
-    _.each(this._remoteCandidates, candidate => this.connection.addIceCandidate(candidate));
   }
 
   _log() {
