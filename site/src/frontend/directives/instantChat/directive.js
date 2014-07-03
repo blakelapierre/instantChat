@@ -40,7 +40,7 @@ module.exports = () => {
       signal.on({
         'ready': handle => console.log('got handle', handle),
 
-        'peer added': addPeer,
+        'peer added':   addPeer,
         'peer removed': peerRemoved,
 
         // 'peer ice_candidate': () => console.log('ICE Candidate Received'),
@@ -50,7 +50,7 @@ module.exports = () => {
         'peer send answer':    () => console.log('Answer Sent'),
 
         'peer signaling_state_change':      peer => console.log('Signaling: ' + peer.connection.signalingState),
-        'peer ice_connection_state_change': peer => console.log('ICE: ' + peer.connection.iceConnectionState),
+        'peer ice_connection_state_change': peer => console.log(      'ICE: ' + peer.connection.iceConnectionState),
 
         'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
 
