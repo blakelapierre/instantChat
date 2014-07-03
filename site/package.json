@@ -60,5 +60,8 @@
     "lodash": "global:_",
     "socket.io": "global:io",
     "fitText": "global:fitText"
+  },
+  "jshintConfig": {
+    "esnext": true
   }
 }

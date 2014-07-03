@@ -10,7 +10,7 @@ var RTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
 
 var iceServers = [{url: 'stun:stun.l.google.com:19302'}];
 
-var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state_change', 
+var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state_change',
                          'add_stream', 'remove_stream', 'ice_connection_state_change',
                          'data_channel'];
 
@@ -42,7 +42,7 @@ class Peer {
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
       'data_channel':   event => this._addChannel(new Channel(this, event.channel)),
-      'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream)) 
+      'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream))
     });
 
     this.on({
@@ -78,14 +78,14 @@ class Peer {
       this._connection.createOffer(
         offer => {
           this._connection.setLocalDescription(offer, () => resolve(offer), error => reject('peer error set_local_description', this, error, offer));
-        }, 
+        },
         error => reject('peer error create offer', this, error));
     });
   }
 
   receiveOffer(offer) {
     return new Promise((resolve, reject) => {
-      this._connection.setRemoteDescription(new RTCSessionDescription(offer), 
+      this._connection.setRemoteDescription(new RTCSessionDescription(offer),
         () => {
           this._resolveIceCandidatePromises();
           this._connection.createAnswer(
@@ -107,7 +107,7 @@ class Peer {
 
   addIceCandidate(candidate) {
     console.log('received candidate', candidate);
-    
+
     return new Promise((outerResolve, outerReject) => {
       this._iceCandidatePromises.push(() => {
         return new Promise((resolve, reject) => {
@@ -146,11 +146,11 @@ class Peer {
 
   addLocalStream(id, stream) {
     var localStream = new Stream(this, id, stream);
-    
+
     this._localStreams.push(localStream);
 
     this._addLocalStream(stream);
-  
+
     return localStream;
   }
 
@@ -206,7 +206,7 @@ class Peer {
 
   _log() {
     this._log.push({
-      at: new Date(), 
+      at: new Date(),
       args: [...arguments]
     });
   }
@@ -248,7 +248,7 @@ class Peer {
           listeners.splice(i, 1);
         }
       }
-      if (listeners.length == 0) delete events[event];
+      if (listeners.length === 0) delete events[event];
     }
   }
 

@@ -22,7 +22,7 @@ function on(event, listener) {
 
   events[event] = events[event] || [];
   events[event].push(listener);
-};
+}
 
 function off(event, listener) {
   if (typeof event == 'object') {
@@ -37,9 +37,9 @@ function off(event, listener) {
         listeners.splice(i, 1);
       }
     }
-    if (listeners.length == 0) delete events[event];
+    if (listeners.length === 0) delete events[event];
   }
-};
+}
 
 function fire(event) {
   var listeners = events[event] || [],
@@ -48,7 +48,7 @@ function fire(event) {
   for (var i = 0; i < listeners.length; i++) {
     listeners[i].apply(null, args);
   }
-};
+}
 /*
 -  Event Handling
 */
@@ -90,10 +90,10 @@ function createPeer(peerID, config, emit, fire) {
           fire('peer send offer', peer, offer);
         },
         ...error => fire(...error));
-  };
+  }
 
   return peer;
-};
+}
 
 /*
 +  Signalling
@@ -104,7 +104,7 @@ function connectToSignal(server, onReady) {
 
   socket.rooms = [];
 
-  function emit(event, data) { console.log('emitting', event, data); socket.emit(event, data); };
+  function emit(event, data) { console.log('emitting', event, data); socket.emit(event, data); }
 
   socket.on('error', function() {
     console.log('error', arguments);
@@ -120,7 +120,7 @@ function connectToSignal(server, onReady) {
 
       function getPeer(id) {
         return peersHash[id];
-      };
+      }
 
       function addPeer(id, config) {
         config = config || {isExistingPeer: false};
@@ -128,9 +128,9 @@ function connectToSignal(server, onReady) {
         var peer = createPeer(id, config, emit, fire);
         peers.push(peer);
         peersHash[id] = peer;
-        
+
         fire('peer added', peer);
-      };
+      }
 
       function removePeerByID(id) {
         var peer = getPeer(id);
@@ -140,7 +140,7 @@ function connectToSignal(server, onReady) {
           delete peersHash[id];
           fire('peer removed', peer);
         }
-      };
+      }
 
       function sendAnswer(peerID, offer) {
         var peer = getPeer(peerID);
@@ -153,10 +153,10 @@ function connectToSignal(server, onReady) {
               fire('peer send answer', peer, answer);
             },
             ...error => fire(...error)
-          );     
-        
+          );
+
         fire('peer receive offer', peer, offer);
-      };
+      }
 
       function receiveAnswer(peerID, answer) {
         var peer = getPeer(peerID);
@@ -166,7 +166,7 @@ function connectToSignal(server, onReady) {
           .then(
             () =>     fire('peer receive answer', peer, answer),
             error =>  fire('peer error answer', peer, error, answer));
-      };
+      }
 
       function addIceCandidate(peerID, candidate) {
         var peer = getPeer(peerID);
@@ -176,7 +176,7 @@ function connectToSignal(server, onReady) {
           .then(
             () =>     fire('peer ice_candidate accepted', peer, candidate),
             error =>  fire('peer error ice_candidate', peer, error, candidate));
-      };
+      }
 
       _.each({
 
@@ -204,16 +204,16 @@ function connectToSignal(server, onReady) {
   function joinRoom(roomName) {
     socket.rooms.push(roomName);
     emit('room join', roomName);
-  };
+  }
 
   function leaveRoom(roomName) {
     _.remove(socket.rooms, roomName);
     emit('room leave', roomName);
-  };
+  }
 
   function leaveRooms() {
     _.each(socket.rooms, leaveRoom);
-  };
+  }
 
   var signal = {
     on: on,
@@ -225,7 +225,7 @@ function connectToSignal(server, onReady) {
   };
 
   return signal;
-};
+}
 /*
 -  Signalling
 */
@@ -235,7 +235,7 @@ module.exports = function() {
 
   return {
     connectToSignal: server => {
-      if (signal == null) signal = connectToSignal(server);
+      if (signal === null) signal = connectToSignal(server);
       else if (signal.ready) fire('ready', signal.myID); // oof, get me (this line of code) out of here
       return signal;
     },
