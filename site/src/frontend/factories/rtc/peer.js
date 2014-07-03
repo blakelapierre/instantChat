@@ -17,7 +17,7 @@ var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state
 var iceServers = {iceServers: navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:stun.l.google.com:19302'}]};
 
 class Peer {
-  constructor(id, config, connectionListeners, sendOffer) {
+  constructor(id, config, connectionListeners) {
     this._id = id;
     this._config = config;
     this._localCandidates = [];
@@ -29,8 +29,6 @@ class Peer {
     this._connectionListeners = connectionListeners;
 
     this._isReadyForIceCandidates = false;
-
-    this.sendOffer = sendOffer;
 
     this._nextChannelID = 0;
 
@@ -126,7 +124,7 @@ class Peer {
     var channel = this._addChannel(new Channel(this, this.connection.createDataChannel(label, options), channelListeners));
 
     if (this._channels.length > 0 && window.mozRTCPeerConnection) {
-      this.sendOffer(this._connection);
+      this.fire('negotiation_needed', {target: this._connection});
     }
 
     return channel;
@@ -177,7 +175,7 @@ class Peer {
 
   _addLocalStream(stream) {
     this._connection.addStream(stream);
-    if (navigator.mozGetUserMedia && this._config.isExistingPeer) this.sendOffer();
+    if (navigator.mozGetUserMedia) this.fire('negotiation_needed', {target: this._connection});
     this.fire('localStream added', stream);
     return stream;
   }
@@ -201,6 +199,11 @@ class Peer {
   on(event, listener) {
     var events = this._events;
 
+    events[event] = events[event] || [];
+    events[event].push(listener);
+
+    this._events = events;
+
     if (typeof event == 'object') {
       for (var eventName in event) this.on(eventName, event[eventName]);
       return;
@@ -210,11 +213,6 @@ class Peer {
       this._connection.addEventListener(event.replace(/_/g, ''), listener);
       return;
     }
-
-    events[event] = events[event] || [];
-    events[event].push(listener);
-
-    this._events = events;
   }
 
   off(event, listener) {

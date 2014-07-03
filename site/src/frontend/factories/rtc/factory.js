@@ -55,10 +55,13 @@ function fire(event) {
 
 function createPeer(peerID, config, emit, fire) {
   var peer = new Peer(peerID, config, {
+
     negotiation_needed: event => {
+      console.log('negotiation_needed', config);
       if (config.isExistingPeer) sendOffer(event.target); // should this if condition be here?
       fire('peer negotiation_needed', peer, event);
     },
+
     ice_candidate: event => {
       var candidate = event.candidate;
       console.log('candidate', event);
@@ -68,13 +71,14 @@ function createPeer(peerID, config, emit, fire) {
         fire('peer ice_candidate', peer, candidate);
       }
     },
+
     // Do we want to be passing the raw event here?
     add_stream:                   event => fire('peer add_stream', peer, event),
     remove_stream:                event => fire('peer remove_stream', peer, event),
     data_channel:                 event => fire('peer data_channel connected', peer, event.channel),
     signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
     ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
-  }, sendOffer);
+  });
 
 
   function sendOffer() {
@@ -181,11 +185,13 @@ function connectToSignal(server, onReady) {
 
         'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
 
-        'peer offer':         data => sendAnswer(data.peerID, data.offer),
-        'peer answer':        data => receiveAnswer(data.peerID, data.answer),
+        'peer offer': data => sendAnswer(data.peerID, data.offer),
+        'peer answer':data => receiveAnswer(data.peerID, data.answer),
+
         'peer ice_candidate': data => addIceCandidate(data.peerID, data.candidate)
 
       }, (handler, name) => socket.on(name, function() {
+        console.log(name, arguments);
         handler.apply(this, arguments);
         fire(name, ...arguments);
       }));
@@ -207,7 +213,7 @@ function connectToSignal(server, onReady) {
 
   function leaveRooms() {
     _.each(socket.rooms, leaveRoom);
-  }
+  };
 
   var signal = {
     on: on,
