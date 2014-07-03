@@ -55,12 +55,12 @@ module.exports = () => {
         'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
 
         'peer error set_local_description':  (peer, error, offer) => console.log('peer error set_local_description', peer, error, offer),
-        'peer error set_remote_description': (peer, error, offer) => console.log('peer error set_remote_description', peer, error, offer)
+        'peer error set_remote_description': (peer, error, offer) => console.log('peer error set_remote_description', peer, error, offer),
 
         'peer error create offer': (peer, error)        => console.log('peer error create offer', peer, error),
         'peer error send answer':  (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
         
-        'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate),
+        'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate)
       });
 
       $scope.currentRooms = signal.currentRooms;
