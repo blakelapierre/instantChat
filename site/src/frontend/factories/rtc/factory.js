@@ -58,7 +58,7 @@ function createPeer(peerID, config, emit, fire) {
 
     negotiation_needed: event => {
       console.log('negotiation_needed', config);
-      if (config.isExistingPeer) sendOffer(event.target); // should this if condition be here?
+      if (peer.isConnectingPeer) sendOffer(event.target); // should this if condition be here?
       fire('peer negotiation_needed', peer, event);
     },
 

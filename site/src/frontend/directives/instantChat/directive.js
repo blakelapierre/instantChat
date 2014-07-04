@@ -18,9 +18,10 @@ module.exports = () => {
         video: {
           mandatory: {
             minWidth: 320,
-            minHeight: 240,
             maxWidth: 320,
-            maxHeight: 240
+            minHeight: 240,
+            maxHeight: 240,
+            maxFrameRate: 15
           }
         }
       })
@@ -28,7 +29,7 @@ module.exports = () => {
           console.log('got local stream', stream.getAudioTracks());
           localParticipant.streams.push({
             isLocal: true,
-            stream, 
+            stream,
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
           });
           $scope.$apply();
@@ -46,7 +47,7 @@ module.exports = () => {
         // 'peer ice_candidate': () => console.log('ICE Candidate Received'),
         'peer receive offer':  () => console.log('Offer Received'),
         'peer receive answer': () => console.log('Answer Received'),
-        
+
         'peer send answer':    () => console.log('Answer Sent'),
 
         'peer signaling_state_change':      peer => console.log('Signaling: ' + peer.connection.signalingState),
@@ -59,7 +60,7 @@ module.exports = () => {
 
         'peer error create offer': (peer, error)        => console.log('peer error create offer', peer, error),
         'peer error send answer':  (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
-        
+
         'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate)
       });
 
@@ -77,7 +78,7 @@ module.exports = () => {
       function addPeer(peer) {
         console.log('peer added', peer);
         var participant = {
-          peer,
+          peer: peer,
           streams: []
         };
 
@@ -93,15 +94,29 @@ module.exports = () => {
 
         if (peer.config.isExistingPeer) {
           peer.connect()
-            .then(peer => 
-              setTimeout(() => console.log('peer', peer), 0)
-            ).catch(error => console.log(error));
+            .then(peer => {
+              console.log('^^^ adding chat channel');
+              var channel = peer.addChannel('chat', null, {
+                message: (channel, event) => console.log('message', event),
+                open: event => console.log('open'),
+                close: event => console.log('close'),
+                error: event => console.log('error')
+              });
+              console.log('channel', channel);
+
+              console.log('Have Peer', peer);
+            }).catch(error => console.log(error));
+        }
+        else {
+          peer.on('channel added', channel => {
+            channel.send('hello');
+          });
         }
 
         peer.on('remoteStream added', stream => {
           console.log('got remote stream', stream);
           participant.streams.push({
-            peer,
+            peer: peer,
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream.stream))
           });
           $scope.$apply();

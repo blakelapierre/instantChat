@@ -47,6 +47,8 @@ module.exports = () => {
       $scope.subscribe = () => {
 
       };
+
+      debouncedCollapse();
     }]
   }
 };

@@ -28,6 +28,8 @@ class Peer {
     this._events = {};
     this._connectionListeners = connectionListeners;
 
+    this._isConnectingPeer = false;
+
     this._isReadyForIceCandidates = false;
     this._iceCandidatePromises = [];
 
@@ -57,8 +59,10 @@ class Peer {
     });
   }
 
+  // This is kind of misleading. It doesn't cause the connection...
   connect() {
-    var peer = this;
+    this._isConnectingPeer = true;
+
     return new Promise((resolve, reject) => {
       var connectWatcher = event => {
         var connection = event.target;
@@ -72,7 +76,7 @@ class Peer {
           case 'failed':
           case 'disconnected':
           case 'closed':
-            reject({peer: peer, event: event});
+            reject({peer: this, event: event});
             break;
         }
       };
@@ -135,11 +139,9 @@ class Peer {
   addChannel(label, options, channelListeners) {
     label = label || ('data-channel-' + this._nextChannelID++);
 
-    var channel = this._addChannel(new Channel(this, this.connection.createDataChannel(label, options), channelListeners));
+    var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelListeners));
 
-    if (this._channels.length > 0 && window.mozRTCPeerConnection) {
-      this.fire('negotiation_needed', {target: this._connection});
-    }
+    if (window.mozRTCPeerConnection) this.fire('negotiation_needed', {target: this._connection});
 
     return channel;
   }
@@ -168,6 +170,7 @@ class Peer {
   get localStreams() { return this._localStreams; }
   get remoteStreams() { return this._remoteStreams; }
   get channels() { return this._channels; }
+  get isConnectingPeer() { return this._isConnectingPeer; }
   get log() { return this._log; }
 
   channel(label) { return _.find(this._channels, {'label': label}); }
