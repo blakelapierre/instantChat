@@ -102,8 +102,6 @@ function connectToSignal(server, onReady) {
   console.log('connecting to', server);
   var socket = io(server);
 
-  socket.rooms = [];
-
   function emit(event, data) { console.log('emitting', event, data); socket.emit(event, data); }
 
   socket.on('error', function() {
@@ -201,18 +199,20 @@ function connectToSignal(server, onReady) {
     });
   });
 
+  var rooms = [];
+
   function joinRoom(roomName) {
-    socket.rooms.push(roomName);
+    rooms.push(roomName);
     emit('room join', roomName);
   }
 
   function leaveRoom(roomName) {
-    _.remove(socket.rooms, roomName);
+    _.remove(rooms, roomName);
     emit('room leave', roomName);
   }
 
   function leaveRooms() {
-    _.each(socket.rooms, leaveRoom);
+    _.each(rooms, leaveRoom);
   }
 
   var signal = {
@@ -221,7 +221,7 @@ function connectToSignal(server, onReady) {
     joinRoom: joinRoom,
     leaveRoom: leaveRoom,
     leaveRooms: leaveRooms,
-    currentRooms: socket.rooms
+    currentRooms: rooms
   };
 
   return signal;
