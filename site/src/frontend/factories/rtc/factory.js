@@ -235,7 +235,7 @@ module.exports = function() {
 
   return {
     connectToSignal: server => {
-      if (signal === null) signal = connectToSignal(server);
+      if (signal === undefined) signal = connectToSignal(server);
       else if (signal.ready) fire('ready', signal.myID); // oof, get me (this line of code) out of here
       return signal;
     },
