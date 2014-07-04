@@ -58,14 +58,22 @@ class Peer {
   }
 
   connect() {
+    var peer = this;
     return new Promise((resolve, reject) => {
       var connectWatcher = event => {
-        if (this._connection.iceConnectionState == 'connected') {
-          resolve(this);
-          this._connection.removeEventListener('iceconnectionstatechange', connectWatcher);
-        }
-        else if (true) {
-          //handle failures here
+        var connection = event.target;
+
+        switch (connection.iceConnectionState) {
+          case 'connected':
+          case 'completed':
+            resolve(this);
+            connection.removeEventListener('iceconnectionstatechange', connectWatcher);
+            break;
+          case 'failed':
+          case 'disconnected':
+          case 'closed':
+            reject({peer: peer, event: event});
+            break;
         }
       };
 
@@ -106,12 +114,9 @@ class Peer {
   }
 
   addIceCandidate(candidate) {
-    console.log('received candidate', candidate);
-
     return new Promise((outerResolve, outerReject) => {
       this._iceCandidatePromises.push(() => {
         return new Promise((resolve, reject) => {
-          console.log('** adding candidate');
           this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
             this._remoteCandidates.push(candidate);
             resolve();
@@ -196,9 +201,7 @@ class Peer {
   }
 
   _resolveIceCandidatePromises() {
-
     if (this._connection.signalingState != 'have-local-offer' && this._connection.remoteDescription) {
-      console.log('Resolving ice connections', this._iceCandidatePromises);
       _.each(this._iceCandidatePromises, fn => Promise.resolve(fn()));
       this._iceCandidatePromises.splice(0);
     }
