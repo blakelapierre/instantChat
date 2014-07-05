@@ -9,7 +9,7 @@ function HashList(idProperty) {
 }
 
 // A HashList stores data in both an array, and a dictionary/hashmap
-// We do this 
+// We do this
 function HashList(idProperty) {
   var list = [],
       hash = {};
@@ -21,7 +21,7 @@ function HashList(idProperty) {
         id: obj,
         index: list.length - 1,
         obj: obj
-      }
+      };
     };
 
     this.removeObject = function(obj) {
@@ -31,7 +31,7 @@ function HashList(idProperty) {
     this.removeByID = function(id) {
       var hObj = hash[id];
 
-      if (hObj == null) return;
+      if (hObj === undefined) return;
 
       list.splice(hObj.index, 1);
       delete hash[id];
@@ -60,7 +60,7 @@ function HashList(idProperty) {
     this.removeByID = function(id) {
       var hObj = hash[id];
 
-      if (hObj == null) return;
+      if (hObj === undefined) return;
 
       list.splice(hObj.index, 1);
       delete hash[id];
@@ -96,8 +96,8 @@ function HashList(idProperty) {
     for (var i = 0; i < list.length; i++) {
       fn(list[i]);
     }
-  }
-};
+  };
+}
 
 module.exports = function(io) {
   var rooms = new HashList('_roomName'),
@@ -107,7 +107,7 @@ module.exports = function(io) {
   function joinRoom(socket, roomName) {
     var room = rooms.getByID(roomName);
 
-    if (room == null) {
+    if (room === null) {
       room = new HashList('id');
       room._roomName = roomName;
       rooms.push(room);
@@ -126,13 +126,13 @@ module.exports = function(io) {
 
     socket.rooms.push(roomName);
     console.log('join', roomName, socket.id);
-  };
+  }
 
   function leaveRoom(socket, roomName) {
     console.log('leave', roomName, socket.id);
     var room = rooms.getByID(roomName);
 
-    if (room == null) {
+    if (room === null) {
       console.log('Tried to leave non-existent room', roomName);
       return;
     }
@@ -145,8 +145,8 @@ module.exports = function(io) {
       peerSocket.emit('peer leave', socket.id);
     });
 
-    if (room.length() == 0) rooms.removeByID(roomName);
-  };
+    if (room.length() === 0) rooms.removeByID(roomName);
+  }
 
   io.sockets.on('connection', function(socket) {
     socket.emit('your_id', socket.id);

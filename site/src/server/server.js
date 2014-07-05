@@ -9,12 +9,12 @@ module.exports = function(config, callback) {
 
   var redirectServer = http.createServer(function requireHTTPS(req, res, next) {
     res.writeHead(302, {
-      'Location': 'https://' + req.headers['host'] + req.url
+      'Location': 'https://' + req.headers.host + req.url
     });
     res.end();
   });
 
-  
+
   var serverRoot = config.serverRoot;
 
   app.use(express.static(path.join(serverRoot, '..', 'dist')));
