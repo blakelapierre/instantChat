@@ -138,10 +138,12 @@ class Peer {
 
   addChannel(label, options, channelListeners) {
     label = label || ('data-channel-' + this._nextChannelID++);
+    options = options || {};
+    options.negotiated = false;
 
     var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelListeners));
 
-    if (window.mozRTCPeerConnection) this.fire('negotiation_needed', {target: this._connection});
+    if (window.mozRTCPeerConnection && this._localStreams.length === 0) this.fire('negotiation_needed', {target: this._connection});
 
     return channel;
   }

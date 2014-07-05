@@ -3,5 +3,6 @@
 </div>
 
 <div class="stream-controls" style="left: {{videoSurfaceLeft}}px; bottom: {{videoSurfaceBottom}}px; right: {{videoSurfaceRight}}px;">
-  <span ng-class="{'fa': true, 'fa-volume-off': stream.isMuted, 'volume-off': stream.isMuted, 'fa-volume-up': !stream.isMuted, 'volume-on': !stream.isMuted}" ng-click="toggleMute($event)"></span>
+  <span
+  ng-show="!stream.isLocal" ng-class="{'fa': true, 'fa-volume-off': stream.isMuted, 'volume-off': stream.isMuted, 'fa-volume-up': !stream.isMuted, 'volume-on': !stream.isMuted}" ng-click="toggleMute($event)"></span>
 </div>
