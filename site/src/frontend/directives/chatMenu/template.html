@@ -13,7 +13,8 @@
 
         <div class="menu-items">
           <ul ng-click="$event.stopPropagation()">
-            <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person</a></li>
+            <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person via E-Mail</a></li>
+            <li ng-click=""><a href="sms:?body={{smsBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person via SMS</a></li>
           </ul>
         </div>
       </div>

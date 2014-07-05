@@ -10,7 +10,8 @@ module.exports = () => {
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',
-        emailBody() { return 'Come join me at ' + window.location.toString(); },
+        emailBody() { return 'Come join me at ' + encodeURIComponent(window.location.toString()); },
+        smsBody() { return 'Come join me at ' + encodeURIComponent(window.location.toString()); },
 
         isMouseInside: false,
 
