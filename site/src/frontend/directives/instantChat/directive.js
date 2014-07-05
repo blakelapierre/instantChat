@@ -8,9 +8,11 @@ module.exports = () => {
     controller: ['$rootScope', '$scope', '$sce', '$location', 'rtc', 'localMedia', ($rootScope, $scope, $sce, $location, rtc, localMedia) => {
       var localParticipant = {
         localParticipant: true,
+        config: {participantName: 'Blake'},
         streams: []
       };
 
+      $scope.config = localParticipant.config;
       $scope.participants = [localParticipant];
 
       localMedia.getStream({
@@ -29,7 +31,7 @@ module.exports = () => {
           console.log('got local stream', stream.getAudioTracks());
           localParticipant.streams.push({
             isLocal: true,
-            stream,
+            stream: stream,
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
           });
           $scope.$apply();
@@ -53,7 +55,7 @@ module.exports = () => {
         'peer signaling_state_change':      peer => console.log('Signaling: ' + peer.connection.signalingState),
         'peer ice_connection_state_change': peer => console.log(      'ICE: ' + peer.connection.iceConnectionState),
 
-        'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
+        //'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
 
         'peer error set_local_description':  (peer, error, offer) => console.log('peer error set_local_description', peer, error, offer),
         'peer error set_remote_description': (peer, error, offer) => console.log('peer error set_remote_description', peer, error, offer),
@@ -121,13 +123,26 @@ module.exports = () => {
           });
           $scope.$apply();
         });
+
+        $scope.$apply();
+
+        $rootScope.$broadcast('participant added', participant);
       }
 
       function peerRemoved(peer) {
-        _.remove($scope.participants, {peer: peer});
-        $scope.$apply();
+        var participant = _.find($scope.participants, {peer: peer}),
+            index = $scope.participants.indexOf(participant);
+
+        if (index != -1) {
+          $scope.participants.splice(index, 1);
+          $scope.$apply();
+          $rootScope.$broadcast('participant removed', participant);
+        }
       }
 
+      $scope.$watchCollection('config', config => {
+        console.log(config);
+      });
     }]
   };
 };

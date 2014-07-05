@@ -1,20 +1,28 @@
 <div ng-class="{'menu-container': true, 'collapsed': isCollapsed}">
   <div class="expanded-view" ng-mouseenter="mouseEnterExpandedView()" ng-mouseleave="mouseLeftExpandedView()">
     <div class="overlay"></div>
-    <div class="menu-content">
-      <span class="badge">#{{currentRoom}}</span>
-      <div class="menu-items">
-        <ul ng-click="$event.stopPropagation()">
-          <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank">+ Invite Person</a></li>
-          <li ng-click="subscribe()">+ Receive Join Notifications</li>
-        </ul>
+    <div class="menu-content" ng-click="collapse()">
+      <div class="header">
+        <span class="badge" ng-click="$event.stopPropagation()">#{{currentRoom}} <ng-pluralize class="participants-count" count="participants.length" when="{'0': '- Nobody is here (not even you!)',
+               '1': '- 1 Participant',
+               'other': '- {} Participants'}"></ng-pluralize></span>
+      </div>
+      <div class="body">
+        <input class="name-input" type="text" placeholder="Set Your Name" ng-bind="config.participantName"
+        ng-click="$event.stopPropagation()">
+
+        <div class="menu-items">
+          <ul ng-click="$event.stopPropagation()">
+            <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person</a></li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
   <div class="collapsed-view" ng-click="expand()">
     <div class="overlay"></div>
     <div class="glyph-table">
-      <span class="glyph">M</span>
+      <span class="glyph fa fa-bars"></span>
     </div>
   </div>
 </div>

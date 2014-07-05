@@ -1,7 +1,7 @@
 <div class="cell">
-  <video src="{{stream.src}}" autoplay onloadstart="$scope.videoLoaded($event)"></video>
+  <video src="{{stream.src}}" autoplay></video>
 </div>
 
-<div class="stream-controls">
-  <span class="control control-off">off</span>
+<div class="stream-controls" style="left: {{videoSurfaceLeft}}px; bottom: {{videoSurfaceBottom}}px; right: {{videoSurfaceRight}}px;">
+  <span ng-class="{'fa': true, 'fa-volume-off': stream.isMuted, 'volume-off': stream.isMuted, 'fa-volume-up': !stream.isMuted, 'volume-on': !stream.isMuted}" ng-click="toggleMute($event)"></span>
 </div>
