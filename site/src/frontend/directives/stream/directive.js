@@ -61,6 +61,8 @@ module.exports = ['$rootScope', ($rootScope) => {
 
       $scope.$watch('stream', stream => {
         stream.isMuted = stream.isLocal || stream.isMuted;
+        stream.isVotedUp = false;
+        stream.isVotedDown = false;
 
         video.muted = stream.isMuted;
       });
@@ -75,7 +77,19 @@ module.exports = ['$rootScope', ($rootScope) => {
       };
     },
     controller: ['$scope', ($scope) => {
+      $scope.toggleVoteUp = $event => {
+        var stream = $scope.stream;
 
+        stream.isVotedUp = !stream.isVotedUp;
+        stream.isVotedDown = false;
+      };
+
+      $scope.toggleVoteDown = $event => {
+        var stream = $scope.stream;
+
+        stream.isVotedUp = false;
+        stream.isVotedDown = !stream.isVotedDown;
+      };
     }]
   };
 }];

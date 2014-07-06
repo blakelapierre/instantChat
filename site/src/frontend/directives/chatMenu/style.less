@@ -1,5 +1,8 @@
+@import '../../mixins.less';
+
 @menuWidth: 60%;
 @collapseDuration: 0.4s;
+@opacity: 0.85;
 
 chat-menu {
   .menu-container {
@@ -10,6 +13,8 @@ chat-menu {
       bottom: 0%;
 
       width: @menuWidth;
+      max-width: 25em;
+
       height: 100%;
 
       transform: scale(1);
@@ -22,7 +27,7 @@ chat-menu {
 
         background-color: #333;
 
-        opacity: 0.5;
+        opacity: 0.85;
 
         transition: background-color @collapseDuration ease, opacity @collapseDuration ease;
       }
@@ -37,8 +42,6 @@ chat-menu {
         height: 100%;
 
         text-align: center;
-
-        padding-top: 1em;
 
         color: #fff;
         text-shadow: 0px 0px 15px #bddfff;
@@ -60,6 +63,8 @@ chat-menu {
           height: 90%;
           width: 100%;
 
+          padding-top: 1em;
+
           .name-input {
             width: 100%;
 
@@ -72,6 +77,10 @@ chat-menu {
 
             background: transparent;
             border: none;
+
+            .placeholder({
+              color: #dff;
+            });
           }
 
           .menu-items {

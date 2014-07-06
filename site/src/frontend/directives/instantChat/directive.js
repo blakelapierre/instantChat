@@ -36,7 +36,7 @@ module.exports = () => {
           });
           $scope.$apply();
         })
-        .catch(error => console.log(error));
+        .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
 
       var signal = rtc.connectToSignal('https://' + $location.host());
 
@@ -142,6 +142,11 @@ module.exports = () => {
 
       $scope.$watchCollection('config', config => {
         console.log(config);
+      });
+
+      $rootScope.$on('error', (event, message, error) => {
+        $scope.errorMessage = message;
+        $scope.$apply(); // is this necessary?
       });
     }]
   };

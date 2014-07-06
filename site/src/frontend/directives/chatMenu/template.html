@@ -8,13 +8,22 @@
                'other': '- {} Participants'}"></ng-pluralize></span>
       </div>
       <div class="body">
-        <input class="name-input" type="text" placeholder="Set Your Name" ng-bind="config.participantName"
-        ng-click="$event.stopPropagation()">
+        <input class="name-input"
+               type="text"
+               placeholder="Set Your Name"
+               ng-bind="config.participantName"
+               ng-click="$event.stopPropagation()">
 
         <div class="menu-items">
           <ul ng-click="$event.stopPropagation()">
-            <li ng-click=""><a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person via E-Mail</a></li>
-            <li ng-click=""><a href="sms:?body={{smsBody()}}" target="_blank"><span class="fa fa-envelope"></span> Invite Person via SMS</a></li>
+            <li>
+              <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
+                 target="_blank"><span class="fa fa-envelope"></span> Invite via E-Mail</a>
+            </li>
+            <li>
+              <a href="sms:?body={{smsBody()}}"
+                 target="_blank"><span class="fa fa-envelope"></span> Invite via SMS</a>
+            </li>
           </ul>
         </div>
       </div>

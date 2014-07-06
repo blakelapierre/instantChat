@@ -28,13 +28,13 @@ stream {
   .stream-controls {
     position: absolute;
 
-    padding-left: 0.25em;
-
     font-size: xx-large;
 
     span {
       position: relative;
       bottom: 0;
+
+      margin: 0.2em;
     }
 
     .volume-off {
@@ -45,6 +45,30 @@ stream {
     .volume-on {
       color: #393;
       text-shadow: 0px 0px 10px #030;
+    }
+
+    .thumbs {
+      float: right;
+      margin-right: 0.5em;
+
+      cursor: pointer;
+    }
+
+    .thumbs-up {
+      bottom: 0.15em;
+      padding-right: 3px; // The filled thumb up is 3px wider...
+    }
+
+    .thumbs-up-selected {
+      padding-right: 0px;
+      color: #6f6;
+      text-shadow: 0px 0px 10px #030;
+    }
+
+    .thumbs-down-selected {
+      padding-right: 0px;
+      color: #f66;
+      text-shadow: 0px 0px 10px #300;
     }
   }
 }
