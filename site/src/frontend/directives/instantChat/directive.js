@@ -89,27 +89,31 @@ module.exports = () => {
         localMedia.getStream()
           .then(
             stream => {
+              console.log('got stream, setting up peer')
               peer.addLocalStream('local', stream);
+
+              if (peer.config.isExistingPeer) {
+                var channel = peer.addChannel('chat', null, {
+                  message: (channel, event) => console.log('message', event),
+                  open: event => console.log('open'),
+                  close: event => console.log('close'),
+                  error: event => console.log('error')
+                });
+
+                peer.connect()
+                  .then(peer => {
+                    console.log('^^^ adding chat channel');
+
+
+                    console.log('Have Peer', peer);
+                  }).catch(error => console.log(error));
+              }
               $scope.$apply();
             }
           ).catch(error => console.log('*** Error getting local media stream', error));
 
-        if (peer.config.isExistingPeer) {
-          peer.connect()
-            .then(peer => {
-              console.log('^^^ adding chat channel');
-              var channel = peer.addChannel('chat', null, {
-                message: (channel, event) => console.log('message', event),
-                open: event => console.log('open'),
-                close: event => console.log('close'),
-                error: event => console.log('error')
-              });
-              console.log('channel', channel);
 
-              console.log('Have Peer', peer);
-            }).catch(error => console.log(error));
-        }
-        else {
+        if (!peer.config.isExistingPeer) {
           peer.on('channel added', channel => {
             channel.send('hello');
           });

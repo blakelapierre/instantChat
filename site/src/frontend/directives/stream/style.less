@@ -1,74 +1,86 @@
 stream {
-  display: table;
-  border: none;
-  border-spacing: 0;
 
-  .cell {
-    display: table-cell;
-    vertical-align: middle;
-
+  .have-size {
     width: 100%;
+    height: 100%;
 
-    video {
-      position: absolute;
+    display: table;
+    border: none;
+    border-spacing: 0;
 
-      top: 0%;
-      left: 0%;
-      bottom: 0%;
-      right: 0%;
+    .cell {
+      display: table-cell;
+      vertical-align: middle;
 
       width: 100%;
 
-      max-height: 100%;
+      video {
+        position: absolute;
 
-      margin: auto;
-    }
-  }
+        top: 0%;
+        left: 0%;
+        bottom: 0%;
+        right: 0%;
 
-  .stream-controls {
-    position: absolute;
+        width: 100%;
 
-    font-size: xx-large;
+        max-height: 100%;
 
-    span {
-      position: relative;
-      bottom: 0;
-
-      margin: 0.2em;
+        margin: auto;
+      }
     }
 
-    .volume-off {
-      color: #933;
-      text-shadow: 0px 0px 10px #300;
-    }
+    .stream-controls {
+      @activatedColor: #6f6;
+      @deactivatedColor: #f66;
 
-    .volume-on {
-      color: #393;
-      text-shadow: 0px 0px 10px #030;
-    }
+      @activatedShadowColor: #030;
+      @deactivatedShadowColor: #300;
 
-    .thumbs {
-      float: right;
-      margin-right: 0.5em;
+      position: absolute;
 
-      cursor: pointer;
-    }
+      font-size: xx-large;
 
-    .thumbs-up {
-      bottom: 0.15em;
-      padding-right: 3px; // The filled thumb up is 3px wider...
-    }
+      span {
+        position: relative;
+        bottom: 0;
 
-    .thumbs-up-selected {
-      padding-right: 0px;
-      color: #6f6;
-      text-shadow: 0px 0px 10px #030;
-    }
+        margin: 0.2em 0.5em;
+      }
 
-    .thumbs-down-selected {
-      padding-right: 0px;
-      color: #f66;
-      text-shadow: 0px 0px 10px #300;
+      .volume-off {
+        color: @deactivatedColor;
+        text-shadow: 0px 0px 10px @deactivatedShadowColor;
+      }
+
+      .volume-on {
+        color: @activatedColor;
+        text-shadow: 0px 0px 10px @activatedShadowColor;
+      }
+
+      .thumbs {
+        float: right;
+        margin-right: 0.5em;
+
+        cursor: pointer;
+      }
+
+      .thumbs-up {
+        bottom: 0.15em;
+        padding-right: 3px; // The filled thumb up is 3px wider...
+      }
+
+      .thumbs-up-selected {
+        padding-right: 0px;
+        color: @activatedColor;
+        text-shadow: 0px 0px 10px @activatedShadowColor;
+      }
+
+      .thumbs-down-selected {
+        padding-right: 0px;
+        color: @deactivatedColor;
+        text-shadow: 0px 0px 10px @deactivatedShadowColor;
+      }
     }
   }
 }

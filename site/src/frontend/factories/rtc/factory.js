@@ -55,11 +55,9 @@ function fire(event) {
 
 function createPeer(peerID, config, emit, fire) {
   var peer = new Peer(peerID, config, {
-
-    negotiation_needed: event => {
-      console.log('negotiation_needed', config);
-      if (peer.isConnectingPeer) sendOffer(event.target); // should this if condition be here?
-      fire('peer negotiation_needed', peer, event);
+    'offerReady': offer => {
+      emit('peer offer', {peerID, offer});
+      fire('peer send offer', peer, offer);
     },
 
     ice_candidate: event => {
@@ -79,18 +77,6 @@ function createPeer(peerID, config, emit, fire) {
     signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
     ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
   });
-
-
-  function sendOffer() {
-    peer
-      .initiateOffer()
-      .then(
-        offer => {
-          emit('peer offer', {peerID, offer});
-          fire('peer send offer', peer, offer);
-        },
-        ...error => fire(...error));
-  }
 
   return peer;
 }

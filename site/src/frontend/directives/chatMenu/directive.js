@@ -39,7 +39,7 @@ module.exports = () => {
           $scope.collapse();
           $scope.$apply();
         }
-      }, 1500);
+      }, 1250);
 
       $scope.invite = () => {
 

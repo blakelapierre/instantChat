@@ -6,7 +6,8 @@ module.exports = ['$rootScope', ($rootScope) => {
       stream: '='
     },
     link: ($scope, element, attributes) => {
-      var video = element.find('video')[0];
+      var video = element.find('video')[0],
+          cell = element[0].childNodes[0];
 
       $scope.haveSize = false;
 
@@ -15,19 +16,24 @@ module.exports = ['$rootScope', ($rootScope) => {
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
       });
 
-      video.addEventListener('resize', event => {
-        console.log(event);
+      video.addEventListener('playing', () => {
+        $scope.haveSize = true;
+        $rootScope.$broadcast('haveVideoSize', $scope.stream);
       });
 
-      var cell = _.find(element.children(), child => angular.element(child).hasClass('cell'));
+      video.addEventListener('play', () => {
+        $scope.haveSize = true;
+        $rootScope.$broadcast('haveVideoSize', $scope.stream);
+      });
 
+      video.addEventListener('resize', event => refreshSize());
       window.addEventListener('resize', event => refreshSize());
 
       function refreshSize() {
         if ($scope.haveSize) {
           var videoWidth = video.videoWidth,
               videoHeight = video.videoHeight,
-              videoRatio = videoWidth / videoHeight,
+              videoRatio = (videoWidth / videoHeight) || (4 / 3),
               cellWidth = cell.clientWidth,
               cellHeight = cell.clientHeight,
               cellRatio = cellWidth / cellHeight;
@@ -35,13 +41,15 @@ module.exports = ['$rootScope', ($rootScope) => {
           var videoSurfaceWidth, videoSurfaceHeight;
 
           if (cellRatio > videoRatio) {
-            videoSurfaceWidth = cellHeight * videoRatio,
+            videoSurfaceWidth = cellHeight * videoRatio;
             videoSurfaceHeight = cellHeight;
           }
           else {
-            videoSurfaceWidth = cellWidth,
+            videoSurfaceWidth = cellWidth;
             videoSurfaceHeight = cellWidth / videoRatio;
           }
+
+          console.log(videoRatio, cellRatio);
 
           $scope.videoSurfaceTop = (cellHeight - videoSurfaceHeight) / 2;
           $scope.videoSurfaceLeft = (cellWidth - videoSurfaceWidth) / 2;

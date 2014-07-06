@@ -82,15 +82,24 @@ class Peer {
       };
 
       this._connection.addEventListener('iceconnectionstatechange', connectWatcher);
+
+      this.initiateOffer()
+        .then(offer => this.fire('offerReady', offer))
+        .catch(() => this.fire('offer error'));
     });
   }
 
-  initiateOffer() {
+  initiateOffer(options) {
+    console.log('###cvreateing offer');
+    options = options || {};
     return new Promise((resolve, reject) => {
       this._connection.createOffer(
-        offer => {
-          this._connection.setLocalDescription(offer, () => resolve(offer), error => reject('peer error set_local_description', this, error, offer));
-        },
+        offer =>
+          this._connection
+              .setLocalDescription(offer,
+                () => resolve(this._connection.localDescription),
+                error => reject('peer error set_local_description', this, error, offer),
+                options),
         error => reject('peer error create offer', this, error));
     });
   }
@@ -102,7 +111,7 @@ class Peer {
           this._resolveIceCandidatePromises();
           this._connection.createAnswer(
             answer => {
-              this._connection.setLocalDescription(answer, () => resolve(answer), error => reject('peer error set_local_description', this, error, answer));
+              this._connection.setLocalDescription(answer, () => resolve(this._connection.localDescription), error => reject('peer error set_local_description', this, error, answer));
             },
             error => reject('peer error send answer', this, error, offer));
         },
@@ -138,12 +147,10 @@ class Peer {
 
   addChannel(label, options, channelListeners) {
     label = label || ('data-channel-' + this._nextChannelID++);
-    options = options || {};
-    options.negotiated = false;
+    // options = options || {};
+    // options.negotiated = false;
 
     var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelListeners));
-
-    if (window.mozRTCPeerConnection && this._localStreams.length === 0) this.fire('negotiation_needed', {target: this._connection});
 
     return channel;
   }
