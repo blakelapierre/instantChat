@@ -6,6 +6,8 @@
 
 </div>
 
+<span class="fa fa-arrows-alt full-screen" ng-click="toggleFullscreen()"> {{fullscreenMessage}}</span>
+
 <div class="error-message" ng-show="errorMessage != null" ng-click="errorMessage = null">{{errorMessage}}</div>
 
 <chat-menu config="config"></chat-menu>

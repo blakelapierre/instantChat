@@ -3,7 +3,50 @@ module.exports = () => {
     restrict: 'E',
     template: require('./template.html'),
     link: ($scope, element, attributes) => {
+      var domElement = element[0];
+
       $scope.videoLoaded = event => console.log(event);
+
+      $scope.toggleFullscreen = () => {
+        //Using Mozilla's polyfill...
+        if (!document.fullscreenElement &&    // alternative standard method
+            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+          } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      };
+
+      document.addEventListener('fullscreenchange', updateFullscreenMessage);
+      document.addEventListener('webkitfullscreenchange', updateFullscreenMessage);
+      document.addEventListener('mozfullscreenchange', updateFullscreenMessage);
+
+      function updateFullscreenMessage() {
+        if (!document.fullscreenElement &&    // alternative standard method
+            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+          $scope.fullscreenMessage = 'Go Fullscreen';
+        } else {
+          $scope.fullscreenMessage = 'Exit Fullscreen';
+        }
+      }
+
+      updateFullscreenMessage();
     },
     controller: ['$rootScope', '$scope', '$sce', '$location', 'rtc', 'localMedia', ($rootScope, $scope, $sce, $location, rtc, localMedia) => {
       var localParticipant = {

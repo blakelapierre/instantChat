@@ -11,26 +11,23 @@ module.exports = ['$rootScope', ($rootScope) => {
 
       $scope.haveSize = false;
 
-      video.addEventListener('loadedmetadata', () => {
+      video.addEventListener('loadedmetadata', () => gotSize());
+      video.addEventListener('playing',        () => gotSize());
+      video.addEventListener('play',           () => gotSize());
+
+      video.addEventListener('resize',      () => refreshSize());
+      window.addEventListener('resize',     () => refreshSize());
+
+      $rootScope.$on('haveVideoSize',       () => refreshSize());
+      $rootScope.$on('participant added',   () => refreshSize());
+      $rootScope.$on('participant removed', () => refreshSize());
+
+      function gotSize() {
         $scope.haveSize = true;
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
-      });
-
-      video.addEventListener('playing', () => {
-        $scope.haveSize = true;
-        $rootScope.$broadcast('haveVideoSize', $scope.stream);
-      });
-
-      video.addEventListener('play', () => {
-        $scope.haveSize = true;
-        $rootScope.$broadcast('haveVideoSize', $scope.stream);
-      });
-
-      video.addEventListener('resize', event => refreshSize());
-      window.addEventListener('resize', event => refreshSize());
+      }
 
       function refreshSize() {
-        if ($scope.haveSize) {
           var videoWidth = video.videoWidth,
               videoHeight = video.videoHeight,
               videoRatio = (videoWidth / videoHeight) || (4 / 3),
@@ -60,12 +57,8 @@ module.exports = ['$rootScope', ($rootScope) => {
           $scope.videoSurfaceHeight = videoSurfaceHeight;
 
           $scope.$apply();
-        }
-      }
 
-      $rootScope.$on('haveVideoSize', () => refreshSize());
-      $rootScope.$on('participant added', () => refreshSize());
-      $rootScope.$on('participant removed', () => refreshSize());
+      }
 
       $scope.$watch('stream', stream => {
         stream.isMuted = stream.isLocal || stream.isMuted;
