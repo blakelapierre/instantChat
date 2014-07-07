@@ -62,7 +62,6 @@ function createPeer(peerID, config, emit, fire) {
 
     ice_candidate: event => {
       var candidate = event.candidate;
-      console.log('candidate', event);
 
       if (candidate) {
         emit('ice_candidate', {peerID, candidate});
@@ -85,18 +84,14 @@ function createPeer(peerID, config, emit, fire) {
 +  Signalling
 */
 function connectToSignal(server, onReady) {
-  console.log('connecting to', server);
   var socket = io(server);
 
-  function emit(event, data) { console.log('emitting', event, data); socket.emit(event, data); }
+  var emit = (event, data) => socket.emit(event, data);
 
-  socket.on('error', function() {
-    console.log('error', arguments);
-  });
+  socket.on('error', () => console.log('error', arguments));
 
   socket.on('connect', () => {
     socket.on('your_id', myID => {
-      console.log('your_id');
       var peers = [],
           peersHash = {};
 
@@ -120,7 +115,7 @@ function connectToSignal(server, onReady) {
         var peer = getPeer(id);
         if (peer) {
           peer.close();
-          _.remove(peers, function(peer) { return peer.id === id; });
+          _.remove(peers, peer => { return peer.id === id; });
           delete peersHash[id];
           fire('peer removed', peer);
         }
@@ -148,8 +143,8 @@ function connectToSignal(server, onReady) {
         peer
           .receiveAnswer(answer)
           .then(
-            () =>     fire('peer receive answer', peer, answer),
-            error =>  fire('peer error answer', peer, error, answer));
+            () =>    fire('peer receive answer', peer, answer),
+            error => fire('peer error answer', peer, error, answer));
       }
 
       function addIceCandidate(peerID, candidate) {
@@ -158,8 +153,8 @@ function connectToSignal(server, onReady) {
         peer
           .addIceCandidate(candidate)
           .then(
-            () =>     fire('peer ice_candidate accepted', peer, candidate),
-            error =>  fire('peer error ice_candidate', peer, error, candidate));
+            () =>    fire('peer ice_candidate accepted', peer, candidate),
+            error => fire('peer error ice_candidate', peer, error, candidate));
       }
 
       _.each({
@@ -175,7 +170,6 @@ function connectToSignal(server, onReady) {
         'peer ice_candidate': data => addIceCandidate(data.peerID, data.candidate)
 
       }, (handler, name) => socket.on(name, function() {
-        console.log(name, arguments);
         handler.apply(this, arguments);
         fire(name, ...arguments);
       }));

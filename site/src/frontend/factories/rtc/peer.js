@@ -70,8 +70,8 @@ class Peer {
         switch (connection.iceConnectionState) {
           case 'connected':
           case 'completed':
-            resolve(this);
             connection.removeEventListener('iceconnectionstatechange', connectWatcher);
+            resolve(this);
             break;
           case 'failed':
           case 'disconnected':
@@ -90,7 +90,6 @@ class Peer {
   }
 
   initiateOffer(options) {
-    console.log('###cvreateing offer');
     options = options || {};
     return new Promise((resolve, reject) => {
       this._connection.createOffer(
