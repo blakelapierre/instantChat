@@ -20,11 +20,11 @@ class Peer {
   constructor(id, config, connectionListeners) {
     this._id = id;
     this._config = config;
-    this._localCandidates = [];
     this._remoteCandidates = [];
-    this._channels = [];
-    this._localStreams = [];
+    this._localCandidates = [];
     this._remoteStreams = [];
+    this._localStreams = [];
+    this._channels = [];
     this._events = {};
     this._connectionListeners = connectionListeners;
 
