@@ -1,4 +1,4 @@
-module.exports = ['$rootScope', ($rootScope) => {
+module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
   return {
     restrict: 'E',
     template: require('./template.html'),
@@ -54,6 +54,9 @@ module.exports = ['$rootScope', ($rootScope) => {
           $scope.videoSurfaceWidth = videoSurfaceWidth;
           $scope.videoSurfaceHeight = videoSurfaceHeight;
 
+          video.videoSurfaceWidth = videoSurfaceWidth;
+          video.videoSurfaceHeight = videoSurfaceHeight;
+
           $scope.$apply();
 
       }
@@ -74,6 +77,15 @@ module.exports = ['$rootScope', ($rootScope) => {
           video.muted = stream.isMuted;
         }
       };
+
+      $scope.captureFrame = options => {
+        if ($scope.haveSize) {
+          return videoTools.captureFrame(video, options || {width: 96});
+        }
+        else {
+          console.log('we probably want to return something here?!');
+        }
+      };
     },
     controller: ['$scope', 'instantChatManager', ($scope, instantChatManager) => {
       $scope.toggleVoteUp = $event => {
@@ -83,6 +95,8 @@ module.exports = ['$rootScope', ($rootScope) => {
         stream.isVotedDown = false;
 
         instantChatManager.sendToggleVoteUp(stream, stream.isVotedUp);
+
+        $scope.captureFrame();
       };
 
       $scope.toggleVoteDown = $event => {
