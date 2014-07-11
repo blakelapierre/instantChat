@@ -1,6 +1,6 @@
-<div class="participants participants-count-{{participants.length}}">
+<div class="participants participants-count-{{activeParticipants.length}}">
 
-  <participant ng-repeat="participant in participants"
+  <participant ng-repeat="participant in activeParticipants"
     class="participant participant-{{$index}}" participant="participant">
   </participant>
 

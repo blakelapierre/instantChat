@@ -144,12 +144,12 @@ class Peer {
     });
   }
 
-  addChannel(label, options, channelListeners) {
+  addChannel(label, options, channelHandler) {
     label = label || ('data-channel-' + this._nextChannelID++);
     // options = options || {};
     // options.negotiated = false;
 
-    var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelListeners));
+    var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelHandler));
 
     return channel;
   }
@@ -182,6 +182,7 @@ class Peer {
   get log() { return this._log; }
 
   channel(label) { return _.find(this._channels, {'label': label}); }
+  stream(id) { return _.find(this._remoteStreams, {'id': id}); }
 
   // Do we want to expose this?!
   get connection() { return this._connection; }
@@ -229,13 +230,6 @@ class Peer {
   +  Event Handling
   */
   on(event, listener) {
-    var events = this._events;
-
-    events[event] = events[event] || [];
-    events[event].push(listener);
-
-    this._events = events;
-
     if (typeof event == 'object') {
       for (var eventName in event) this.on(eventName, event[eventName]);
       return;
@@ -245,6 +239,13 @@ class Peer {
       this._connection.addEventListener(event.replace(/_/g, ''), listener);
       return;
     }
+
+    var events = this._events;
+
+    events[event] = events[event] || [];
+    events[event].push(listener);
+
+    this._events = events;
   }
 
   off(event, listener) {

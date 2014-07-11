@@ -1,3 +1,5 @@
+import {InstantChatChannelHandler} from '../../factories/rtc/instantChatChannelHandler/factory';
+
 module.exports = () => {
   return {
     restrict: 'E',
@@ -48,7 +50,10 @@ module.exports = () => {
 
       updateFullscreenMessage();
     },
-    controller: ['$rootScope', '$scope', '$sce', '$location', 'rtc', 'localMedia', ($rootScope, $scope, $sce, $location, rtc, localMedia) => {
+    controller:
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager',
+      ($rootScope, $scope, $sce, $location, $timeout, rtc, localMedia, instantChatChannelHandler, instantChatManager) => {
+
       var localParticipant = {
         localParticipant: true,
         config: {participantName: 'Blake'},
@@ -57,6 +62,9 @@ module.exports = () => {
 
       $scope.config = localParticipant.config;
       $scope.participants = [localParticipant];
+      $scope.activeParticipants = [];
+
+      instantChatManager.setScope($rootScope);
 
       localMedia.getStream({
         audio: true,
@@ -71,12 +79,15 @@ module.exports = () => {
         }
       })
         .then(stream => {
-          console.log('got local stream', stream.getAudioTracks());
           localParticipant.streams.push({
             isLocal: true,
             stream: stream,
+            votes: [],
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
           });
+
+          addActiveParticipant(localParticipant);
+
           $scope.$apply();
         })
         .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
@@ -84,10 +95,10 @@ module.exports = () => {
       var signal = rtc.connectToSignal('https://' + $location.host());
 
       signal.on({
-        'ready': handle => console.log('got handle', handle),
+        'ready': handle => localParticipant.id = handle,
 
         'peer added':   addPeer,
-        'peer removed': peerRemoved,
+        'peer removed': removePeer,
 
         // 'peer ice_candidate': () => console.log('ICE Candidate Received'),
         'peer receive offer':  () => console.log('Offer Received'),
@@ -120,11 +131,22 @@ module.exports = () => {
         signal.joinRoom(room);
       });
 
+      function addActiveParticipant(participant) {
+        if (!participant.isActive) {
+          participant.isActive = true;
+
+          $scope.activeParticipants.push(participant);
+
+          instantChatManager.addParticipant(participant);
+        }
+      }
+
       function addPeer(peer) {
-        console.log('peer added', peer);
         var participant = {
+          id: peer.id,
           peer: peer,
-          streams: []
+          streams: [],
+          isActive: false
         };
 
         $scope.participants.push(participant);
@@ -132,51 +154,52 @@ module.exports = () => {
         localMedia.getStream()
           .then(
             stream => {
-              console.log('got stream, setting up peer')
               peer.addLocalStream('local', stream);
 
               if (peer.config.isExistingPeer) {
-                var channel = peer.addChannel('chat', null, {
-                  message: (channel, event) => console.log('message', event),
-                  open: event => console.log('open'),
-                  close: event => console.log('close'),
-                  error: event => console.log('error')
-                });
+                var channel = peer.addChannel('instantChat', null, instantChatChannelHandler($scope));
 
                 peer.connect()
-                  .then(peer => {
-                    console.log('^^^ adding chat channel');
-
-
-                    console.log('Have Peer', peer);
-                  }).catch(error => console.log(error));
+                  .then(
+                    peer => {
+                      addActiveParticipant(participant);
+                      $scope.$apply();
+                    },
+                    error => console.log(error));
               }
               $scope.$apply();
-            }
-          ).catch(error => console.log('*** Error getting local media stream', error));
+            },
+            error => console.log('*** Error getting local media stream', error));
 
 
         if (!peer.config.isExistingPeer) {
           peer.on('channel added', channel => {
-            channel.send('hello');
+            if (channel.label === 'instantChat') {
+              channel.attachHandler(instantChatChannelHandler($scope));
+              addActiveParticipant(participant);
+            }
+            $scope.$apply();
           });
         }
 
         peer.on('remoteStream added', stream => {
-          console.log('got remote stream', stream);
           participant.streams.push({
             peer: peer,
+            votes: [],
             src: $sce.trustAsResourceUrl(URL.createObjectURL(stream.stream))
           });
+
           $scope.$apply();
         });
+
+        peer.on('disconnected', removePeer);
 
         $scope.$apply();
 
         $rootScope.$broadcast('participant added', participant);
       }
 
-      function peerRemoved(peer) {
+      function removePeer(peer) {
         var participant = _.find($scope.participants, {peer: peer}),
             index = $scope.participants.indexOf(participant);
 
@@ -184,6 +207,14 @@ module.exports = () => {
           $scope.participants.splice(index, 1);
           $scope.$apply();
           $rootScope.$broadcast('participant removed', participant);
+        }
+
+        if (participant.isActive) {
+          index = $scope.activeParticipants.indexOf(participant);
+          instantChatManager.removeParticipant(participant);
+          $scope.activeParticipants.splice(index, 1);
+          $scope.$apply();
+          $rootScope.$broadcast('activeParticipant removed', participant);
         }
       }
 
@@ -193,7 +224,36 @@ module.exports = () => {
 
       $rootScope.$on('error', (event, message, error) => {
         $scope.errorMessage = message;
+        console.log('Global Error', message, error);
         $scope.$apply(); // is this necessary?
+      });
+
+      $rootScope.$on('stream vote up', (event, data) => {
+        var from = data.from,
+            to = data.to,
+            stream = data.stream,
+            status = data.status;
+
+        stream.votes.push({vote: 'up', status: status, from: from});
+        $timeout(() => {
+          stream.votes.shift();
+          console.log(stream.votes);
+        }, 2000);
+        $scope.$apply();
+      });
+
+      $rootScope.$on('stream vote down', (event, data) => {
+        var from = data.from,
+            to = data.to,
+            stream = data.stream,
+            status = data.status;
+
+        stream.votes.push({vote: 'down', status: status, from: from});
+        $timeout(() => {
+          stream.votes.shift();
+          console.log(stream.votes);
+        }, 2000);
+        $scope.$apply();
       });
     }]
   };

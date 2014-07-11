@@ -46,8 +46,6 @@ module.exports = ['$rootScope', ($rootScope) => {
             videoSurfaceHeight = cellWidth / videoRatio;
           }
 
-          console.log(videoRatio, cellRatio);
-
           $scope.videoSurfaceTop = (cellHeight - videoSurfaceHeight) / 2;
           $scope.videoSurfaceLeft = (cellWidth - videoSurfaceWidth) / 2;
           $scope.videoSurfaceBottom = $scope.videoSurfaceTop; // CSS Bottom is inverted
@@ -77,12 +75,14 @@ module.exports = ['$rootScope', ($rootScope) => {
         }
       };
     },
-    controller: ['$scope', ($scope) => {
+    controller: ['$scope', 'instantChatManager', ($scope, instantChatManager) => {
       $scope.toggleVoteUp = $event => {
         var stream = $scope.stream;
 
         stream.isVotedUp = !stream.isVotedUp;
         stream.isVotedDown = false;
+
+        instantChatManager.sendToggleVoteUp(stream, stream.isVotedUp);
       };
 
       $scope.toggleVoteDown = $event => {
@@ -90,6 +90,8 @@ module.exports = ['$rootScope', ($rootScope) => {
 
         stream.isVotedUp = false;
         stream.isVotedDown = !stream.isVotedDown;
+
+        instantChatManager.sendToggleVoteDown(stream, stream.isVotedDown);
       };
     }]
   };

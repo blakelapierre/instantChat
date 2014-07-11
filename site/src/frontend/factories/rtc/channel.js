@@ -1,9 +1,9 @@
 class Channel {
-  constructor(peer, channel, channelListeners) {
+  constructor(peer, channel, channelHandler) {
     this._channel = channel;
     this._peer = peer;
 
-    this.on(channelListeners || {});
+    this.attachHandler(channelHandler);
   }
 
   send(data) { this._channel.send(data); }
@@ -12,6 +12,12 @@ class Channel {
   get label() { return this._channel.label; }
   get channel() { return this._channel; }
   get peer() { return this._peer; }
+
+  attachHandler(channelHandler) {
+    if (typeof channelHandler === 'function') channelHandler = channelHandler(this._channel);
+
+    this.on(channelHandler || {});
+  }
 
   /*
   +  Event Handling
@@ -22,7 +28,7 @@ class Channel {
       return;
     }
 
-    this.channel.addEventListener(event, event => listener(this, event));
+    this._channel.addEventListener(event, event => listener(this, event));
 
     return this;
   }

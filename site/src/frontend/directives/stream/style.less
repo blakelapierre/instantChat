@@ -30,7 +30,7 @@ stream {
       }
     }
 
-    .stream-controls {
+    .stream-overlay {
       @activatedColor: #6f6;
       @deactivatedColor: #f66;
 
@@ -39,48 +39,101 @@ stream {
 
       position: absolute;
 
-      font-size: xx-large;
+      .stream-controls {
+        position: absolute;
 
-      span {
-        position: relative;
-        bottom: 0;
+        width: 100%;
 
-        margin: 0.2em 0.5em;
+        left: 0%;
+        bottom: 0%;
+
+        font-size: xx-large;
+
+        span {
+          position: relative;
+          bottom: 0;
+
+          margin: 0.2em 0.5em;
+        }
+
+        .volume-off {
+          color: @deactivatedColor;
+          text-shadow: 0px 0px 10px @deactivatedShadowColor;
+        }
+
+        .volume-on {
+          color: @activatedColor;
+          text-shadow: 0px 0px 10px @activatedShadowColor;
+        }
+
+        .thumbs {
+          float: right;
+          margin-right: 0.5em;
+
+          cursor: pointer;
+        }
+
+        .thumbs-up {
+          bottom: 0.15em;
+          padding-right: 3px; // The filled thumb up is 3px wider...
+        }
+
+        .thumbs-up-selected {
+          padding-right: 0px;
+          color: @activatedColor;
+          text-shadow: 0px 0px 10px @activatedShadowColor;
+        }
+
+        .thumbs-down-selected {
+          padding-right: 0px;
+          color: @deactivatedColor;
+          text-shadow: 0px 0px 10px @deactivatedShadowColor;
+        }
       }
 
-      .volume-off {
-        color: @deactivatedColor;
-        text-shadow: 0px 0px 10px @deactivatedShadowColor;
-      }
+      .votes {
+        position: absolute;
 
-      .volume-on {
-        color: @activatedColor;
-        text-shadow: 0px 0px 10px @activatedShadowColor;
-      }
+        right: 0%;
+        top: 0%;
 
-      .thumbs {
-        float: right;
-        margin-right: 0.5em;
+        .vote {
+          text-align: right;
 
-        cursor: pointer;
-      }
+          transition: all linear 0.5s;
 
-      .thumbs-up {
-        bottom: 0.15em;
-        padding-right: 3px; // The filled thumb up is 3px wider...
-      }
+          video {
+            width: 20%;
+            height: 20%;
+          }
 
-      .thumbs-up-selected {
-        padding-right: 0px;
-        color: @activatedColor;
-        text-shadow: 0px 0px 10px @activatedShadowColor;
-      }
+          .thumbs {
+            font-size: 4em;
+          }
 
-      .thumbs-down-selected {
-        padding-right: 0px;
-        color: @deactivatedColor;
-        text-shadow: 0px 0px 10px @deactivatedShadowColor;
+          .fa-thumbs-up {
+            color: @activatedColor;
+          }
+
+          .fa-thumbs-down {
+            color: @deactivatedColor;
+          }
+        }
       }
     }
   }
 }
+
+.vote.ng-move,
+        .vote.ng-enter,
+        .vote.ng-leave {
+          transition: all linear 0.5s;
+        }
+
+        .vote.ng-enter {
+          transform: scale(0);
+        }
+
+        .vote.ng-enter-active {
+          transform: scale(1);
+        }

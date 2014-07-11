@@ -16,10 +16,12 @@ module.exports = angular.module('instantChat', ['ngRoute'])
   .factory('localMedia',  require('./factories/localMedia/factory'))
   .factory('rtc',         require('./factories/rtc/factory'))
 
-  .factory('chatReceiveHandlers',   require('./factories/rtc/chatReceiveHandlers/factory'))
-  .factory('chatServeHandlers',     require('./factories/rtc/chatServeHandlers/factory'))
+  .factory('chatReceiveHandlers',           require('./factories/rtc/chatReceiveHandlers/factory'))
+  .factory('chatServeHandlers',             require('./factories/rtc/chatServeHandlers/factory'))
+  .factory('instantChatChannelHandler',     require('./factories/rtc/instantChatChannelHandler/factory'))
+  .factory('instantChatManager',            require('./factories/rtc/instantChatManager/factory'))
 
   .config(['$compileProvider', $compileProvider => {
-      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|sms):/);
-    }])
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|sms):/);
+  }])
 ;
