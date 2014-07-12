@@ -29,4 +29,4 @@ class Stream {
   // */
 }
 
-export {Stream}
+export {Stream};

@@ -119,14 +119,16 @@ stream {
             color: @deactivatedColor;
           }
         }
-      }
-    }
-  }
-}
 
-.vote.ng-move,
+        .vote.ng-move,
         .vote.ng-enter,
         .vote.ng-leave {
+
+          video {
+            width: 100%;
+            height: 100%;
+          }
+
           transition: all linear 0.5s;
         }
 
@@ -137,3 +139,7 @@ stream {
         .vote.ng-enter-active {
           transform: scale(1);
         }
+      }
+    }
+  }
+}

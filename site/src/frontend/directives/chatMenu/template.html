@@ -3,26 +3,35 @@
     <div class="overlay"></div>
     <div class="menu-content" ng-click="collapse()">
       <div class="header">
-        <span class="badge" ng-click="$event.stopPropagation()">#{{currentRoom}} <ng-pluralize class="participants-count" count="participants.length" when="{'0': '- Nobody is here (not even you!)',
-               '1': '- 1 Participant',
-               'other': '- {} Participants'}"></ng-pluralize></span>
+        <span class="badge" ng-click="$event.stopPropagation()">#{{currentRoom}}
+        <ng-pluralize class="participants-count" count="activeParticipants.length" when="{'0': 'Nobody is here (not even you!)',
+               '1': '1 Participant',
+               'other': '{} Participants'}"></ng-pluralize></span>
       </div>
       <div class="body">
-        <input class="name-input"
-               type="text"
-               placeholder="Set Your Name"
-               ng-bind="config.participantName"
-               ng-click="$event.stopPropagation()">
+        <div class="name-input">
+          <input type="text"
+                 placeholder="What's Your Name?"
+                 ng-bind="config.participantName"
+                 ng-click="$event.stopPropagation()">
+        </div>
+
+        <div class="thumbnail-container"
+            ng-click="$event.stopPropagation()"
+            ng-show="localThumbnailSrc">
+          <img class="local-thumbnail" src="{{localThumbnailSrc}}" />
+          <label class="permission"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
+        </div>
 
         <div class="menu-items">
           <ul ng-click="$event.stopPropagation()">
             <li>
               <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
-                 target="_blank"><span class="fa fa-envelope"></span> Invite via E-Mail</a>
+                 target="_blank"><span class="fa fa-envelope"></span> <span>Invite via E-Mail</span></a>
             </li>
             <li>
               <a href="sms:?body={{smsBody()}}"
-                 target="_blank"><span class="fa fa-envelope"></span> Invite via SMS</a>
+                 target="_blank"><span class="fa fa-envelope"></span> <span>Invite via SMS</span></a>
             </li>
           </ul>
         </div>

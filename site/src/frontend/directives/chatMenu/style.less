@@ -46,6 +46,8 @@ chat-menu {
         color: #fff;
         text-shadow: 0px 0px 15px #bddfff;
 
+        overflow: auto;
+
         .header {
           height: 10%;
           width: 100%;
@@ -54,6 +56,8 @@ chat-menu {
             font-size: xx-large;
 
             .participants-count {
+              display: block;
+
               font-size: large;
             }
           }
@@ -65,22 +69,61 @@ chat-menu {
 
           padding-top: 1em;
 
+          div:not(:last-child) {
+            margin-bottom: 1em;
+          }
+
           .name-input {
             width: 100%;
 
-            text-align: center;
+            input {
+              width: 100%;
 
-            font-size: x-large;
+              text-align: center;
 
-            color: #fff;
-            text-shadow: 0px 0px 5px #333;
+              font-size: medium;
+              font-family: 'Press Start 2P';
 
-            background: transparent;
-            border: none;
+              color: #fff;
+              text-shadow: 0px 0px 5px #333;
 
-            .placeholder({
-              color: #dff;
-            });
+              background: transparent;
+              border: none;
+
+              .placeholder({
+                color: #dff;
+                font-family: 'Press Start 2P';
+              });
+            }
+          }
+
+          .thumbnail-container {
+            width: 100%;
+
+            .local-thumbnail {
+              display: block;
+              margin: 0 auto 1em auto;
+            }
+
+            .permission {
+              display: block;
+
+              font-size: xx-small;
+
+              color: #4a4;
+              text-shadow: 0px 0px 5px #060;
+
+              input, span {
+                vertical-align: middle;
+              }
+
+              .front-page,
+              .front-page:visited {
+                color: #09f;
+                font-weight: bolder;
+                text-shadow: 0px 0px 5px #036;
+              }
+            }
           }
 
           .menu-items {
@@ -98,18 +141,26 @@ chat-menu {
               a {
                 text-decoration: none;
                 color: inherit;
+
+                .fa-envelope {
+                  font-size: x-large;
+                }
+
+                span {
+                  vertical-align: middle;
+                }
               }
 
               li {
                 display: block;
 
-                font-size: xx-large;
+                font-size: medium;
 
                 cursor: pointer;
               }
 
               li:not(:last-child) {
-                margin-bottom: 2em;
+                margin-bottom: 1.5em;
               }
             }
           }

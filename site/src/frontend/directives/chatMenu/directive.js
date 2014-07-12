@@ -6,7 +6,8 @@ module.exports = () => {
     template: require('./template.html'),
     link: ($scope, element, attributes) => {
     },
-    controller: ['$scope', ($scope) => {
+    controller: ['$rootScope', '$scope', ($rootScope, $scope) => {
+      $scope.havePermissionForFrontPage = true;
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',
@@ -37,9 +38,9 @@ module.exports = () => {
         }
       }, 1250);
 
-      $scope.invite = () => {
-
-      };
+      $rootScope.$on('localThumbnail', ($event, dataUrl) => {
+        if (dataUrl) $scope.localThumbnailSrc = dataUrl;
+      });
 
       debouncedCollapse();
     }]

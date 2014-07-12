@@ -1,4 +1,4 @@
-module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
+module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootScope, $interval, $timeout, videoTools) => {
   return {
     restrict: 'E',
     template: require('./template.html'),
@@ -10,11 +10,13 @@ module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
           cell = element[0].childNodes[0];
 
       $scope.haveSize = false;
+      $scope.thumbSrc = 'about:blank';
 
       video.addEventListener('loadedmetadata', () => gotSize());
       video.addEventListener('playing',        () => gotSize());
       video.addEventListener('play',           () => gotSize());
 
+      element.on('resize',    () => refreshSize());
       video.addEventListener('resize',      () => refreshSize());
       window.addEventListener('resize',     () => refreshSize());
 
@@ -28,6 +30,7 @@ module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
       }
 
       function refreshSize() {
+        console.log('refreshing size');
           var videoWidth = video.videoWidth,
               videoHeight = video.videoHeight,
               videoRatio = (videoWidth / videoHeight) || (4 / 3),
@@ -67,6 +70,11 @@ module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
         stream.isVotedDown = false;
 
         video.muted = stream.isMuted;
+
+        if (stream.isLocal) {
+          $interval($scope.generateLocalThumbnail, 15000);
+          $timeout($scope.generateLocalThumbnail, 100); // Yeah, we want to do something different here, but I'm not sure what
+        }
       });
 
       $scope.toggleMute = $event => {
@@ -96,7 +104,7 @@ module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
 
         instantChatManager.sendToggleVoteUp(stream, stream.isVotedUp);
 
-        $scope.captureFrame();
+        stream.thumbSrc = $scope.captureFrame();
       };
 
       $scope.toggleVoteDown = $event => {
@@ -106,6 +114,10 @@ module.exports = ['$rootScope', 'videoTools', ($rootScope, videoTools) => {
         stream.isVotedDown = !stream.isVotedDown;
 
         instantChatManager.sendToggleVoteDown(stream, stream.isVotedDown);
+      };
+
+      $scope.generateLocalThumbnail = () => {
+        $rootScope.$broadcast('localThumbnail', $scope.captureFrame());
       };
     }]
   };

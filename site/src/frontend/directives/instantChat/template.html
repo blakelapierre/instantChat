@@ -6,7 +6,9 @@
 
 </div>
 
-<span class="fa fa-arrows-alt full-screen" ng-click="toggleFullscreen()"> {{fullscreenMessage}}</span>
+<div class="full-screen" ng-click="toggleFullscreen()">
+  <span class="fa fa-arrows-alt"></span> <span>{{fullscreenMessage}}</span>
+</div>
 
 <div class="error-message" ng-show="errorMessage != null" ng-click="errorMessage = null">{{errorMessage}}</div>
 
