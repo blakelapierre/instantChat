@@ -17,7 +17,7 @@ var iceServers = {
     {url: 'stun:104.131.128.101:3478', urls: 'stun:104.131.128.101:3478'},
     {url: 'turn:104.131.128.101:3478', urls: 'turn:104.131.128.101:3478', username: 'turn', credential: 'turn'}
   ],
-  iceTransports: 'relay'
+  iceTransports: 'all'
 };
 
 class Peer {
