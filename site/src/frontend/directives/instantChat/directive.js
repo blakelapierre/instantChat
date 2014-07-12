@@ -206,7 +206,7 @@ module.exports = () => {
         if (index != -1) {
           $scope.participants.splice(index, 1);
           $scope.$apply();
-          $rootScope.$broadcast('participant removed', participant);
+          $timeout(() => $rootScope.$broadcast('participant removed', participant), 0);
         }
 
         if (participant.isActive) {
