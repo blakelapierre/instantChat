@@ -29,6 +29,8 @@ chat-menu {
 
         opacity: 0.85;
 
+        box-shadow: -5px 0px 10px #333;
+
         transition: background-color @collapseDuration ease, opacity @collapseDuration ease;
       }
 
@@ -46,31 +48,40 @@ chat-menu {
         color: #fff;
         text-shadow: 0px 0px 15px #bddfff;
 
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
 
         .header {
-          height: 10%;
+          height: 15%;
           width: 100%;
 
           .badge {
+            display: block;
+
+            margin-top: 0.25em;
+
             font-size: xx-large;
 
             .participants-count {
               display: block;
 
-              font-size: large;
+              margin-top: 0.5em;
+
+              font-size: x-small;
             }
           }
         }
 
         .body {
-          height: 90%;
+          position: absolute;
+
+          top: 15%;
+          bottom: 0%;
+
           width: 100%;
 
-          padding-top: 1em;
-
-          div:not(:last-child) {
-            margin-bottom: 1em;
+          div {
+            margin-top: 1em;
           }
 
           .name-input {
@@ -81,7 +92,7 @@ chat-menu {
 
               text-align: center;
 
-              font-size: medium;
+              font-size: large;
               font-family: 'Press Start 2P';
 
               color: #fff;
@@ -102,7 +113,7 @@ chat-menu {
 
             .local-thumbnail {
               display: block;
-              margin: 0 auto 1em auto;
+              margin: 0 auto 0.5em auto;
             }
 
             .permission {

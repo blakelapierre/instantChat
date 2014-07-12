@@ -234,11 +234,12 @@ module.exports = () => {
             stream = data.stream,
             status = data.status;
 
+        if (stream.votes.length > 3) stream.votes.shift();
         stream.votes.push({vote: 'up', status: status, from: from});
         $timeout(() => {
           stream.votes.shift();
           console.log(stream.votes);
-        }, 2000);
+        }, 4000);
         $scope.$apply();
       });
 
@@ -248,11 +249,12 @@ module.exports = () => {
             stream = data.stream,
             status = data.status;
 
+        if (stream.votes.length > 3) stream.votes.shift();
         stream.votes.push({vote: 'down', status: status, from: from});
         $timeout(() => {
           stream.votes.shift();
           console.log(stream.votes);
-        }, 2000);
+        }, 4000);
         $scope.$apply();
       });
     }]
