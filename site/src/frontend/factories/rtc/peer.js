@@ -8,14 +8,17 @@ var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 
 var RTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription);
 var RTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
 
-// var iceServers = [{url: 'stun:stun.l.google.com:19302'}];
-var iceServers = [{url: 'stun:104.131.128.101:5349'}]
-
 var CONNECTION_EVENTS = ['negotiation_needed', 'ice_candidate', 'signaling_state_change',
                          'add_stream', 'remove_stream', 'ice_connection_state_change',
                          'data_channel'];
 
-var iceServers = {iceServers: navigator.mozGetUserMedia ? [{url: 'stun:23.21.150.121'}] : [{url: 'stun:104.131.128.101:3478'}]};
+var iceServers = {
+  iceServers: [
+    {url: 'stun:104.131.128.101:3478', urls: 'stun:104.131.128.101:3478'},
+    {url: 'turn:104.131.128.101:3478', urls: 'turn:104.131.128.101:3478', username: 'turn', credential: 'turn'}
+  ],
+  iceTransports: 'relay'
+};
 
 class Peer {
   constructor(id, config, connectionListeners) {
