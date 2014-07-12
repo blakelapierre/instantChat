@@ -17,11 +17,8 @@ module.exports = () => {
 
         mouseEnterExpandedView() {
           $scope.isMouseInside = true;
-          console.log('inside');
-
         },
         mouseLeftExpandedView() {
-          console.log('left');
           $scope.isMouseInside = false;
           debouncedCollapse();
         },
@@ -34,7 +31,6 @@ module.exports = () => {
       });
 
       var debouncedCollapse = _.debounce(() => {
-        console.log('debounced');
         if (!$scope.isMouseInside) {
           $scope.collapse();
           $scope.$apply();
@@ -47,5 +43,5 @@ module.exports = () => {
 
       debouncedCollapse();
     }]
-  }
+  };
 };
