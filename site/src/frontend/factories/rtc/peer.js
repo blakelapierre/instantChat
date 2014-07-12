@@ -89,21 +89,24 @@ class Peer {
 
       this.initiateOffer()
         .then(offer => this.fire('offerReady', offer))
-        .catch(() => this.fire('offer error'));
+        .catch(error => {
+          console.log(error);
+          this.fire('offer error')
+        });
     });
   }
 
   initiateOffer(options) {
-    options = options || {};
+    options = options || {mandatory: {OfferToReceiveAudio: true, OfferToReceiveVideo: true}};
     return new Promise((resolve, reject) => {
       this._connection.createOffer(
         offer =>
           this._connection
               .setLocalDescription(offer,
                 () => resolve(this._connection.localDescription),
-                error => reject('peer error set_local_description', this, error, offer),
-                options),
-        error => reject('peer error create offer', this, error));
+                error => reject('peer error set_local_description', this, error, offer)),
+        error => reject(error),
+        options);
     });
   }
 
