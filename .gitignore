@@ -1,5 +1,6 @@
 instantChat.sublime-project
 instantChat.sublime-workspace
+site/bower_components
 site/dist
 site/node_modules
 site/public_address

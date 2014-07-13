@@ -1,6 +1,6 @@
 var angular = require('angular');
 
-module.exports = angular.module('instantChat', ['ngRoute'])
+module.exports = angular.module('instantChat', ['ngRoute', 'ngResource'])
 
   .directive('instantChat',   require('./directives/instantChat/directive'))
 
@@ -23,7 +23,14 @@ module.exports = angular.module('instantChat', ['ngRoute'])
 
   .factory('videoTools',            require('./factories/videoTools/factory'))
 
-  .config(['$compileProvider', $compileProvider => {
+  .config(['$routeProvider', '$compileProvider', ($routeProvider, $compileProvider) => {
+    // $routeProvider
+    //   .when('/:id', {
+    //     template: '<rooom></room>'
+    //   })
+    //   .otherwise({
+    //     template: '<teaser></teaser>'
+    //   });
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|sms):/);
   }])
 ;
