@@ -132,22 +132,22 @@ class Peer {
     }, reject));
   }
 
-  addIceCandidate(candidate) {
+  addIceCandidates(candidates) {
     return new Promise((outerResolve, outerReject) => {
-      this._iceCandidatePromises.push(() => {
-        return new Promise((resolve, reject) => {
-          this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
-            this._remoteCandidates.push(candidate);
-            resolve();
-            outerResolve();
-          }, error => {
-            reject(error);
-            outerReject(error);
+      _.each(candidates, candidate => {
+        this._iceCandidatePromises.push(() => {
+          return new Promise((resolve, reject) => {
+            this._connection.addIceCandidate(new RTCIceCandidate(candidate), () => {
+              this._remoteCandidates.push(candidate);
+              resolve();
+            }, error => {
+              reject(error);
+            });
           });
         });
       });
 
-      this._resolveIceCandidatePromises();
+      this._resolveIceCandidatePromises(outerResolve, outerReject);
     });
   }
 
@@ -219,9 +219,13 @@ class Peer {
     return stream;
   }
 
-  _resolveIceCandidatePromises() {
+  _resolveIceCandidatePromises(resolve, reject) {
     if (this._connection.signalingState != 'have-local-offer' && this._connection.remoteDescription) {
-      _.each(this._iceCandidatePromises, fn => Promise.resolve(fn()));
+      Promise
+        .all(_.map(this._iceCandidatePromises, fn => {return fn();}))
+        .then(() => resolve())
+        .catch(reject);
+
       this._iceCandidatePromises.splice(0);
     }
   }

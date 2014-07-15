@@ -54,6 +54,8 @@ function fire(event) {
 */
 
 function createPeer(peerID, config, emit, fire) {
+  var candidates = [];
+
   var peer = new Peer(peerID, config, {
     'offerReady': offer => {
       emit('peer offer', {peerID, offer});
@@ -64,7 +66,8 @@ function createPeer(peerID, config, emit, fire) {
       var candidate = event.candidate;
 
       if (candidate) {
-        emit('ice_candidate', {peerID, candidate});
+        candidates.push(candidate);
+        emitIceCandidates();
         fire('peer ice_candidate', peer, candidate);
       }
     },
@@ -76,6 +79,11 @@ function createPeer(peerID, config, emit, fire) {
     signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
     ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
   });
+
+  var emitIceCandidates = _.throttle(() => {
+    emit('peer candidates', {peerID, candidates});
+    candidates.splice(0);
+  }, 250);
 
   return peer;
 }
@@ -147,14 +155,14 @@ function connectToSignal(server) {
             error => fire('peer error answer', peer, error, answer));
       }
 
-      function addIceCandidate(peerID, candidate) {
+      function addIceCandidates(peerID, candidates) {
         var peer = getPeer(peerID);
 
         peer
-          .addIceCandidate(candidate)
+          .addIceCandidates(candidates)
           .then(
-            () =>    fire('peer ice_candidate accepted', peer, candidate),
-            error => fire('peer error ice_candidate', peer, error, candidate));
+            () =>    fire('peer candidates accepted', peer, candidates),
+            error => fire('peer error candidates', peer, error, candidates));
       }
 
       _.each({
@@ -167,7 +175,7 @@ function connectToSignal(server) {
         'peer offer': data => sendAnswer(data.peerID, data.offer),
         'peer answer':data => receiveAnswer(data.peerID, data.answer),
 
-        'peer ice_candidate': data => addIceCandidate(data.peerID, data.candidate)
+        'peer candidates': data => addIceCandidates(data.peerID, data.candidates)
 
       }, (handler, name) => socket.on(name, function() {
         handler.apply(this, arguments);

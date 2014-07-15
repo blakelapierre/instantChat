@@ -13,13 +13,12 @@ module.exports = function(io) {
 
     sockets.push(socket);
 
-    socket.on('ice_candidate', function(data) {
+    socket.on('peer candidates', function(data) {
       var peerSocket = sockets.getByID(data.peerID);
 
       if (peerSocket) {
-        peerSocket.emit('peer ice_candidate', {
-          label: data.label,
-          candidate: data.candidate,
+        peerSocket.emit('peer candidates', {
+          candidates: data.candidates,
           peerID: socket.id
         });
       }
