@@ -73,8 +73,7 @@ module.exports = () => {
             minWidth: 320,
             maxWidth: 320,
             minHeight: 240,
-            maxHeight: 240,
-            maxFrameRate: 15
+            maxHeight: 240
           }
         }
       })
