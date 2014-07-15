@@ -83,7 +83,7 @@ function createPeer(peerID, config, emit, fire) {
 /*
 +  Signalling
 */
-function connectToSignal(server, onReady) {
+function connectToSignal(server) {
   var socket = io(server);
 
   var emit = (event, data) => socket.emit(event, data);

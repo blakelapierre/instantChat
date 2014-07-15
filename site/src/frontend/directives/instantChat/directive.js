@@ -95,7 +95,10 @@ module.exports = () => {
       var signal = rtc.connectToSignal('https://' + $location.host());
 
       signal.on({
-        'ready': handle => localParticipant.id = handle,
+        'ready': handle => {
+          localParticipant.id = handle;
+          joinRoom();
+        },
 
         'peer added':   addPeer,
         'peer removed': removePeer,
@@ -122,14 +125,16 @@ module.exports = () => {
 
       $scope.currentRooms = signal.currentRooms;
 
-      $rootScope.$on('$locationChangeSuccess', event => {
+      $rootScope.$on('$locationChangeSuccess', joinRoom);
+
+      function joinRoom() {
         var room = $location.path().replace(/^\//, '');
 
         $scope.currentRoom = room;
 
         signal.leaveRooms();
         signal.joinRoom(room);
-      });
+      }
 
       function addActiveParticipant(participant) {
         if (!participant.isActive) {
@@ -200,21 +205,27 @@ module.exports = () => {
       }
 
       function removePeer(peer) {
-        var participant = _.find($scope.participants, {peer: peer}),
-            index = $scope.participants.indexOf(participant);
+        // Occasionally, the localParticipant has been removed. It's likely that is because a null/undefined
+        // is being passed as peer here. Not sure what's causing it, but adding a guard here for now.
+        var participant = _.find($scope.participants, {peer: peer, isLocalParticipant: undefined});
 
-        if (index != -1) {
-          $scope.participants.splice(index, 1);
-          $scope.$apply();
-          $timeout(() => $rootScope.$broadcast('participant removed', participant), 0);
-        }
+        if (participant) {
+          console.log('removing', participant);
+          var index = $scope.participants.indexOf(participant);
 
-        if (participant.isActive) {
-          index = $scope.activeParticipants.indexOf(participant);
-          instantChatManager.removeParticipant(participant);
-          $scope.activeParticipants.splice(index, 1);
-          $scope.$apply();
-          $rootScope.$broadcast('activeParticipant removed', participant);
+          if (index != -1) {
+            $scope.participants.splice(index, 1);
+            $scope.$apply();
+            $timeout(() => $rootScope.$broadcast('participant removed', participant), 0);
+          }
+
+          if (participant.isActive) {
+            index = $scope.activeParticipants.indexOf(participant);
+            instantChatManager.removeParticipant(participant);
+            $scope.activeParticipants.splice(index, 1);
+            $scope.$apply();
+            $rootScope.$broadcast('activeParticipant removed', participant);
+          }
         }
       }
 

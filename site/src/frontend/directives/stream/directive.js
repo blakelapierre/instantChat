@@ -30,7 +30,6 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       }
 
       function refreshSize() {
-        console.log('refreshing size');
           var videoWidth = video.videoWidth,
               videoHeight = video.videoHeight,
               videoRatio = (videoWidth / videoHeight) || (4 / 3),

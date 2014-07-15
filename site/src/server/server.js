@@ -3,6 +3,7 @@ module.exports = function(config, callback) {
       http = require('http'),
       path = require('path'),
       express = require('express'),
+      _ = require('lodash'),
       io = require('socket.io'),
       signal = require('./signal'),
       app = express();
@@ -32,9 +33,16 @@ module.exports = function(config, callback) {
   var router = express.Router();
 
   router.get('/stats', function(req, res) {
+    console.log(signalStats.rooms);
     res.json({
       sockets: signalStats.sockets.length(),
       rooms: signalStats.rooms.length()
+    });
+  });
+
+  router.get('/rooms', function(req, res) {
+    res.json({
+      rooms: _.map(signalStats.rooms.asList(), function(room) { return room._roomName; }) // horrible inefficient!
     });
   });
 

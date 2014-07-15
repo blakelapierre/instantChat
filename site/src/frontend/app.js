@@ -8,7 +8,11 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource'])
 
   .directive('participant',   require('./directives/participant/directive'))
 
+  .directive('roomList',      require('./directives/roomList/directive'))
+
   .directive('stream',        require('./directives/stream/directive'))
+
+  .directive('teaser',        require('./directives/teaser/directive'))
 
   .directive('fitText',       require('./directives/util/fitText/directive'))
   .directive('selectOnClick', require('./directives/util/selectOnClick/directive'))
@@ -24,13 +28,13 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource'])
   .factory('videoTools',            require('./factories/videoTools/factory'))
 
   .config(['$routeProvider', '$compileProvider', ($routeProvider, $compileProvider) => {
-    // $routeProvider
-    //   .when('/:id', {
-    //     template: '<rooom></room>'
-    //   })
-    //   .otherwise({
-    //     template: '<teaser></teaser>'
-    //   });
+    $routeProvider
+      .when('/:id', {
+        template: '<instant-chat></instant-chat>'
+      })
+      .otherwise({
+        template: '<teaser></teaser>'
+      });
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|sms):/);
   }])
 ;
