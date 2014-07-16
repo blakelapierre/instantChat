@@ -1,15 +1,21 @@
 <div ng-class="{'menu-container': true, 'collapsed': isCollapsed}">
+
   <div class="expanded-view" ng-mouseenter="mouseEnterExpandedView()" ng-mouseleave="mouseLeftExpandedView()">
     <div class="overlay"></div>
+
     <div class="menu-content" ng-click="collapse()">
       <div class="header">
         <div class="badge" ng-click="$event.stopPropagation()">
           <span class="room-name">#{{currentRoom}}</span>
-          <ng-pluralize class="participants-count" count="activeParticipants.length" when="{'0': 'Nobody is here (not even you!)',
-                 '1': '1 Participant',
-                 'other': '{} Participants'}"></ng-pluralize>
+          <ng-pluralize
+            class="participants-count"
+            count="activeParticipants.length"
+            when="{'0': 'Nobody is here (not even you!)',
+                   '1': '1 Participant',
+                   'other': '{} Participants'}"></ng-pluralize>
         </div>
       </div>
+
       <div class="body">
         <div class="name-input">
           <input type="text"
@@ -19,8 +25,8 @@
         </div>
 
         <div class="thumbnail-container"
-            ng-click="$event.stopPropagation()"
-            ng-show="localThumbnailSrc">
+             ng-click="$event.stopPropagation()"
+             ng-show="localThumbnailSrc">
           <img class="local-thumbnail" src="{{localThumbnailSrc}}" />
           <label class="permission"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
         </div>
@@ -38,12 +44,23 @@
           </ul>
         </div>
       </div>
+
+      <div class="footer" ng-click="$event.stopPropagation()">
+        <div class="trigger settings-trigger" ng-click="triggerSettings()">
+            <span class="fa fa-cog"></span> <span>Settings</span>
+        </div>
+        <div class="trigger rooms-trigger" ng-click="triggerRooms()">
+            <span>Rooms</span> <span class="fa fa-building-o"></span>
+        </div>
+      </div>
     </div>
   </div>
+
   <div class="collapsed-view" ng-click="expand()">
     <div class="overlay"></div>
     <div class="glyph-table">
       <span class="glyph fa fa-bars"></span>
     </div>
   </div>
+
 </div>
