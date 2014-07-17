@@ -3,6 +3,7 @@ module.exports = function(config, callback) {
       http = require('http'),
       path = require('path'),
       express = require('express'),
+      bodyParser = require('body-parser'),
       _ = require('lodash'),
       io = require('socket.io'),
       signal = require('./signal'),
@@ -19,6 +20,7 @@ module.exports = function(config, callback) {
   var serverRoot = config.serverRoot;
 
   app.use(express.static(path.join(serverRoot, '..', 'dist')));
+  app.use(bodyParser.json());
 
   var sslOptions = {
         ca: config.ca,
@@ -33,17 +35,47 @@ module.exports = function(config, callback) {
   var router = express.Router();
 
   router.get('/stats', function(req, res) {
-    console.log(signalStats.rooms);
     res.json({
       sockets: signalStats.sockets.length(),
       rooms: signalStats.rooms.length()
     });
   });
 
+  var roomList = signalStats.rooms.asList();
   router.get('/rooms', function(req, res) {
     res.json({
-      rooms: _.map(signalStats.rooms.asList(), function(room) { return room._roomName; }) // horrible inefficient!
+      rooms: _.map(roomList, function(room) {
+        return {
+          name: room._roomName,
+          participants: _.map(room.asList(), function(socket) {
+            return {
+              id: socket.id,
+              image: socket.image
+            };
+          })
+        };
+      }) // horrible inefficient!
     });
+  });
+
+  var sockets = signalStats.sockets;
+  router.post('/images', function(req, res) {
+    var data = req.body,
+        socket = sockets.getByID(data.id)
+
+    if (socket) {
+      socket.image = data.data;
+    }
+    res.json({success: true});
+  });
+
+  router.get('/images/:id', function(req, res) {
+    var socket = sockets.getByID(req.params.id);
+
+    if (socket) {
+      res.json({data: socket.image});
+    }
+    res.json({success: false});
   });
 
   app.use('/', router);

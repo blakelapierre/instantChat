@@ -6,6 +6,8 @@ room-list {
 
   margin: 0 auto;
 
+  text-align: center;
+
   font-size: large;
 
   color: #fff;
@@ -13,5 +15,33 @@ room-list {
   a,
   a:visited {
     color: #ddf;
+  }
+
+  .room {
+    display: inline-block;
+
+    padding: 0.5em;
+
+    margin: 0.5em;
+
+    background-color: #070707;
+    border: 1px solid #070707;
+    border-radius: 6px;
+
+    box-shadow: 0px 0px 5px #333;
+
+    .room-name {
+      text-align: center;
+    }
+
+    .participant {
+      display: inline-block;
+
+      padding: 0.25em 0;
+
+      &:not(:last-child) {
+        margin-right: 0.25em;
+      }
+    }
   }
 }

@@ -51,8 +51,8 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager',
-      ($rootScope, $scope, $sce, $location, $timeout, rtc, localMedia, instantChatChannelHandler, instantChatManager) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$resource', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager',
+      ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager) => {
 
       var localParticipant = {
         localParticipant: true,
@@ -260,6 +260,14 @@ module.exports = () => {
         stream.votes.push({vote: 'down', status: status, from: from});
         $timeout(() => stream.votes.shift(), 4000);
         $scope.$apply();
+      });
+
+      var Images = $resource('/images');
+      $rootScope.$on('localThumbnail', ($event, imageData) => {
+        Images.save({
+          id: localParticipant.id,
+          data: imageData
+        });
       });
     }]
   };

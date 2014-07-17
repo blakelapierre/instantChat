@@ -5,11 +5,10 @@ teaser {
   width: 100%;
   height: 100%;
 
-  .intro {
-    min-width: 50%;
-    max-width: 75%;
+  overflow-y: auto;
 
-    margin: 0 auto;
+  .intro {
+    margin: 0 1em;
     margin-top: 2em;
 
     text-align: center;
@@ -19,6 +18,7 @@ teaser {
     }
 
     .channel-input {
+      display: block;
       width: 100%;
 
       font-size: 2em;
@@ -38,6 +38,7 @@ teaser {
 
         .placeholder({
           line-height: 1em;
+          text-align: center;
         });
       }
     }

@@ -2,16 +2,15 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    controller: ['$scope', '$resource', ($scope, $resource) => {
+    controller: ['$scope', '$resource', '$interval', ($scope, $resource, $interval) => {
       var Rooms = $resource('/rooms');
 
-      console.log(rooms, {'get': {method: 'get', isArray: true}});
+      function getRooms() {
+        Rooms.get(null, rooms => $scope.rooms = rooms.rooms);
+      }
 
-      var rooms = Rooms.get(null, function() {
-        $scope.rooms = rooms.rooms;
-        console.log('got rooms');
-        console.log(rooms);
-      });
+      $interval(getRooms, 30000);
+      getRooms();
     }]
   };
 };
