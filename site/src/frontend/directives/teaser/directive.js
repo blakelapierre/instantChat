@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = function() {
   return {
     restrict: 'E',
@@ -9,6 +11,11 @@ module.exports = function() {
       $scope.joinChannel = () => {
         $location.path($scope.channelName);
       };
+
+      $scope.channelChange = _.debounce(() => {
+        $scope.joinChannel();
+        $scope.$apply();
+      }, 1500);
     }]
   };
 };

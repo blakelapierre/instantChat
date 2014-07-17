@@ -3,7 +3,7 @@
   <h5>P2P Encrypted Hashtag-based Video Chat</h5>
 
   <form ng-submit="joinChannel()">
-    <label class="channel-input"><span>#</span><input type="text" placeholder="Enter Channel Name" tabindex="0" ng-model="channelName"></label>
+    <label class="channel-input"><span>#</span><input type="text" placeholder="Enter Channel Name" tabindex="0" ng-model="channelName" ng-change="channelChange()"></label>
   </form>
 </div>
 
