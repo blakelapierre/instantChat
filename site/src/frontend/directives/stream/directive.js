@@ -72,7 +72,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
         if (stream.isLocal) {
           $interval($scope.generateLocalThumbnail, 15000);
-          $timeout($scope.generateLocalThumbnail, 100); // Yeah, we want to do something different here, but I'm not sure what
+          $timeout($scope.generateLocalThumbnail, 1000); // Yeah, we want to do something different here, but I'm not sure what
         }
       });
 

@@ -1,105 +1,45 @@
-@keyframes tease-hello {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.15
-  }
-  30% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 0.15;
-  }
-  100% {
-    opacity: 0;
-  }
-}
+@import '../../mixins.less';
 
 teaser {
   position: absolute;
   width: 100%;
   height: 100%;
 
-  font-family: monospace;
-
-  display: table;
-
-  .teaser {
-    display: table-cell;
-
-    vertical-align: middle;
+  .intro {
+    min-width: 50%;
+    max-width: 75%;
 
     margin: 0 auto;
-
-    margin-top: -25%;
+    margin-top: 2em;
 
     text-align: center;
 
-    color: #3f3;
-    text-shadow: 0 0 6px #6f6;
-
-    // leave this off for now to save CPU cycles
-    // animation: greenTextPulse 10s infinite linear;
-
-    .disclaimer {
-      margin-top: 2em;
-      font-size: x-small;
+    .self-name {
+      color: #bbf;
     }
 
-    .disclaimer-2 {
-      margin-top: 2em;
-      font-size: xx-small;
+    .channel-input {
+      width: 100%;
 
-      a {
-        color: #99f;
-        text-shadow: 0 0 10px #aaf;
+      font-size: 2em;
+
+      * {
+        vertical-align: middle;
       }
-    }
-  }
 
-  .hello-table {
-    position: fixed;
+      input {
+        font-size: 0.7em;
 
-    top: 0%;
-    left: 0%;
+        text-align: center;
 
-    width: 100%;
-    height: 100%;
+        color: #fff;
+        background-color: transparent;
+        border: none;
 
-    display: table;
-
-    text-align: left;
-
-    background-color: #fff;
-
-    color: #000;
-
-    text-shadow: 0 0 1px #333;
-
-    .hello-container {
-      display: table-cell;
-
-      vertical-align: middle;
-
-      .hello {
-        width: 75%;
-        margin: 0 auto;
-
-        font-size: small;
-
-        font-family: monospace;
+        .placeholder({
+          line-height: 1em;
+        });
       }
-    }
-
-    &.tease-hello {
-      animation: tease-hello 30s 0s infinite linear;
     }
   }
 }

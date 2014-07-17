@@ -9,6 +9,7 @@ chat-menu {
     .expanded-view {
       position: absolute;
 
+      top: 0%;
       right: 0%;
       bottom: 0%;
 
@@ -49,9 +50,10 @@ chat-menu {
         text-shadow: 0px 0px 15px #bddfff;
 
         overflow-x: hidden;
+        overflow-y: hidden;
 
         .header {
-          height: 15%;
+          height: 4em;
           width: 100%;
 
           .badge {
@@ -74,12 +76,13 @@ chat-menu {
         .body {
           position: absolute;
 
-          top: 15%;
+          top: 4em;
           bottom: 2em;
 
           width: 100%;
 
           overflow-y: auto;
+          overflow-x: hidden;
 
           div {
             margin-top: 1em;
@@ -189,10 +192,9 @@ chat-menu {
           font-size: large;
 
           .trigger {
-            height: 100%;
-            width: 50%;
+            position: absolute;
 
-            float: left;
+            height: 100%;
 
             line-height: 2em;
 
@@ -206,6 +208,11 @@ chat-menu {
 
             &.settings-trigger {
               left: 0%;
+              right: 50%;
+
+              padding-left: 1em;
+
+              text-align: left;
 
               color: #db0;
               text-shadow: 0px 0px 5px #db0;
@@ -213,6 +220,11 @@ chat-menu {
 
             &.rooms-trigger {
               left: 50%;
+              right: 0%;
+
+              padding-right: 1em;
+
+              text-align: right;
 
               color: #0bf;
               text-shadow: 0px 0px 5px #0bf;

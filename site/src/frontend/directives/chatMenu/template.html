@@ -20,7 +20,8 @@
         <div class="name-input">
           <input type="text"
                  placeholder="What's Your Name?"
-                 ng-bind="config.participantName"
+                 focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
+                 ng-model="config.participantName"
                  ng-click="$event.stopPropagation()">
         </div>
 

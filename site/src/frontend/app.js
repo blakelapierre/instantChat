@@ -1,6 +1,6 @@
 var angular = require('angular');
 
-module.exports = angular.module('instantChat', ['ngRoute', 'ngResource'])
+module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'LocalStorageModule'])
 
   .directive('instantChat',   require('./directives/instantChat/directive'))
 
@@ -15,6 +15,7 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource'])
   .directive('teaser',        require('./directives/teaser/directive'))
 
   .directive('fitText',       require('./directives/util/fitText/directive'))
+  .directive('focusOn',       require('./directives/util/focusOn/directive'))
   .directive('selectOnClick', require('./directives/util/selectOnClick/directive'))
 
   .factory('localMedia',  require('./factories/localMedia/factory'))

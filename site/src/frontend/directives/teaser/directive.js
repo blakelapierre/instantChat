@@ -2,11 +2,13 @@ module.exports = function() {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    link: function($scope, element, attributes, instantFile) {
-
+    link: ($scope, element, attributes, instantFile) => {
+      element.find('input')[0].focus();
     },
-    controller: ['$scope', function($scope) {
-
+    controller: ['$scope', '$location', ($scope, $location) => {
+      $scope.joinChannel = () => {
+        $location.path($scope.channelName);
+      };
     }]
   };
 };

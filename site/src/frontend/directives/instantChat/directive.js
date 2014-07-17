@@ -56,7 +56,7 @@ module.exports = () => {
 
       var localParticipant = {
         localParticipant: true,
-        config: {participantName: 'Blake'},
+        config: {participantName: ''},
         streams: []
       };
 
@@ -228,9 +228,9 @@ module.exports = () => {
         }
       }
 
-      $scope.$watchCollection('config', config => {
+      $scope.$watchCollection('config', _.debounce(config => {
         console.log(config);
-      });
+      }, 500));
 
       $rootScope.$on('error', (event, message, error) => {
         $scope.errorMessage = message;

@@ -5,6 +5,7 @@ module.exports = () => {
     restrict: 'E',
     template: require('./template.html'),
     link: ($scope, element, attributes) => {
+
     },
     controller: ['$rootScope', '$scope', ($rootScope, $scope) => {
       $scope.havePermissionForFrontPage = true;

@@ -1,3 +1,9 @@
 <div ng-repeat="room in rooms">
-  <a href="#{{room}}">#{{room}}</a>
+  <div class="room-name">
+    <a href="#{{room}}">#{{room}}</a>
+  </div>
+
+  <div ng-repeat="participant in room.participants">
+    {{participant}}
+  </div>
 </div>
