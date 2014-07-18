@@ -1,6 +1,5 @@
 @import '../../mixins.less';
 
-@menuWidth: 60%;
 @collapseDuration: 0.4s;
 @opacity: 0.85;
 
@@ -13,8 +12,8 @@ chat-menu {
       right: 0%;
       bottom: 0%;
 
-      width: @menuWidth;
-      max-width: 25em;
+      width: 30em;
+      max-width: 100%;
 
       height: 100%;
 
@@ -47,7 +46,7 @@ chat-menu {
         text-align: center;
 
         color: #fff;
-        text-shadow: 0px 0px 15px #bddfff;
+        text-shadow: 0px 0px 5px #aaa;
 
         overflow-x: hidden;
         overflow-y: hidden;
@@ -57,7 +56,7 @@ chat-menu {
           width: 100%;
 
           .badge {
-            display: block;
+            display: inline-block;
 
             margin-top: 0.25em;
 
@@ -77,7 +76,7 @@ chat-menu {
           position: absolute;
 
           top: 4em;
-          bottom: 2em;
+          bottom: 4em;
 
           width: 100%;
 
@@ -96,7 +95,7 @@ chat-menu {
 
               text-align: center;
 
-              font-size: large;
+              font-size: 1em;
               font-family: 'Press Start 2P';
 
               color: #fff;
@@ -167,11 +166,15 @@ chat-menu {
               }
 
               li {
-                display: block;
+                display: inline-block;
 
                 font-size: medium;
 
                 cursor: pointer;
+
+                &:hover {
+                  text-shadow: 0px 0px 25px #fff;
+                }
               }
 
               li:not(:last-child) {
@@ -186,17 +189,15 @@ chat-menu {
 
           bottom: 0%;
 
-          height: 2em;
+          height: 4em;
           width: 100%;
-
-          font-size: large;
 
           .trigger {
             position: absolute;
 
             height: 100%;
 
-            line-height: 2em;
+            font-size: 3em;
 
             vertical-align: middle;
 
@@ -208,7 +209,7 @@ chat-menu {
 
             &.settings-trigger {
               left: 0%;
-              right: 50%;
+              right: 66.66%;
 
               padding-left: 1em;
 
@@ -216,10 +217,28 @@ chat-menu {
 
               color: #db0;
               text-shadow: 0px 0px 5px #db0;
+
+              &:hover {
+                text-shadow: 0px 0px 25px #db0;
+              }
+            }
+
+            &.feedback-trigger {
+              left: 33.33%;
+              right: 33.33%;
+
+              text-align: center;
+
+              color: #0fb;
+              text-shadow: 0px 0px 5px #0fb;
+
+              &:hover {
+                text-shadow: 0px 0px 25px #0fb;
+              }
             }
 
             &.rooms-trigger {
-              left: 50%;
+              left: 66.66%;
               right: 0%;
 
               padding-right: 1em;
@@ -228,6 +247,10 @@ chat-menu {
 
               color: #0bf;
               text-shadow: 0px 0px 5px #0bf;
+
+              &:hover {
+                text-shadow: 0px 0px 25px #0bf;
+              }
             }
           }
         }
@@ -235,7 +258,7 @@ chat-menu {
     }
 
     &.collapsed .expanded-view {
-      right: -@menuWidth;
+      right: -100%;
       bottom: -100%;
       transform: scale(0);
 

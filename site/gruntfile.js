@@ -19,6 +19,10 @@ module.exports = function(grunt) {
       prod: {
         files: ['src/app.js']
       },
+      less: {
+        files: ['src/**/*.less'],
+        tasks: ['less:bundle', 'autoprefixer:dist']
+      },
       site: {
         files: ['src/app.js', 'src/**/*.*', 'dist/index.html'],
         tasks: ['preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
@@ -97,7 +101,7 @@ module.exports = function(grunt) {
       options: {
         context: {
           DEBUG: false
-        }     
+        }
       },
       index: {
         src: 'src/frontend/index.html',

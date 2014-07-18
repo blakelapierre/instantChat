@@ -17,7 +17,8 @@ body {
   background-color: #000;
   color: #fff;
 
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 
   font-family: @fontFamily;
 
@@ -26,6 +27,12 @@ body {
     left: 0;
     bottom: 0;
     font-size: xx-small;
+
+    a,
+    a:visited {
+      text-decoration: none;
+      color: #fff;
+    }
   }
 
   input {

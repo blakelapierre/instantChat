@@ -51,12 +51,12 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$resource', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager',
-      ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$resource', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
+      ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
 
       var localParticipant = {
         localParticipant: true,
-        config: {participantName: ''},
+        config: {participantName: localStorageService.get('participantName') || ''},
         streams: []
       };
 

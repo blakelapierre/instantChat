@@ -7,13 +7,14 @@ module.exports = () => {
     link: ($scope, element, attributes) => {
 
     },
-    controller: ['$rootScope', '$scope', ($rootScope, $scope) => {
+    controller: ['$rootScope', '$scope', 'localStorageService', ($rootScope, $scope, localStorageService) => {
       $scope.havePermissionForFrontPage = true;
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',
         emailBody() { return 'Come join me at ' + encodeURIComponent(window.location.toString()); },
         smsBody() { return 'Come join me at ' + encodeURIComponent(window.location.toString()); },
+
 
         isMouseInside: false,
 
@@ -29,6 +30,11 @@ module.exports = () => {
         expand() {
           $scope.isCollapsed = false;
           $scope.isMouseInside = true;
+        },
+
+        participantNameBlur() {
+          localStorageService.set('participantName', $scope.config.participantName);
+          // need to notify peers of new name
         }
       });
 

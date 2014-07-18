@@ -22,23 +22,22 @@
                  placeholder="What's Your Name?"
                  focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
                  ng-model="config.participantName"
-                 ng-click="$event.stopPropagation()">
+                 ng-click="$event.stopPropagation()"
+                 ng-blur="participantNameBlur()">
         </div>
 
-        <div class="thumbnail-container"
-             ng-click="$event.stopPropagation()"
-             ng-show="localThumbnailSrc">
-          <img class="local-thumbnail" src="{{localThumbnailSrc}}" />
-          <label class="permission"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
+        <div class="thumbnail-container" ng-show="localThumbnailSrc">
+          <img class="local-thumbnail" src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
+          <label class="permission" ng-click="$event.stopPropagation()"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
         </div>
 
         <div class="menu-items">
-          <ul ng-click="$event.stopPropagation()">
-            <li>
+          <ul>
+            <li ng-click="$event.stopPropagation()">
               <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
                  target="_blank"><span class="fa fa-envelope"></span> <span>Invite via E-Mail</span></a>
             </li>
-            <li>
+            <li ng-click="$event.stopPropagation()">
               <a href="sms:?body={{smsBody()}}"
                  target="_blank"><span class="fa fa-envelope"></span> <span>Invite via SMS</span></a>
             </li>
@@ -48,10 +47,13 @@
 
       <div class="footer" ng-click="$event.stopPropagation()">
         <div class="trigger settings-trigger" ng-click="triggerSettings()">
-            <span class="fa fa-cog"></span> <span>Settings</span>
+          <span class="fa fa-cog"></span>
+        </div>
+        <div class="trigger feedback-trigger" ng-click="triggerFeedback()">
+          <span class="fa fa-comments"></span>
         </div>
         <div class="trigger rooms-trigger" ng-click="triggerRooms()">
-            <span>Rooms</span> <span class="fa fa-building-o"></span>
+          <span class="fa fa-building-o"></span>
         </div>
       </div>
     </div>
