@@ -16,6 +16,8 @@ module.exports = function() {
         $scope.joinChannel();
         $scope.$apply();
       }, 1500);
+
+      if ($scope.localStream) $scope.localStream.stop();
     }]
   };
 };

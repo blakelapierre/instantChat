@@ -87,6 +87,8 @@ module.exports = () => {
 
           addActiveParticipant(localParticipant);
 
+          $rootScope.localStream = stream;
+
           $scope.$apply();
         })
         .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
@@ -127,12 +129,15 @@ module.exports = () => {
       $rootScope.$on('$locationChangeSuccess', joinRoom);
 
       function joinRoom() {
+        signal.leaveRooms();
+
         var room = $location.path().replace(/^\//, '');
 
-        $scope.currentRoom = room;
+        if (room) {
+          $scope.currentRoom = room;
 
-        signal.leaveRooms();
-        signal.joinRoom(room);
+          signal.joinRoom(room);
+        }
       }
 
       function addActiveParticipant(participant) {
