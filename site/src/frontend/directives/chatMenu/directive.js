@@ -16,7 +16,7 @@ module.exports = () => {
         smsBody() { return 'Come join me at ' + encodeURIComponent(window.location.toString()); },
 
 
-        isMouseInside: false,
+        isMouseInside: true,
 
         mouseEnterExpandedView() {
           $scope.isMouseInside = true;
