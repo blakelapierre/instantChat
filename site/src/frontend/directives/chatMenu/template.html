@@ -37,24 +37,24 @@
           <ul>
             <li ng-click="$event.stopPropagation()">
               <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
-                 target="_blank"><span class="fa fa-envelope"></span> <span>E-Mail</span></a>
+                 target="_blank"><span class="fa fa-envelope"></span></a>
             </li>
 
             <li ng-click="$event.stopPropagation()">
               <a href="sms:?body={{smsBody()}}"
-                 target="_blank"><span class="fa fa-mobile"></span> <span>SMS</span></a>
+                 target="_blank"><span class="fa fa-mobile"></span></a>
             </li>
 
             <li ng-click="$event.stopPropagation()">
-              <a href="https://twitter.com/share?url={{inviteLink()}}&text={{inviteText}}" target="_blank"><span class="fa fa-twitter"></span> Twitter</a>
+              <a href="https://twitter.com/share?url={{inviteLink()}}&text={{inviteText}}" target="_blank"><span class="fa fa-twitter"></span></a>
             </li>
 
             <li ng-click="$event.stopPropagation()">
-              <a href="https://facebook.com/dialog/feed?app_id=1443412259259623&display=popup&link={{inviteLink()}}&redirect_uri={{inviteLink()}}&caption={{inviteText}}" target="_blank"><span class="fa fa-facebook"></span> Facebook</a>
+              <a href="https://facebook.com/dialog/feed?app_id=1443412259259623&display=popup&link={{inviteLink()}}&redirect_uri={{inviteLink()}}&caption={{inviteText}}" target="_blank"><span class="fa fa-facebook"></span></a>
             </li>
 
             <li ng-click="$event.stopPropagation()">
-              <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span> Google+</a>
+              <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span></a>
             </li>
           </ul>
         </div>
