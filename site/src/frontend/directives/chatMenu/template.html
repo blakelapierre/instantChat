@@ -27,7 +27,7 @@
         </div>
 
         <div class="thumbnail-container" ng-show="localThumbnailSrc">
-          <img class="local-thumbnail" src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
+          <img class="local-thumbnail" ng-src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
           <label class="permission" ng-click="$event.stopPropagation()"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
         </div>
 

@@ -3,7 +3,8 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
     restrict: 'E',
     template: require('./template.html'),
     scope: {
-      stream: '='
+      stream: '=',
+      streamName: '='
     },
     link: ($scope, element, attributes) => {
       var video = element.find('video')[0],
@@ -71,7 +72,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         video.muted = stream.isMuted;
 
         if (stream.isLocal) {
-          $interval($scope.generateLocalThumbnail, 15000);
+          $scope.thumbnailInterval = $interval($scope.generateLocalThumbnail, 15000);
           $timeout($scope.generateLocalThumbnail, 1000); // Yeah, we want to do something different here, but I'm not sure what
         }
       });
@@ -118,6 +119,10 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       $scope.generateLocalThumbnail = () => {
         $rootScope.$broadcast('localThumbnail', $scope.captureFrame());
       };
+
+      $scope.$on('$destroy', () => {
+        if ($scope.thumbnailInterval) $interval.cancel($scope.thumbnailInterval);
+      });
     }]
   };
 }];

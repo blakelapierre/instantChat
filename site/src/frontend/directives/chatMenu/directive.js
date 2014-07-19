@@ -35,6 +35,7 @@ module.exports = () => {
         },
 
         participantNameBlur() {
+          localStorageService.set('config', $scope.config);
           localStorageService.set('participantName', $scope.config.participantName);
           // need to notify peers of new name
         }

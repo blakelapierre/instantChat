@@ -1,37 +1,44 @@
 module.exports = ['$emit', ($emit) => {
-  var participants = [];
+  var participants = [], config;
+
+  function setConfig(participant, c) {
+    console.log('!!setting config', c);
+    config = c;
+    _.each(participants, sendConfig);
+  }
+
+  function sendConfig(participant) {
+    console.log('sending config', participant, config);
+    sendMessage(participant, {
+      type: 'config',
+      participantID: participant.id,
+      config: config
+    });
+  }
 
   function sendToggleVoteUp(stream, voteUpStatus) {
-    console.log('sending', stream, voteUpStatus, 'to', participants);
-    _.each(participants, participant => {
-      var peer = participant.peer;
-      if (peer) {
-        var channel = peer.channel('instantChat');
-
-        channel.sendJSON({
-          type: 'voteUp',
-          participantID: stream.peer.id,
-          streamID: stream.id,
-          status: voteUpStatus
-        });
-      }
+    sendMessageToAll({
+      type: 'voteUp',
+      participantID: stream.peer.id,
+      streamID: stream.id,
+      status: voteUpStatus
     });
   }
 
   function sendToggleVoteDown(stream, voteDownStatus) {
-    _.each(participants, participant => {
-      var peer = participant.peer;
-      if (peer) {
-        var channel = peer.channel('instantChat');
-
-        channel.sendJSON({
-          type: 'voteDown',
-          participantID: stream.peer.id,
-          streamID: stream.id,
-          status: voteDownStatus
-        });
-      }
+    sendMessageToAll({
+      type: 'voteDown',
+      participantID: stream.peer.id,
+      streamID: stream.id,
+      status: voteDownStatus
     });
+  }
+
+  function receiveConfig(fromPeer, participantID, config) {
+    var fromParticipant = _.find(participants, {id: fromPeer.id}),
+        targetParticipant = _.find(participants, {id: participantID});
+
+    $emit('participant config', {from: fromParticipant, to: targetParticipant, config: config});
   }
 
   function receiveToggleVoteUp(fromPeer, participantID, streamID, voteUpStatus) {
@@ -52,21 +59,29 @@ module.exports = ['$emit', ($emit) => {
 
   var messageHandlers = {
     'voteUp': (peer, data) => receiveToggleVoteUp(peer, data.participantID, data.streamID, data.status),
-    'voteDown': (peer, data) => receiveToggleVoteDown(peer, data.participantID, data.streamID, data.status)
+    'voteDown': (peer, data) => receiveToggleVoteDown(peer, data.participantID, data.streamID, data.status),
+    'config': (peer, data) => receiveConfig(peer, data.participantID, data.config)
   };
 
   function addParticipant(participant) {
     participants.push(participant);
 
     // This may be the local participant, which doesn't have a peer
-    if (participant.peer) {
-      participant.peer.channel('instantChat').on({
+    if (!participant.isLocalParticipant) {
+      var channel = participant.peer.channel('instantChat');
+
+      channel.on({
         message: (channel, event) => {
           console.log(channel, event);
           var message = JSON.parse(event.data);
           messageHandlers[message.type](channel.peer, message);
+        },
+        open: (channel, event) => {
+          sendConfig(participant);
         }
       });
+
+      if (channel.channel.readyState == 'open') sendConfig(participant);
     }
   }
 
@@ -77,7 +92,25 @@ module.exports = ['$emit', ($emit) => {
     }
   }
 
+  function sendMessageToAll(message) {
+    _.each(participants, participant => sendMessage(participant, message));
+  }
+
+  function sendMessage(participant, message) {
+    if (!participant.isLocalParticipant) {
+      try {
+          var peer = participant.peer,
+              chatChannel = peer.channel('instantChat');
+          if (chatChannel) chatChannel.sendJSON(message);
+      }
+      catch (e) {
+        console.log('Chat send error', e, chatChannel, message);
+      }
+    }
+  }
+
   return {
+    setConfig: setConfig,
     addParticipant: addParticipant,
     removeParticipant: removeParticipant,
     sendToggleVoteUp: sendToggleVoteUp,

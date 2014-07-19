@@ -55,10 +55,12 @@ module.exports = () => {
       ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
 
       var localParticipant = {
-        localParticipant: true,
-        config: {participantName: localStorageService.get('participantName') || ''},
+        isLocalParticipant: true,
+        config: getConfig(),
         streams: []
       };
+
+      instantChatManager.setConfig(localParticipant, localParticipant.config);
 
       $scope.config = localParticipant.config;
       $scope.participants = [localParticipant];
@@ -126,6 +128,12 @@ module.exports = () => {
 
       $rootScope.$on('$locationChangeSuccess', joinRoom);
 
+      function getConfig() {
+        var config = localStorageService.get('config');
+
+        return config;
+      }
+
       function joinRoom() {
         signal.leaveRooms();
 
@@ -153,7 +161,8 @@ module.exports = () => {
           id: peer.id,
           peer: peer,
           streams: [],
-          isActive: false
+          isActive: false,
+          config: {}
         };
 
         $scope.participants.push(participant);
@@ -265,12 +274,29 @@ module.exports = () => {
         $scope.$apply();
       });
 
+      $rootScope.$on('participant config', (event, data) => {
+        console.log(data);
+        var from = data.from,
+            config = data.config;
+
+        from.config = config;
+        $scope.$apply();
+      });
+
       var Images = $resource('/images');
       $rootScope.$on('localThumbnail', ($event, imageData) => {
         Images.save({
           id: localParticipant.id,
           data: imageData
         });
+      });
+
+      $rootScope.$on('LocalStorageModule.notification.setitem', ($event, data) => {
+        switch (data.key) {
+          case 'config':
+            instantChatManager.setConfig(localParticipant, JSON.parse(data.newvalue));
+            break;
+        }
       });
     }]
   };

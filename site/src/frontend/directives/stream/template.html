@@ -5,10 +5,12 @@
 
   <div class="stream-overlay"
        style="left: {{videoSurfaceLeft}}px; bottom: {{videoSurfaceBottom}}px; right: {{videoSurfaceRight}}px; height: {{videoSurfaceHeight}}px; width: {{videoSurfaceWidth}}px;">
+    <span>{{streamName}}</span>
     <div class="stream-controls">
       <div ng-show="!stream.isLocal">
         <span ng-class="{
                 'fa': true,
+                'volume': true,
                 'fa-volume-off': stream.isMuted,
                 'volume-off': stream.isMuted,
                 'fa-volume-up': !stream.isMuted,
