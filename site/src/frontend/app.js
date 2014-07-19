@@ -1,6 +1,6 @@
 var angular = require('angular');
 
-module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'LocalStorageModule'])
+module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'ngEventEmitter', 'LocalStorageModule'])
 
   .directive('instantChat',   require('./directives/instantChat/directive'))
 

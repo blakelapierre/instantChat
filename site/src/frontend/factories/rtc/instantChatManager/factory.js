@@ -1,5 +1,5 @@
-module.exports = () => {
-  var $scope, participants = [];
+module.exports = ['$emit', ($emit) => {
+  var participants = [];
 
   function sendToggleVoteUp(stream, voteUpStatus) {
     console.log('sending', stream, voteUpStatus, 'to', participants);
@@ -39,7 +39,7 @@ module.exports = () => {
         targetParticipant = _.find(participants, {id: participantID}),
         targetStream = _.find(targetParticipant.streams, {id: streamID});
 
-    $scope.$broadcast('stream vote up', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteUpStatus});
+    $emit('stream vote up', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteUpStatus});
   }
 
   function receiveToggleVoteDown(fromPeer, participantID, streamID, voteDownStatus) {
@@ -47,7 +47,7 @@ module.exports = () => {
         targetParticipant = _.find(participants, {id: participantID}),
         targetStream = _.find(targetParticipant.streams, {id: streamID});
 
-    $scope.$broadcast('stream vote down', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteDownStatus});
+    $emit('stream vote down', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteDownStatus});
   }
 
   var messageHandlers = {
@@ -78,10 +78,9 @@ module.exports = () => {
   }
 
   return {
-    setScope: scope => $scope = scope,
     addParticipant: addParticipant,
     removeParticipant: removeParticipant,
     sendToggleVoteUp: sendToggleVoteUp,
     sendToggleVoteDown: sendToggleVoteDown
   };
-};
+}];

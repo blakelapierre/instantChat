@@ -64,8 +64,6 @@ module.exports = () => {
       $scope.participants = [localParticipant];
       $scope.activeParticipants = [];
 
-      instantChatManager.setScope($rootScope);
-
       localMedia.getStream({
         audio: true,
         video: {
