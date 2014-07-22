@@ -10,6 +10,7 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'ngEven
 
   .directive('roomList',      require('./directives/roomList/directive'))
 
+  .directive('settings',      require('./directives/settings/directive'))
   .directive('stream',        require('./directives/stream/directive'))
 
   .directive('teaser',        require('./directives/teaser/directive'))

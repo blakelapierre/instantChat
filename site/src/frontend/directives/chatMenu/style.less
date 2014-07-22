@@ -1,5 +1,82 @@
 @import '../../mixins.less';
 
+@shadowSize: 10px;
+
+@envelopeColor: #b33;
+@envelopeShadowColor: #a33;
+@keyframes envelopeColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: @envelopeColor;
+    text-shadow: 0px 0px @shadowSize #fff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+@mobileColor: #3b3;
+@mobileShadowColor: #3f3;
+@keyframes mobileColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: @mobileColor;
+    text-shadow: 0px 0px @shadowSize #fff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+@twitterColor: #55acee;
+@twitterShadowColor: #33f;
+@keyframes twitterColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: @twitterColor;
+    text-shadow: 0px 0px @shadowSize #fff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+@facebookColor: #4c66a4;
+@facebookShadowColor: #33f;
+@keyframes facebookColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: @facebookColor;
+    text-shadow: 0px 0px @shadowSize #fff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+@gplusColor: #dd4b38;
+@gplusShadowColor: #f33;
+@keyframes gplusColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: @gplusColor;
+    text-shadow: 0px 0px @shadowSize #fff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
 @collapseDuration: 0.4s;
 @opacity: 0.85;
 
@@ -19,7 +96,7 @@ chat-menu {
 
       transform: scale(1);
 
-      transition: bottom @collapseDuration ease, right @collapseDuration ease, transform @collapseDuration ease-in;
+      transition: bottom @collapseDuration ease, right @collapseDuration ease, transform @collapseDuration ease, width 0.5s ease;
 
       .overlay {
         width: 100%;
@@ -37,7 +114,7 @@ chat-menu {
       .menu-content {
         position: absolute;
 
-        left: 0%;
+        right: 0%;
         top: 0%;
 
         width: 100%;
@@ -50,6 +127,8 @@ chat-menu {
 
         overflow-x: hidden;
         overflow-y: hidden;
+
+        transition: width 0.5s ease, left 0.5s ease, right 0.5s ease;
 
         .header {
           height: 4em;
@@ -179,6 +258,49 @@ chat-menu {
                   .fa {
                     font-size: xx-large;
                   }
+
+                  @highlightSpeed: 1.2s;
+                  @initialDelay: 1s;
+                  @delaySpeed: 0.7s;
+                  .fa-envelope {
+                    animation: envelopeColor @highlightSpeed @initialDelay ease;
+
+                    &:hover {
+                      color: @envelopeColor;
+                    }
+                  }
+
+                  .fa-mobile {
+                    animation: mobileColor @highlightSpeed (@initialDelay + 1 * @delaySpeed) ease;
+
+                    &:hover {
+                      color: @mobileColor;
+                    }
+                  }
+
+                  .fa-twitter {
+                    animation: twitterColor @highlightSpeed (@initialDelay + 2 * @delaySpeed) ease;
+
+                    &:hover {
+                      color: @twitterColor;
+                    }
+                  }
+
+                  .fa-facebook {
+                    animation: facebookColor @highlightSpeed (@initialDelay + 3 * @delaySpeed) ease;
+
+                    &:hover {
+                      color: @facebookColor;
+                    }
+                  }
+
+                  .fa-google-plus {
+                    animation: gplusColor @highlightSpeed (@initialDelay + 4 * @delaySpeed) ease;
+
+                    &:hover {
+                      color: @gplusColor;
+                    }
+                  }
                 }
 
                 &:hover {
@@ -262,6 +384,66 @@ chat-menu {
               }
             }
           }
+        }
+      }
+
+      settings {
+        display: block;
+
+        position: absolute;
+        top: 0%;
+        left: 0%;
+
+        width: 0%;
+        height: 0%;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        transition: width 2.5s ease, height 2.5s ease;
+      }
+
+      &.settings-visible {
+        width: 100%;
+
+        .menu-content {
+          width: 40%;
+        }
+
+        settings {
+          width: 60%;
+          height: 100%;
+        }
+      }
+
+      room-list {
+        display: block;
+
+        position: absolute;
+        top: 0%;
+        right: 0%;
+
+        width: 0%;
+        height: 0%;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        transition: width: 0.5s ease, height 0.5s ease;
+      }
+
+      &.rooms-visible {
+        width: 100%;
+
+        .menu-content {
+          right: 60%;
+
+          width: 40%;
+        }
+
+        room-list {
+          width: 60%;
+          height: 100%;
         }
       }
     }

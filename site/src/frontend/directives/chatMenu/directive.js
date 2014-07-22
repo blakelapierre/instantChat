@@ -28,7 +28,12 @@ module.exports = () => {
           debouncedCollapse();
         },
 
-        collapse() { $scope.isCollapsed = true; },
+        collapse() {
+          $scope.isCollapsed = true;
+          $scope.roomsVisible = false;
+          $scope.feedbackVisible = false;
+          $scope.roomsVisible = false;
+        },
         expand() {
           $scope.isCollapsed = false;
           $scope.isMouseInside = true;
@@ -38,6 +43,22 @@ module.exports = () => {
           localStorageService.set('config', $scope.config);
           localStorageService.set('participantName', $scope.config.participantName);
           // need to notify peers of new name
+        },
+
+        triggerSettings() {
+          $scope.roomsVisible = false;
+          $scope.feedbackVisible = false;
+          $scope.settingsVisible = !$scope.settingsVisible;
+        },
+        triggerFeedback() {
+          $scope.settingsVisible = false;
+          $scope.roomsVisible = false;
+          $scope.feedbackVisible = !$scope.feedbackVisible;
+        },
+        triggerRooms() {
+          $scope.settingsVisible = false;
+          $scope.feedbackVisible = false;
+          $scope.roomsVisible = !$scope.roomsVisible;
         }
       });
 
