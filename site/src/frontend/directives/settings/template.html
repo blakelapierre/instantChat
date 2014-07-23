@@ -1,6 +1,19 @@
-<div ng-repeat="audio in sources.audio">
-  {{audio}}
-</div>
-<div ng-repeat="video in sources.video">
-  {{video}}
+<div class="sources">
+  <div class="audio-sources">
+    <span>Audio Sources</span>
+    <div class="source audio-source" ng-repeat="audio in sources.audio">
+      <span class="fa fa-volume-up"></span>
+      <span class="source-label">{{audio.label}}</span>
+      <span ng-show="audio.facing != '' && audio.facing != null"> - {{audio.facing}}</span>
+    </div>
+  </div>
+
+  <div class="video-sources">
+    <span>Video Sources</span>
+    <div class="source video-source" ng-repeat="video in sources.video">
+      <span class="fa fa-video-camera"></span>
+      <span class="source-label">{{video.label}}</span>
+      <span ng-show="video.facing != '' && video.facing != null"> - {{video.facing}}</span>
+    </div>
+  </div>
 </div>

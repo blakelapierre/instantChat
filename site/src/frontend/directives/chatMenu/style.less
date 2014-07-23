@@ -1,8 +1,8 @@
 @import '../../mixins.less';
 
-@shadowSize: 10px;
+@shadowSize: 7px;
 
-@envelopeColor: #b33;
+@envelopeColor: #e66;
 @envelopeShadowColor: #a33;
 @keyframes envelopeColor {
   0% {
@@ -258,49 +258,6 @@ chat-menu {
                   .fa {
                     font-size: xx-large;
                   }
-
-                  @highlightSpeed: 1.2s;
-                  @initialDelay: 1s;
-                  @delaySpeed: 0.7s;
-                  .fa-envelope {
-                    animation: envelopeColor @highlightSpeed @initialDelay ease;
-
-                    &:hover {
-                      color: @envelopeColor;
-                    }
-                  }
-
-                  .fa-mobile {
-                    animation: mobileColor @highlightSpeed (@initialDelay + 1 * @delaySpeed) ease;
-
-                    &:hover {
-                      color: @mobileColor;
-                    }
-                  }
-
-                  .fa-twitter {
-                    animation: twitterColor @highlightSpeed (@initialDelay + 2 * @delaySpeed) ease;
-
-                    &:hover {
-                      color: @twitterColor;
-                    }
-                  }
-
-                  .fa-facebook {
-                    animation: facebookColor @highlightSpeed (@initialDelay + 3 * @delaySpeed) ease;
-
-                    &:hover {
-                      color: @facebookColor;
-                    }
-                  }
-
-                  .fa-google-plus {
-                    animation: gplusColor @highlightSpeed (@initialDelay + 4 * @delaySpeed) ease;
-
-                    &:hover {
-                      color: @gplusColor;
-                    }
-                  }
                 }
 
                 &:hover {
@@ -388,8 +345,6 @@ chat-menu {
       }
 
       settings {
-        display: block;
-
         position: absolute;
         top: 0%;
         left: 0%;
@@ -456,6 +411,51 @@ chat-menu {
       .overlay {
         background-color: #bddfff;
         opacity: 0;
+      }
+    }
+
+    &.expanded .expanded-view {
+      @highlightDuration: 2.25s;
+      @initialDelay: 0.5s;
+      @delayDuration: 0.15s;
+      .fa-envelope {
+        animation: envelopeColor @highlightDuration @initialDelay ease;
+
+        &:hover {
+          color: @envelopeColor;
+        }
+      }
+
+      .fa-mobile {
+        animation: mobileColor @highlightDuration (@initialDelay + 1 * @delayDuration) ease;
+
+        &:hover {
+          color: @mobileColor;
+        }
+      }
+
+      .fa-twitter {
+        animation: twitterColor @highlightDuration (@initialDelay + 2 * @delayDuration) ease;
+
+        &:hover {
+          color: @twitterColor;
+        }
+      }
+
+      .fa-facebook {
+        animation: facebookColor @highlightDuration (@initialDelay + 3 * @delayDuration) ease;
+
+        &:hover {
+          color: @facebookColor;
+        }
+      }
+
+      .fa-google-plus {
+        animation: gplusColor @highlightDuration (@initialDelay + 4 * @delayDuration) ease;
+
+        &:hover {
+          color: @gplusColor;
+        }
       }
     }
 

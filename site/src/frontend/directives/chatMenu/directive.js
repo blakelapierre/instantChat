@@ -30,7 +30,7 @@ module.exports = () => {
 
         collapse() {
           $scope.isCollapsed = true;
-          $scope.roomsVisible = false;
+          $scope.settingsVisible = false;
           $scope.feedbackVisible = false;
           $scope.roomsVisible = false;
         },
