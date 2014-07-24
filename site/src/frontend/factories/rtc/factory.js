@@ -6,10 +6,6 @@ import {Peer} from './peer';
 var _ = require('lodash'),
     io = require('socket.io');
 
-var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
-var URL = (window.URL || window.webkitURL || window.msURL || window.oURL);
-var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
-
 /*
 +  Event Handling
 */
