@@ -9,8 +9,13 @@ module.exports = () => {
         Rooms.get(null, rooms => $scope.rooms = rooms.rooms);
       }
 
-      $interval(getRooms, 30000);
       getRooms();
+
+      var getRoomPromise = $interval(getRooms, 30000);
+
+      $scope.$on('$destroy', () => {
+        $interval.cancel(getRoomPromise);
+      });
     }]
   };
 };
