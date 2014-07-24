@@ -28,7 +28,7 @@ function off(event, listener) {
 
   var listeners = events[event];
   if (listeners && listeners.length > 0) {
-    for (var i = listeners.length - 1; i >= 0; i++) {
+    for (var i = listeners.length - 1; i >= 0; i--) {
       if (listeners[i] === listener) {
         listeners.splice(i, 1);
       }
@@ -214,13 +214,17 @@ function connectToSignal(server) {
 -  Signalling
 */
 
-module.exports = function() {
+module.exports = () => {
   var signal;
 
   return {
-    connectToSignal: server => {
+    connectToSignal: (server, listeners) => {
       if (signal === undefined) signal = connectToSignal(server);
-      else if (signal.ready) fire('ready', signal.myID); // oof, get me (this line of code) out of here
+
+      signal.on(listeners);
+
+      if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
+
       return signal;
     },
     existingSignal: () => signal

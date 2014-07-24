@@ -7,7 +7,12 @@ module.exports = ($q) => {
     getStream: options => {
       options = options || {audio: true, video: true};
 
-      promise = promise || new Promise((resolve, reject) => getUserMedia.call(navigator, options, resolve, reject));
+      promise = promise || new Promise((resolve, reject) => {
+        getUserMedia.call(navigator, options, stream => {
+          stream.addEventListener('ended', () => promise = null);
+          resolve(stream);
+        }, reject);
+      });
 
       return promise;
     },

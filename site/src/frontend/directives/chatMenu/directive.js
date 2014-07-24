@@ -4,8 +4,9 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    link: ($scope, element, attributes) => {
-
+    scope: {
+      config: '=',
+      currentRoom: '='
     },
     controller: ['$rootScope', '$scope', 'localStorageService', ($rootScope, $scope, localStorageService) => {
       $scope.havePermissionForFrontPage = true;
@@ -41,7 +42,6 @@ module.exports = () => {
 
         participantNameBlur() {
           localStorageService.set('config', $scope.config);
-          localStorageService.set('participantName', $scope.config.participantName);
           // need to notify peers of new name
         },
 

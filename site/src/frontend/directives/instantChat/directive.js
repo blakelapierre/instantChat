@@ -5,34 +5,11 @@ module.exports = () => {
     restrict: 'E',
     template: require('./template.html'),
     link: ($scope, element, attributes) => {
-      var domElement = element[0];
-
       $scope.videoLoaded = event => console.log(event);
 
       $scope.toggleFullscreen = () => {
-        //Using Mozilla's polyfill...
-        if (!document.fullscreenElement &&    // alternative standard method
-            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-          if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-          } else if (document.documentElement.msRequestFullscreen) {
-            document.documentElement.msRequestFullscreen();
-          } else if (document.documentElement.mozRequestFullScreen) {
-            document.documentElement.mozRequestFullScreen();
-          } else if (document.documentElement.webkitRequestFullscreen) {
-            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-          }
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          }
-        }
+        if (isFullscreen()) exitFullscreen();
+        else enterFullscreen();
       };
 
       document.addEventListener('fullscreenchange', updateFullscreenMessage);
@@ -40,12 +17,25 @@ module.exports = () => {
       document.addEventListener('mozfullscreenchange', updateFullscreenMessage);
 
       function updateFullscreenMessage() {
-        if (!document.fullscreenElement &&    // alternative standard method
-            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-          $scope.fullscreenMessage = 'Go Fullscreen';
-        } else {
-          $scope.fullscreenMessage = 'Exit Fullscreen';
-        }
+        $scope.fullscreenMessage = isFullscreen() ? 'Exit Fullscreen' : 'Go Fullscreen';
+      }
+
+      function isFullscreen() {
+        return !!document.fullscreenElement || !!document.mozFullScreenElement || !!document.webkitFullscreenElement || !!document.msFullscreenElement;
+      }
+
+      function exitFullscreen() {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+
+      function enterFullscreen() {
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        else if (document.documentElement.msRequestFullscreen) document.documentElement.msRequestFullscreen();
+        else if (document.documentElement.mozRequestFullScreen) document.documentElement.mozRequestFullScreen();
+        else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
       }
 
       updateFullscreenMessage();
@@ -53,6 +43,8 @@ module.exports = () => {
     controller:
       ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$resource', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
       ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+
+      var rootScopeCleanup = [];
 
       var localParticipant = {
         isLocalParticipant: true,
@@ -93,9 +85,7 @@ module.exports = () => {
         })
         .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
 
-      var signal = rtc.connectToSignal('https://' + $location.host());
-
-      signal.on({
+      var signalListeners = {
         'ready': handle => {
           localParticipant.id = handle;
           joinRoom();
@@ -122,11 +112,12 @@ module.exports = () => {
         'peer error send answer':  (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
 
         'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate)
-      });
+      };
 
+      var signal = rtc.connectToSignal('https://' + $location.host(), signalListeners);
+
+      $scope.currentRoom = {name: null};
       $scope.currentRooms = signal.currentRooms;
-
-      $rootScope.$on('$locationChangeSuccess', joinRoom);
 
       function getConfig() {
         var config = localStorageService.get('config');
@@ -135,13 +126,13 @@ module.exports = () => {
       }
 
       function joinRoom() {
+        console.log('joining room', $location.path());
         signal.leaveRooms();
 
         var room = $location.path().replace(/^\//, '');
 
         if (room) {
-          $scope.currentRoom = room;
-
+          $scope.currentRoom.name = room;
           signal.joinRoom(room);
         }
       }
@@ -244,13 +235,15 @@ module.exports = () => {
         console.log(config);
       }, 500));
 
-      $rootScope.$on('error', (event, message, error) => {
+      //onRootScope('$locationChangeSuccess', joinRoom);
+
+      onRootScope('error', ($event, message, error) => {
         $scope.errorMessage = message;
         console.log('Global Error', message, error);
         $scope.$apply(); // is this necessary?
       });
 
-      $rootScope.$on('stream vote up', (event, data) => {
+      onRootScope('stream vote up', ($event, data) => {
         var from = data.from,
             to = data.to,
             stream = data.stream,
@@ -262,7 +255,7 @@ module.exports = () => {
         $scope.$apply();
       });
 
-      $rootScope.$on('stream vote down', (event, data) => {
+      onRootScope('stream vote down', ($event, data) => {
         var from = data.from,
             to = data.to,
             stream = data.stream,
@@ -274,7 +267,7 @@ module.exports = () => {
         $scope.$apply();
       });
 
-      $rootScope.$on('participant config', (event, data) => {
+      onRootScope('participant config', ($event, data) => {
         console.log(data);
         var from = data.from,
             config = data.config;
@@ -284,20 +277,32 @@ module.exports = () => {
       });
 
       var Images = $resource('/images');
-      $rootScope.$on('localThumbnail', ($event, imageData) => {
+      onRootScope('localThumbnail', ($event, imageData) => {
         Images.save({
           id: localParticipant.id,
           data: imageData
         });
       });
 
-      $rootScope.$on('LocalStorageModule.notification.setitem', ($event, data) => {
+      onRootScope('LocalStorageModule.notification.setitem', ($event, data) => {
         switch (data.key) {
           case 'config':
             instantChatManager.setConfig(localParticipant, JSON.parse(data.newvalue));
             break;
         }
       });
+
+      $scope.$on('$destroy', () => {
+        console.log('unreging', rootScopeCleanup);
+        signal.leaveRooms();
+        signal.off(signalListeners);
+        _.each(rootScopeCleanup, fn => fn());
+        rootScopeCleanup.splice(0);
+      });
+
+      function onRootScope(eventName, listener) {
+        rootScopeCleanup.push($rootScope.$on(eventName, listener));
+      }
     }]
   };
 };
