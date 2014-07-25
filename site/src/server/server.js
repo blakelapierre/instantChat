@@ -7,6 +7,7 @@ module.exports = function(config, callback) {
       _ = require('lodash'),
       io = require('socket.io'),
       signal = require('./signal'),
+      suggestions = require('./suggestions'),
       app = express();
 
   var redirectServer = http.createServer(function requireHTTPS(req, res, next) {
@@ -77,6 +78,8 @@ module.exports = function(config, callback) {
     }
     res.json({success: false});
   });
+
+  suggestions(router);
 
   app.use('/', router);
 

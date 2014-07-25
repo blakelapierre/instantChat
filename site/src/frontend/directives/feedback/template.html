@@ -1,0 +1,11 @@
+<form class="suggestions">
+  <ol>
+    <li ng-repeat="suggestion in suggestions">
+      {{suggestion.down_count}} <span class="fa fa-thumbs-down" ng-click="voteDown(suggestion)"></span>
+      {{suggestion.text}}
+      <span class="fa fa-thumbs-up" ng-click="voteUp(suggestion)"></span> {{suggestion.up_count}}
+    </li>
+  </ol>
+  <textarea ng-model="newSuggestion" placeholder="Add Your Suggestion"></textarea>
+  <button ng-click="submitSuggestion()">Submit</button>
+</form>

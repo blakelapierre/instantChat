@@ -6,6 +6,8 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'ngEven
 
   .directive('chatMenu',      require('./directives/chatMenu/directive'))
 
+  .directive('feedback',      require('./directives/feedback/directive'))
+
   .directive('participant',   require('./directives/participant/directive'))
 
   .directive('roomList',      require('./directives/roomList/directive'))

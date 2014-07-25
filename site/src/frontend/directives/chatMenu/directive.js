@@ -4,12 +4,11 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    scope: {
-      config: '=',
-      currentRoom: '='
-    },
+    scope: true,
     controller: ['$rootScope', '$scope', 'localStorageService', ($rootScope, $scope, localStorageService) => {
       $scope.havePermissionForFrontPage = true;
+
+      $rootScope.test = () => console.log('worked');
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',

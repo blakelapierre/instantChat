@@ -371,6 +371,33 @@ chat-menu {
         }
       }
 
+      feedback {
+        position: absolute;
+        top: 0%;
+        left: 0%;
+
+        width: 0%;
+        height: 0%;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        transition: width 2.5s ease, height 2.5s ease;
+      }
+
+      &.feedback-visible {
+        width: 100%;
+
+        .menu-content {
+          width: 40%;
+        }
+
+        feedback {
+          width: 50%;
+          height: 100%;
+        }
+      }
+
       room-list {
         display: block;
 
