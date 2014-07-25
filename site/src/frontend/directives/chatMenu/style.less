@@ -195,6 +195,9 @@ chat-menu {
 
             .local-thumbnail {
               display: block;
+              width: auto;
+              height: 5em;
+
               margin: 0 auto 0.5em auto;
             }
 
@@ -443,7 +446,7 @@ chat-menu {
 
     &.expanded .expanded-view {
       @highlightDuration: 2.25s;
-      @initialDelay: 0.5s;
+      @initialDelay: 1.5s;
       @delayDuration: 0.15s;
       .fa-envelope {
         animation: envelopeColor @highlightDuration @initialDelay ease;
