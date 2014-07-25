@@ -13,9 +13,7 @@ module.exports = () => {
 
       var getRoomPromise = $interval(getRooms, 30000);
 
-      $scope.$on('$destroy', () => {
-        $interval.cancel(getRoomPromise);
-      });
+      $scope.$on('$destroy', () => $interval.cancel(getRoomPromise));
     }]
   };
 };
