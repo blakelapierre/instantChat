@@ -64,7 +64,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
       }
 
-      video.addEventListener('play', () => {
+      video.addEventListener('playing', () => {
         if ($scope.stream.isLocal) {
           $scope.generateLocalThumbnail(); // Yeah, we want to do something different here, but I'm not sure what
         }
@@ -89,9 +89,9 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         }
       };
 
-      $scope.captureFrame = options => {
+      $scope.captureFrame = (options, callback) => {
         if ($scope.haveSize) {
-          return videoTools.captureFrame(video, options || {width: 96});
+          videoTools.captureFrame(video, options || {width: 96}, callback);
         }
         else {
           console.log('we probably want to return something here?!');
@@ -107,7 +107,10 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
         instantChatManager.sendToggleVoteUp(stream, stream.isVotedUp);
 
-        stream.thumbSrc = $scope.captureFrame();
+        $scope.captureFrame(null, dataUrl => {
+          stream.thumbSrc = dataUrl;
+          $scope.$apply();
+        });
       };
 
       $scope.toggleVoteDown = $event => {
@@ -120,7 +123,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       };
 
       $scope.generateLocalThumbnail = () => {
-        $rootScope.$broadcast('localThumbnail', $scope.captureFrame());
+        $scope.captureFrame(null, dataUrl => $rootScope.$broadcast('localThumbnail', dataUrl));
       };
 
       $scope.$on('$destroy', () => {
