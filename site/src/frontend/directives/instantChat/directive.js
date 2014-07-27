@@ -41,8 +41,16 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$resource', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
-      ($rootScope, $scope, $sce, $location, $timeout, $resource, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
+      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+
+      $window.addEventListener('click', toggleBars);
+
+      function toggleBars() {
+        $scope.hideBars = !$scope.hideBars;
+        $scope.$apply();
+        $timeout(() => $rootScope.$broadcast('resize'), 1000);
+      }
 
       var rootScopeCleanup = [];
 
@@ -298,6 +306,7 @@ module.exports = () => {
         signal.off(signalListeners);
         _.each(rootScopeCleanup, fn => fn());
         rootScopeCleanup.splice(0);
+        $window.removeEventListener(toggleBars);
       });
 
       function onRootScope(eventName, listener) {

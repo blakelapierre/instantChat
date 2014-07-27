@@ -83,7 +83,7 @@
 chat-menu {
   .menu-container {
     .expanded-view {
-      position: absolute;
+      position: fixed;
 
       top: 0%;
       right: 0%;
@@ -498,23 +498,19 @@ chat-menu {
       height: 0%;
       width: 0%;
 
+      margin-right: 0.2em;
+
       text-align: center;
 
       color: #fff;
 
-      box-shadow: 0px 0px 5px @collapsedBackgroundColor;
-
       cursor: pointer;
 
-      transition: width @collapseDuration ease, height @collapseDuration ease;
+      transition: width @collapseDuration ease, height @collapseDuration ease, text-shadow 2s ease;
 
       .overlay {
         width: 100%;
         height: 100%;
-
-        background-color: @collapsedBackgroundColor;
-
-        opacity: 0.5;
       }
 
       .glyph-table {
@@ -531,13 +527,32 @@ chat-menu {
         .glyph {
           display: table-cell;
           vertical-align: middle;
+
+          font-size: 2em;
         }
       }
     }
 
     &.collapsed .collapsed-view {
-      height: 3em;
-      width: 3em;
+      height: 2em;
+      width: 2em;
+
+      text-shadow: none;
+
+      .overlay {
+        background-color: transparent;
+        opacity: none;
+      }
+
+      &:hover {
+        text-shadow: 0px 0px 20px #fff;
+
+        transition: none;
+      }
+    }
+
+    &.expanded .collapsed-view {
+      text-shadow: 0px 0px 20px #fff;
     }
   }
 }

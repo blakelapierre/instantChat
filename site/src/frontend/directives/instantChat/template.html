@@ -1,15 +1,20 @@
-<div class="participants participants-count-{{activeParticipants.length}}">
+<div ng-class="{'hide-bars':hideBars}">
+  <div class="top-bar">
+    <div class="full-screen" ng-click="toggleFullscreen()">
+      <span class="fa fa-arrows-alt"></span> <span>{{fullscreenMessage}}</span>
+    </div>
+  </div>
+  <div class="middle-bar">
+    <div class="error-message" ng-show="errorMessage != null" ng-click="errorMessage = null">{{errorMessage}}</div>
+    <div class="participants participants-count-{{activeParticipants.length}}">
 
-  <participant ng-repeat="participant in activeParticipants"
-    class="participant participant-{{$index}}" participant="participant">
-  </participant>
+      <participant ng-repeat="participant in activeParticipants"
+        class="participant participant-{{$index}}" participant="participant">
+      </participant>
 
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <chat-menu config="config" current-room="currentRoom"></chat-menu>
+  </div>
 </div>
-
-<div class="full-screen" ng-click="toggleFullscreen()">
-  <span class="fa fa-arrows-alt"></span> <span>{{fullscreenMessage}}</span>
-</div>
-
-<div class="error-message" ng-show="errorMessage != null" ng-click="errorMessage = null">{{errorMessage}}</div>
-
-<chat-menu config="config" current-room="currentRoom"></chat-menu>

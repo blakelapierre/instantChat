@@ -21,6 +21,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       video.addEventListener('resize',      () => refreshSize());
       window.addEventListener('resize',     () => refreshSize());
 
+      $rootScope.$on('resize',              () => refreshSize());
       $rootScope.$on('haveVideoSize',       () => refreshSize());
       $rootScope.$on('participant added',   () => refreshSize());
       $rootScope.$on('participant removed', () => refreshSize());
