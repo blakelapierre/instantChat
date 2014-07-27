@@ -15,7 +15,7 @@
                 'volume-off': stream.isMuted,
                 'fa-volume-up': !stream.isMuted,
                 'volume-on': !stream.isMuted}"
-              ng-click="toggleMute($event)"></span>
+              ng-click="toggleMute($event); $event.stopPropagation()"></span>
 
         <span ng-class="{
                 'fa': true,
@@ -24,7 +24,7 @@
                 'fa-thumbs-up': stream.isVotedUp,
                 'thumbs-up': true,
                 'thumbs-up-selected': stream.isVotedUp}"
-              ng-click="toggleVoteUp()"></span>
+              ng-click="toggleVoteUp(); $event.stopPropagation()"></span>
 
         <span ng-class="{
                 'fa': true,
@@ -33,7 +33,7 @@
                 'fa-thumbs-down': stream.isVotedDown,
                 'thumbs-down': true,
                 'thumbs-down-selected': stream.isVotedDown}"
-              ng-click="toggleVoteDown()"></span>
+              ng-click="toggleVoteDown(); $event.stopPropagation()"></span>
       </div>
     </div>
     <div class="votes">
