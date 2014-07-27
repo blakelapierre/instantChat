@@ -41,15 +41,22 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
-      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
+      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
 
       $window.addEventListener('click', toggleBars);
 
       function toggleBars() {
         $scope.hideBars = !$scope.hideBars;
         $scope.$apply();
-        $timeout(() => $rootScope.$broadcast('resize'), 1000);
+
+        $scope.resizing = $$rAF(broadcastResize);
+        $timeout(() => $scope.resizing(), 1000);
+      }
+
+      function broadcastResize() {
+        $rootScope.$broadcast('resize');
+        $scope.resizing = $$rAF(broadcastResize);
       }
 
       var rootScopeCleanup = [];
