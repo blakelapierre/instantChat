@@ -1,11 +1,13 @@
 <form class="suggestions">
-  <ol>
-    <li ng-repeat="suggestion in suggestions">
-      {{suggestion.down_count}} <span class="fa fa-thumbs-down" ng-click="voteDown(suggestion)"></span>
+  <ol class="suggestion-list">
+    <li ng-repeat="suggestion in suggestions" class="suggestion">
+      <span class="vote vote-down"><span class="fa fa-thumbs-down" ng-click="voteDown(suggestion)"></span> {{suggestion.down_count}}</span>
       {{suggestion.text}}
-      <span class="fa fa-thumbs-up" ng-click="voteUp(suggestion)"></span> {{suggestion.up_count}}
+      <span class="vote vote-up">{{suggestion.up_count}} <span class="fa fa-thumbs-up" ng-click="voteUp(suggestion)"></span></span>
     </li>
   </ol>
-  <textarea ng-model="newSuggestion" placeholder="Add Your Suggestion"></textarea>
-  <button ng-click="submitSuggestion()">Submit</button>
+  <div class="input">
+    <textarea ng-model="newSuggestion" placeholder="Add Your Suggestion"></textarea>
+    <button ng-click="submitSuggestion()">Submit</button>
+  </div>
 </form>

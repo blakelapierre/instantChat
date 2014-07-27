@@ -70,7 +70,6 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         }
       });
 
-      $scope.thumbnailInterval = $interval($scope.generateLocalThumbnail, 15000);
 
       $scope.$watch('stream', stream => {
         stream.isMuted = stream.isLocal || stream.isMuted;
@@ -78,6 +77,10 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         stream.isVotedDown = false;
 
         video.muted = stream.isMuted;
+
+        if (stream.isLocal) {
+          $scope.thumbnailInterval = $interval($scope.generateLocalThumbnail, 15000);
+        }
       });
 
       $scope.toggleMute = $event => {
@@ -109,7 +112,6 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
         $scope.captureFrame(null, dataUrl => {
           stream.thumbSrc = dataUrl;
-          $scope.$apply();
         });
       };
 

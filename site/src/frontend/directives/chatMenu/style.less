@@ -175,7 +175,6 @@ chat-menu {
               text-align: center;
 
               font-size: 1em;
-              font-family: 'Press Start 2P';
 
               color: #fff;
               text-shadow: 0px 0px 5px #333;
@@ -185,7 +184,6 @@ chat-menu {
 
               .placeholder({
                 color: #dff;
-                font-family: 'Press Start 2P';
               });
             }
           }
@@ -445,9 +443,9 @@ chat-menu {
     }
 
     &.expanded .expanded-view {
-      @highlightDuration: 2.25s;
+      @highlightDuration: 1.5s;
       @initialDelay: 1.5s;
-      @delayDuration: 0.15s;
+      @delayDuration: 0.75s;
       .fa-envelope {
         animation: envelopeColor @highlightDuration @initialDelay ease;
 
