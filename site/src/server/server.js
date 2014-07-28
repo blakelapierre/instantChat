@@ -15,7 +15,7 @@ module.exports = function(config, callback) {
 
   var serverRoot = config.serverRoot;
 
-  app.use(express.static(path.join(serverRoot, '..', 'dist')));
+  app.use(express.static(path.join(serverRoot, 'frontend')));
   app.use(bodyParser.json());
 
   var sslOptions = {

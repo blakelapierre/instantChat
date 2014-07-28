@@ -1,7 +1,7 @@
-module.exports = function(router, signalStats) {
+module.exports = (router, signalStats) => {
   var sockets = signalStats.sockets;
 
-  router.post('/images', function(req, res) {
+  router.post('/images', (req, res) => {
     var data = req.body,
         socket = sockets.getByID(data.id);
 
@@ -11,7 +11,7 @@ module.exports = function(router, signalStats) {
     res.json({success: true});
   });
 
-  router.get('/images/:id', function(req, res) {
+  router.get('/images/:id', (req, res) => {
     var socket = sockets.getByID(req.params.id);
 
     if (socket) {

@@ -2,18 +2,18 @@
 var _ = require('lodash'),
     HashList = require('./hashList');
 
-module.exports = function(io) {
+module.exports = io => {
   var rooms = new HashList('_roomName'),
       sockets = new HashList('id');
 
-  io.sockets.on('connection', function(socket) {
+  io.sockets.on('connection', socket => {
     socket.emit('your_id', socket.id);
 
     socket.rooms = new HashList('_self');
 
     sockets.push(socket);
 
-    socket.on('peer candidates', function(data) {
+    socket.on('peer candidates', data => {
       var peerSocket = sockets.getByID(data.peerID);
 
       if (peerSocket) {
@@ -24,7 +24,7 @@ module.exports = function(io) {
       }
     });
 
-    socket.on('peer offer', function(data) {
+    socket.on('peer offer', data => {
       var peerSocket = sockets.getByID(data.peerID);
 
       if (peerSocket) {
@@ -35,7 +35,7 @@ module.exports = function(io) {
       }
     });
 
-    socket.on('peer answer', function(data) {
+    socket.on('peer answer', data => {
       var peerSocket = sockets.getByID(data.peerID);
 
       if (peerSocket) {
@@ -46,14 +46,14 @@ module.exports = function(io) {
       }
     });
 
-    socket.on('room join', function(roomName) { joinRoom(socket, roomName); });
+    socket.on('room join', roomName => joinRoom(socket, roomName));
 
-    socket.on('room leave', function(roomName) { leaveRoom(socket, roomName); });
+    socket.on('room leave', roomName => leaveRoom(socket, roomName));
 
-    socket.on('disconnect', function() {
+    socket.on('disconnect', () => {
       console.log('disconnect', socket.id);
 
-      socket.rooms.forEach(function(roomName) { leaveRoom(socket, roomName); });
+      socket.rooms.forEach(roomName => leaveRoom(socket, roomName));
 
       sockets.removeObject(socket);
     });
@@ -68,7 +68,7 @@ module.exports = function(io) {
       rooms.push(room);
     }
 
-    room.forEach(function(peerSocket) { peerSocket.emit('peer join', socket.id); });
+    room.forEach(peerSocket => peerSocket.emit('peer join', socket.id));
 
     socket.emit('peer list', {
       roomName: roomName,
@@ -94,7 +94,7 @@ module.exports = function(io) {
 
     socket.rooms.removeByID(roomName);
 
-    room.forEach(function(peerSocket) { peerSocket.emit('peer leave', socket.id); });
+    room.forEach(eerSocket => peerSocket.emit('peer leave', socket.id));
 
     if (room.length() === 0) rooms.removeByID(roomName);
   }

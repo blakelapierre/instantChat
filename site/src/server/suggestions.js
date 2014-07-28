@@ -1,15 +1,13 @@
 var _ = require('lodash');
 
-module.exports = function(router) {
-  console.log('mounting /suggestions');
-
+module.exports = router => {
   var suggestions = [];
 
-  router.get('/suggestions', function(req, res) {
+  router.get('/suggestions', (req, res) => {
     res.json({suggestions: suggestions});
   });
 
-  router.post('/suggestions', function(req, res) {
+  router.post('/suggestions', (req, res) => {
     var text = req.body.text;
 
     var suggestion = {
@@ -26,7 +24,7 @@ module.exports = function(router) {
     res.json({suggestion: suggestion});
   });
 
-  router.post('/suggestions/:id', function(req, res) {
+  router.post('/suggestions/:id', (req, res) => {
     var id = parseInt(req.params.id),
         vote = req.body.vote,
         suggestion = _.find(suggestions, {id: id});
@@ -47,8 +45,8 @@ module.exports = function(router) {
     res.end();
   });
 
-  var updateOrder = _.debounce(function() {
-    suggestions.sort(function(a, b) {
+  var updateOrder = _.debounce(() => {
+    suggestions.sort((a, b) => {
       return a.power >= b.power ? -1 : 1;
     });
   }, 1000);

@@ -1,14 +1,14 @@
 var _ = require('lodash');
 
-module.exports = function(router, signalStats) {
+module.exports = (router, signalStats) => {
   var roomList = signalStats.rooms.asList();
 
-  router.get('/rooms', function(req, res) {
+  router.get('/rooms', (req, res) => {
     res.json({
-      rooms: _.map(roomList, function(room) {
+      rooms: _.map(roomList, room => {
         return {
           name: room._roomName,
-          participants: _.map(room.asList(), function(socket) {
+          participants: _.map(room.asList(), socket => {
             return {
               id: socket.id,
               image: socket.image
