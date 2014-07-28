@@ -1,5 +1,3 @@
-var es6ify = require('es6ify');
-
 module.exports = function(grunt) {
   var pkg = grunt.file.readJSON('package.json');
 
@@ -24,7 +22,7 @@ module.exports = function(grunt) {
         tasks: ['less:bundle', 'autoprefixer:dist']
       },
       site: {
-        files: ['src/app.js', 'src/**/*.*', 'dist/index.html'],
+        files: ['src/app.js', 'src/**/*.*', 'dist/frontend/index.html'],
         tasks: ['preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
         options: {
           livereload: {
@@ -81,14 +79,19 @@ module.exports = function(grunt) {
     copy: {
       libs: {
         files: [
-          {expand: true, flatten: true, src: ['./src/frontend/libs/**/*'], dest: './dist/libs/'}
+          {expand: true, flatten: true, src: ['./src/frontend/libs/**/*'], dest: './dist/frontend/libs/'}
+        ]
+      },
+      cert: {
+        files: [
+          {expand: true, flatten: true, src: ['./src/server/cert/**/*'], dest: './dist/server/cert/'}
         ]
       }
     },
     browserify: {
       instantChat: {
         files: {
-          'dist/instantChat.js': ['src/frontend/app.js']
+          'dist/frontend/instantChat.js': ['src/frontend/app.js']
         },
         options: {
           bundleOptions: {
@@ -105,11 +108,11 @@ module.exports = function(grunt) {
       },
       index: {
         src: 'src/frontend/index.html',
-        dest: 'dist/index.html'
+        dest: 'dist/frontend/index.html'
       },
       livereload: {
         src: 'src/frontend/index.html',
-        dest: 'dist/index.html',
+        dest: 'dist/frontend/index.html',
         options: {
           context: {
             DEBUG: true
@@ -117,16 +120,32 @@ module.exports = function(grunt) {
         }
       }
     },
+    traceur: {
+      options: {},
+      server: {
+        files: [{
+          expand: true,
+          cwd: 'src',
+          src: ['*.js'],
+          dest: 'dist'
+        },{
+          expand: true,
+          cwd: 'src/server',
+          src: ['*.js'],
+          dest: 'dist/server'
+        }]
+      }
+    },
     express: {
       dev: {
         options: {
-          script: 'src/app.js',
+          script: 'dist/app.js',
           args: ['debug']
         }
       },
       prod: {
         options: {
-          script: 'src/app.js'
+          script: 'dist/app.js'
         }
       }
     },
@@ -140,7 +159,7 @@ module.exports = function(grunt) {
     autoprefixer: {
       dist: {
         files: {
-          'dist/style.css': 'temp/style.css'
+          'dist/frontend/style.css': 'temp/style.css'
         }
       }
     }
@@ -156,10 +175,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('serve', 'test', function() {
-    grunt.task.run('copy:libs', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
   });
 
   grunt.registerTask('debug', 'test', function() {
-    grunt.task.run('copy:libs', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
   });
 };

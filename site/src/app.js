@@ -66,7 +66,7 @@ var debug = process.argv[2] == 'debug',
           'AHdlAoGAXw5+xmEN+14ybhxdOUVySSulI55fj/G9xnP/qrXgQaQLYQBJk50eZObC',
           'xNwymY1WxKhiyQzr8Ym57dpmEsZUHwg8pGnfocue0cVpNANldHiz8PM0cwahq9vV',
           'JfKHtnrfhIY2QLgZ01lR5pGlZUzpEebMndOKE1aTQkW1i5TjZNQ=',
-          '-----END RSA PRIVATE KEY-----'].join('\n');
+          '-----END RSA PRIVATE KEY-----'].join('\n'),
 
   cert = ['-----BEGIN CERTIFICATE-----',
           'MIICpDCCAYwCCQCFcd+JJc4mTzANBgkqhkiG9w0BAQUFADAUMRIwEAYDVQQDDAls',
