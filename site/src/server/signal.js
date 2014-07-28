@@ -94,7 +94,7 @@ module.exports = io => {
 
     socket.rooms.removeByID(roomName);
 
-    room.forEach(eerSocket => peerSocket.emit('peer leave', socket.id));
+    room.forEach(peerSocket => peerSocket.emit('peer leave', socket.id));
 
     if (room.length() === 0) rooms.removeByID(roomName);
   }
