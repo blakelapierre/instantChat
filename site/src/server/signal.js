@@ -2,11 +2,13 @@
 var _ = require('lodash'),
     HashList = require('./hashList');
 
-module.exports = io => {
+module.exports = (log, io) => {
   var rooms = new HashList('_roomName'),
       sockets = new HashList('id');
 
   io.sockets.on('connection', socket => {
+    log('New socket');
+
     socket.emit('your_id', socket.id);
 
     socket.rooms = new HashList('_self');
@@ -51,7 +53,7 @@ module.exports = io => {
     socket.on('room leave', roomName => leaveRoom(socket, roomName));
 
     socket.on('disconnect', () => {
-      console.log('disconnect', socket.id);
+      log('disconnect', socket.id);
 
       socket.rooms.forEach(roomName => leaveRoom(socket, roomName));
 
@@ -78,15 +80,15 @@ module.exports = io => {
     room.push(socket);
 
     socket.rooms.push(roomName);
-    console.log('join', roomName, socket.id);
+    log('join', roomName, socket.id);
   }
 
   function leaveRoom(socket, roomName) {
-    console.log('leave', roomName, socket.id);
+    log('leave', roomName, socket.id);
     var room = rooms.getByID(roomName);
 
     if (room === null) {
-      console.log('Tried to leave non-existent room', roomName);
+      log('Tried to leave non-existent room', roomName);
       return;
     }
 

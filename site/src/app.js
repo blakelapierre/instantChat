@@ -2,7 +2,8 @@ var http = require('request'),
     fs = require('fs'),
     path = require('path'),
     server = require('./server/server'),
-    grunt = require('grunt');
+    grunt = require('grunt'),
+    traceur_runtime = require('traceur/bin/traceur-runtime');
 
     console.log(grunt.config);
 

@@ -1,8 +1,9 @@
 var _ = require('lodash');
 
-module.exports = (router, signalStats) => {
+module.exports = (log, router, signalStats) => {
   var roomList = signalStats.rooms.asList();
 
+  log('Mounting /rooms');
   router.get('/rooms', (req, res) => {
     res.json({
       rooms: _.map(roomList, room => {

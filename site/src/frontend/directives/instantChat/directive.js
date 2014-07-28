@@ -41,10 +41,10 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'logger', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
-      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, logger, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'log', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
+      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, log, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
 
-      logger.warn('!@#$!@#$!@#$', {test:true});
+      log.error('Testing error logging', {test: true});
 
       $window.addEventListener('click', toggleBars);
 

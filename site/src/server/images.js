@@ -1,7 +1,10 @@
-module.exports = (router, signalStats) => {
+module.exports = (log, router, signalStats) => {
   var sockets = signalStats.sockets;
 
+  log('Mounting post /images');
   router.post('/images', (req, res) => {
+    log('POST /images');
+
     var data = req.body,
         socket = sockets.getByID(data.id);
 
@@ -11,12 +14,16 @@ module.exports = (router, signalStats) => {
     res.json({success: true});
   });
 
+  log('Mounting get /images/:id');
   router.get('/images/:id', (req, res) => {
     var socket = sockets.getByID(req.params.id);
 
     if (socket) {
       res.json({data: socket.image});
+      return;
     }
+
+    log('Request for non-existant image');
     res.json({success: false});
   });
 };

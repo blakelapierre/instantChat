@@ -1,12 +1,14 @@
 var _ = require('lodash');
 
-module.exports = router => {
+module.exports = (log, router) => {
   var suggestions = [];
 
+  log('Mounting get /suggestions');
   router.get('/suggestions', (req, res) => {
     res.json({suggestions: suggestions});
   });
 
+  log('Mounting post /suggestions');
   router.post('/suggestions', (req, res) => {
     var text = req.body.text;
 
@@ -24,6 +26,7 @@ module.exports = router => {
     res.json({suggestion: suggestion});
   });
 
+  log('Mounting post /suggestions/:id');
   router.post('/suggestions/:id', (req, res) => {
     var id = parseInt(req.params.id),
         vote = req.body.vote,

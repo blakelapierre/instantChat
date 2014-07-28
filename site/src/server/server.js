@@ -6,8 +6,9 @@ module.exports = function(config, callback) {
       express = require('express'),
       bodyParser = require('body-parser'),
       io = require('socket.io'),
-      images = require('./images'),
       log = require('./log'),
+      clientLogger = require('./clientLogger'),
+      images = require('./images'),
       rooms = require('./rooms'),
       signal = require('./signal'),
       stats = require('./stats'),
@@ -27,24 +28,27 @@ module.exports = function(config, callback) {
       redirectServer = createRedirectServer(),
       webserver = https.createServer(sslOptions, app),
       socketIO = io(webserver),
-      signalStats = signal(socketIO),
+      signalStats = signal(log, socketIO),
       router = express.Router();
 
-  log(router);
-  images(router, signalStats);
-  rooms(router, signalStats);
-  stats(router);
-  suggestions(router);
+  clientLogger(log, router);
+  images(log, router, signalStats);
+  rooms(log, router, signalStats);
+  stats(log, router);
+  suggestions(log, router);
 
   app.use('/', router);
 
   webserver.listen(config.port);
   redirectServer.listen(config.httpPort);
 
+  log('Server up!');
+
   callback(webserver, redirectServer, signal);
 
   function createRedirectServer() {
     return http.createServer(function (req, res, next) {
+      log('Redirecting');
       res.writeHead(302, {
         'Location': 'https://' + req.headers.host + req.url
       });
