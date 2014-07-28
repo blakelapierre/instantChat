@@ -88,6 +88,15 @@ function createPeer(peerID, config, emit, fire) {
 +  Signalling
 */
 function connectToSignal(server) {
+  var signal = {
+    on: on,
+    off: off,
+    joinRoom: joinRoom,
+    leaveRoom: leaveRoom,
+    leaveRooms: leaveRooms,
+    currentRooms: rooms
+  };
+
   var socket = io(server);
 
   var emit = (event, data) => socket.emit(event, data);
@@ -100,6 +109,26 @@ function connectToSignal(server) {
           peersHash = {};
 
       signal.myID = myID;
+
+      _.each({
+
+        'peer join':    id => addPeer(id),
+        'peer leave':   id => removePeerByID(id),
+
+        'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
+
+        'peer offer': data => sendAnswer(data.peerID, data.offer),
+        'peer answer':data => receiveAnswer(data.peerID, data.answer),
+
+        'peer candidates': data => addIceCandidates(data.peerID, data.candidates)
+
+      }, (handler, name) => socket.on(name, function() {
+        handler.apply(this, arguments);
+        fire(name, ...arguments);
+      }));
+
+      signal.ready = true;
+      fire('ready', myID);
 
       function getPeer(id) {
         return peersHash[id];
@@ -160,26 +189,6 @@ function connectToSignal(server) {
             () =>    fire('peer candidates accepted', peer, candidates),
             error => fire('peer error candidates', peer, error, candidates));
       }
-
-      _.each({
-
-        'peer join':    id => addPeer(id),
-        'peer leave':   id => removePeerByID(id),
-
-        'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
-
-        'peer offer': data => sendAnswer(data.peerID, data.offer),
-        'peer answer':data => receiveAnswer(data.peerID, data.answer),
-
-        'peer candidates': data => addIceCandidates(data.peerID, data.candidates)
-
-      }, (handler, name) => socket.on(name, function() {
-        handler.apply(this, arguments);
-        fire(name, ...arguments);
-      }));
-
-      signal.ready = true;
-      fire('ready', myID);
     });
   });
 
@@ -198,15 +207,6 @@ function connectToSignal(server) {
   function leaveRooms() {
     _.each(rooms, leaveRoom);
   }
-
-  var signal = {
-    on: on,
-    off: off,
-    joinRoom: joinRoom,
-    leaveRoom: leaveRoom,
-    leaveRooms: leaveRooms,
-    currentRooms: rooms
-  };
 
   return signal;
 }

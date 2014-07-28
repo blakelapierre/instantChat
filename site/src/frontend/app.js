@@ -29,6 +29,8 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'ngEven
   .factory('instantChatChannelHandler',     require('./factories/rtc/instantChatChannelHandler/factory'))
   .factory('instantChatManager',            require('./factories/rtc/instantChatManager/factory'))
 
+  .factory('logger',                        require('./factories/logger/factory'))
+
   .factory('videoTools',            require('./factories/videoTools/factory'))
 
   .config(['$routeProvider', '$compileProvider', ($routeProvider, $compileProvider) => {

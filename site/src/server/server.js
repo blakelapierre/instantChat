@@ -7,6 +7,7 @@ module.exports = function(config, callback) {
       bodyParser = require('body-parser'),
       io = require('socket.io'),
       images = require('./images'),
+      log = require('./log'),
       rooms = require('./rooms'),
       signal = require('./signal'),
       stats = require('./stats'),
@@ -29,6 +30,7 @@ module.exports = function(config, callback) {
       signalStats = signal(socketIO),
       router = express.Router();
 
+  log(router);
   images(router, signalStats);
   rooms(router, signalStats);
   stats(router);

@@ -41,8 +41,10 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
-      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'logger', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
+      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, logger, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+
+      logger.warn('!@#$!@#$!@#$', {test:true});
 
       $window.addEventListener('click', toggleBars);
 
