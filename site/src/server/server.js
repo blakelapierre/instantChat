@@ -1,22 +1,17 @@
 module.exports = function(config, callback) {
-  var https = require('https'),
-      http = require('http'),
+  var _ = require('lodash'),
       path = require('path'),
+      http = require('http'),
+      https = require('https'),
       express = require('express'),
       bodyParser = require('body-parser'),
-      _ = require('lodash'),
       io = require('socket.io'),
+      images = require('./images'),
+      rooms = require('./rooms'),
       signal = require('./signal'),
+      stats = require('./stats'),
       suggestions = require('./suggestions'),
       app = express();
-
-  var redirectServer = http.createServer(function requireHTTPS(req, res, next) {
-    res.writeHead(302, {
-      'Location': 'https://' + req.headers.host + req.url
-    });
-    res.end();
-  });
-
 
   var serverRoot = config.serverRoot;
 
@@ -28,57 +23,15 @@ module.exports = function(config, callback) {
         key: config.key,
         cert: config.cert
       },
+      redirectServer = createRedirectServer(),
       webserver = https.createServer(sslOptions, app),
-      socketIO = io(webserver);
+      socketIO = io(webserver),
+      signalStats = signal(socketIO),
+      router = express.Router();
 
-  var signalStats = signal(socketIO);
-
-  var router = express.Router();
-
-  router.get('/stats', function(req, res) {
-    res.json({
-      sockets: signalStats.sockets.length(),
-      rooms: signalStats.rooms.length()
-    });
-  });
-
-  var roomList = signalStats.rooms.asList();
-  router.get('/rooms', function(req, res) {
-    res.json({
-      rooms: _.map(roomList, function(room) {
-        return {
-          name: room._roomName,
-          participants: _.map(room.asList(), function(socket) {
-            return {
-              id: socket.id,
-              image: socket.image
-            };
-          })
-        };
-      }) // horrible inefficient!
-    });
-  });
-
-  var sockets = signalStats.sockets;
-  router.post('/images', function(req, res) {
-    var data = req.body,
-        socket = sockets.getByID(data.id)
-
-    if (socket) {
-      socket.image = data.data;
-    }
-    res.json({success: true});
-  });
-
-  router.get('/images/:id', function(req, res) {
-    var socket = sockets.getByID(req.params.id);
-
-    if (socket) {
-      res.json({data: socket.image});
-    }
-    res.json({success: false});
-  });
-
+  images(router, signalStats);
+  rooms(router, signalStats);
+  stats(router);
   suggestions(router);
 
   app.use('/', router);
@@ -87,4 +40,13 @@ module.exports = function(config, callback) {
   redirectServer.listen(config.httpPort);
 
   callback(webserver, redirectServer, signal);
+
+  function createRedirectServer() {
+    return http.createServer(function (req, res, next) {
+      res.writeHead(302, {
+        'Location': 'https://' + req.headers.host + req.url
+      });
+      res.end();
+    });
+  }
 };
