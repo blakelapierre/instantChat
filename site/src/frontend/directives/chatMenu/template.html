@@ -13,7 +13,7 @@ ng-click="$event.stopPropagation()">
     <div class="menu-content" ng-click="collapse()">
       <div class="header">
         <div class="badge" ng-click="$event.stopPropagation()">
-          <span class="room-name">#{{currentRoom.name}}</span>
+          <div class="room-name">#{{currentRoom.name}}</div>
           <ng-pluralize
             class="participants-count"
             count="activeParticipants.length"
@@ -39,8 +39,6 @@ ng-click="$event.stopPropagation()">
         </div>
 
         <div class="menu-items">
-          <span class="invite">Invite Someone</span>
-
           <ul>
             <li ng-click="$event.stopPropagation()">
               <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
@@ -64,6 +62,8 @@ ng-click="$event.stopPropagation()">
               <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span></a>
             </li>
           </ul>
+
+          <span class="invite">Invite Someone</span>
         </div>
       </div>
 

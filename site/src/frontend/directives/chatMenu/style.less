@@ -135,16 +135,13 @@ chat-menu {
           width: 100%;
 
           .badge {
-            display: inline-block;
-
-            margin-top: 0.25em;
-
-            font-size: xx-large;
+            .room-name {
+              font-size: 3em;
+              line-height: 1em;
+            }
 
             .participants-count {
               display: block;
-
-              margin-top: 0.5em;
 
               font-size: x-small;
             }
@@ -163,7 +160,7 @@ chat-menu {
           overflow-x: hidden;
 
           div {
-            margin-top: 1em;
+            // margin-top: 1em;
           }
 
           .name-input {
@@ -228,9 +225,7 @@ chat-menu {
             .invite {
               display: block;
 
-              margin-bottom: 1em;
-
-              font-size: 1.1em;
+              font-size: 1.5em;
             }
 
             ul {
@@ -251,23 +246,21 @@ chat-menu {
                 a {
                   display: inline-block;
 
-                  padding: 1em;
-
                   text-decoration: none;
                   color: inherit;
 
                   .fa {
-                    font-size: xx-large;
+                    font-size: 3em;
                   }
                 }
 
                 &:hover {
                   text-shadow: 0px 0px 25px #fff;
                 }
-              }
 
-              li:not(:last-child) {
-                margin-bottom: 1.5em;
+                &:not(:last-child) {
+                  margin-right: 2em;
+                }
               }
             }
           }
