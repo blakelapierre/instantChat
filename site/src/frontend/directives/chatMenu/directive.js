@@ -5,10 +5,13 @@ module.exports = () => {
     restrict: 'E',
     template: require('./template.html'),
     scope: true,
-    controller: ['$rootScope', '$scope', 'localStorageService', ($rootScope, $scope, localStorageService) => {
+    controller: ['$rootScope', '$scope', 'config',
+    ($rootScope, $scope, config) => {
       $scope.havePermissionForFrontPage = true;
 
       $rootScope.test = () => console.log('worked');
+
+      $scope.participantName = config.name;
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',
@@ -40,8 +43,7 @@ module.exports = () => {
         },
 
         participantNameBlur() {
-          localStorageService.set('config', $scope.config);
-          // need to notify peers of new name
+          config.name = $scope.participantName;
         },
 
         triggerSettings() {

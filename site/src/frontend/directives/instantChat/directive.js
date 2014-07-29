@@ -41,8 +41,8 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'log', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
-      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, log, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'log', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'config',
+      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, log, rtc, localMedia, instantChatChannelHandler, instantChatManager, config) => {
 
       log.info('Entering instantChat controller');
 
@@ -65,11 +65,9 @@ module.exports = () => {
 
       var localParticipant = {
         isLocalParticipant: true,
-        config: getConfig(),
+        config: config,
         streams: []
       };
-
-      instantChatManager.setConfig(localParticipant, localParticipant.config);
 
       $scope.config = localParticipant.config;
       $scope.participants = [localParticipant];
@@ -135,12 +133,6 @@ module.exports = () => {
 
       $scope.currentRoom = {name: null};
       $scope.currentRooms = signal.currentRooms;
-
-      function getConfig() {
-        var config = localStorageService.get('config');
-
-        return config;
-      }
 
       function joinRoom() {
         log('joining room', $location.path());
@@ -298,14 +290,6 @@ module.exports = () => {
           id: localParticipant.id,
           data: imageData
         });
-      });
-
-      onRootScope('LocalStorageModule.notification.setitem', ($event, data) => {
-        switch (data.key) {
-          case 'config':
-            instantChatManager.setConfig(localParticipant, JSON.parse(data.newvalue));
-            break;
-        }
       });
 
       $scope.$on('$destroy', () => {

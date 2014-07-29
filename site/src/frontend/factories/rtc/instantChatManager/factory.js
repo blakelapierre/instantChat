@@ -1,17 +1,15 @@
-module.exports = ['$emit', ($emit) => {
-  var participants = [], config;
+var _ = require('lodash');
 
-  function setConfig(participant, c) {
-    console.log('!!setting config', c);
-    config = c;
-    _.each(participants, sendConfig);
-  }
+module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
+  var participants = [];
+
+  console.log(config);
+
+  config.on('$change', _.debounce(() => _.each(participants, p => sendConfig(p))));
 
   function sendConfig(participant) {
-    console.log('sending config', participant, config);
     sendMessage(participant, {
       type: 'config',
-      participantID: participant.id,
       config: config
     });
   }
@@ -70,18 +68,14 @@ module.exports = ['$emit', ($emit) => {
     if (!participant.isLocalParticipant) {
       var channel = participant.peer.channel('instantChat');
 
-      channel.on({
-        message: (channel, event) => {
-          console.log(channel, event);
-          var message = JSON.parse(event.data);
-          messageHandlers[message.type](channel.peer, message);
-        },
-        open: (channel, event) => {
-          sendConfig(participant);
-        }
+      channel.on('message', (channel, event) => {
+        console.log(channel, event);
+        var message = JSON.parse(event.data);
+        messageHandlers[message.type](channel.peer, message);
       });
 
       if (channel.channel.readyState == 'open') sendConfig(participant);
+      else channel.on('open', () => sendConfig(participant));
     }
   }
 
@@ -104,13 +98,12 @@ module.exports = ['$emit', ($emit) => {
           if (chatChannel) chatChannel.sendJSON(message);
       }
       catch (e) {
-        console.log('Chat send error', e, chatChannel, message);
+        log.error('Chat send error', e, chatChannel, message);
       }
     }
   }
 
   return {
-    setConfig: setConfig,
     addParticipant: addParticipant,
     removeParticipant: removeParticipant,
     sendToggleVoteUp: sendToggleVoteUp,

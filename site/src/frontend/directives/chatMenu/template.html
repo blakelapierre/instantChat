@@ -28,7 +28,7 @@ ng-click="$event.stopPropagation()">
           <input type="text"
                  placeholder="What's Your Name?"
                  focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
-                 ng-model="config.participantName"
+                 ng-model="participantName"
                  ng-click="$event.stopPropagation()"
                  ng-blur="participantNameBlur()">
         </div>

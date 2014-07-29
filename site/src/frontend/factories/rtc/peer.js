@@ -28,7 +28,7 @@ class Peer {
     this._localCandidates = [];
     this._remoteStreams = [];
     this._localStreams = [];
-    this._channels = [];
+    this._channels = {};
     this._events = {};
     this._connectionListeners = connectionListeners;
 
@@ -162,8 +162,11 @@ class Peer {
   }
 
   removeChannel(label) {
-    var removed = _.remove(this._channels, function(c) { return c.label === label; });
-    _.each(removed, channel => this.fire('channel removed', channel));
+    var channel = this._channels[label];
+    if (channel) {
+      delete this._channels[label];
+      this.fire('channel removed', channel);
+    }
   }
 
   addLocalStream(id, stream) {
@@ -188,7 +191,7 @@ class Peer {
   get isConnectingPeer() { return this._isConnectingPeer; }
   get log() { return this._log; }
 
-  channel(label) { return _.find(this._channels, {'label': label}); }
+  channel(label) { return this._channels[label]; }
   stream(id) { return _.find(this._remoteStreams, {'id': id}); }
 
   // Do we want to expose this?!
@@ -199,7 +202,7 @@ class Peer {
       'close': () => this.removeChannel(channel.label)
     });
 
-    this._channels.push(channel);
+    this._channels[channel.label] = channel;
 
     this.fire('channel added', channel);
 

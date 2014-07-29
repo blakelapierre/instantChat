@@ -21,6 +21,8 @@ module.exports = angular.module('instantChat', ['ngRoute', 'ngResource', 'ngEven
   .directive('focusOn',       require('./directives/util/focusOn/directive'))
   .directive('selectOnClick', require('./directives/util/selectOnClick/directive'))
 
+  .factory('config',          require('./factories/config/factory'))
+
   .factory('emitter',         require('./factories/emitter/factory'))
 
   .factory('localMedia',      require('./factories/localMedia/factory'))
