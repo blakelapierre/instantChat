@@ -6,51 +6,11 @@ import {Peer} from './peer';
 var _ = require('lodash'),
     io = require('socket.io');
 
-/*
-+  Event Handling
-*/
-var events = {};
-function on(event, listener) {
-  if (typeof event == 'object') {
-    for (var eventName in event) on(eventName, event[eventName]);
-    return;
-  }
-
-  events[event] = events[event] || [];
-  events[event].push(listener);
-}
-
-function off(event, listener) {
-  if (typeof event == 'object') {
-    for (var eventName in event) off(eventName, event[eventName]);
-    return;
-  }
-
-  var listeners = events[event];
-  if (listeners && listeners.length > 0) {
-    for (var i = listeners.length - 1; i >= 0; i--) {
-      if (listeners[i] === listener) {
-        listeners.splice(i, 1);
-      }
-    }
-    if (listeners.length === 0) delete events[event];
-  }
-}
-
-function fire(event) {
-  var listeners = events[event] || [],
-      args = Array.prototype.slice.call(arguments, 1);
-
-  for (var i = 0; i < listeners.length; i++) {
-    listeners[i].apply(null, args);
-  }
-}
-/*
--  Event Handling
-*/
-
-module.exports = ['log', (log) => {
+module.exports = ['log', 'emitter', (log, emitter) => {
   var signal;
+
+  var {emit: fire, on, off} = emitter();
+
   return {
     connectToSignal: (server, listeners) => {
       if (signal === undefined) signal = connectToSignal(server);
