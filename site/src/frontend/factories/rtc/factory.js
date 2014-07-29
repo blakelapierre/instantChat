@@ -49,62 +49,47 @@ function fire(event) {
 -  Event Handling
 */
 
-function createPeer(peerID, config, emit, fire) {
-  var candidates = [];
+module.exports = ['log', (log) => {
+  var signal;
+  return {
+    connectToSignal: (server, listeners) => {
+      if (signal === undefined) signal = connectToSignal(server);
 
-  var peer = new Peer(peerID, config, {
-    'offerReady': offer => {
-      emit('peer offer', {peerID, offer});
-      fire('peer send offer', peer, offer);
+      signal.on(listeners);
+
+      if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
+
+      return signal;
     },
-
-    ice_candidate: event => {
-      var candidate = event.candidate;
-
-      if (candidate) {
-        candidates.push(candidate);
-        emitIceCandidates();
-        fire('peer ice_candidate', peer, candidate);
-      }
-    },
-
-    // Do we want to be passing the raw event here?
-    add_stream:                   event => fire('peer add_stream', peer, event),
-    remove_stream:                event => fire('peer remove_stream', peer, event),
-    data_channel:                 event => fire('peer data_channel connected', peer, event.channel),
-    signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
-    ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
-  });
-
-  var emitIceCandidates = _.throttle(() => {
-    emit('peer candidates', {peerID, candidates});
-    candidates.splice(0);
-  }, 250);
-
-  return peer;
-}
-
-/*
-+  Signalling
-*/
-function connectToSignal(server) {
-  var signal = {
-    on: on,
-    off: off,
-    joinRoom: joinRoom,
-    leaveRoom: leaveRoom,
-    leaveRooms: leaveRooms,
-    currentRooms: rooms
+    existingSignal: () => signal
   };
 
-  var socket = io(server);
+    /*
+  +  Signalling
+  */
+  function connectToSignal(server) {
+    var signal = {
+      on: on,
+      off: off,
+      joinRoom: joinRoom,
+      leaveRoom: leaveRoom,
+      leaveRooms: leaveRooms,
+      currentRooms: rooms
+    };
 
-  var emit = (event, data) => socket.emit(event, data);
+    var socket = io(server);
 
-  socket.on('error', () => console.log('error', arguments));
+    var emit = (event, data) => socket.emit(event, data);
 
-  socket.on('connect', () => {
+    socket.on('error', (...args) => log.error('Failed to connect socket.io', ...args));
+
+    socket.on('connect', () => {
+      log.info('Connected to server');
+    });
+
     socket.on('your_id', myID => {
+      log('Got ID', myID);
+
       var peers = [],
           peersHash = {};
 
@@ -190,43 +175,61 @@ function connectToSignal(server) {
             error => fire('peer error candidates', peer, error, candidates));
       }
     });
-  });
 
-  var rooms = [];
+    var rooms = [];
 
-  function joinRoom(roomName) {
-    rooms.push(roomName);
-    emit('room join', roomName);
+    function joinRoom(roomName) {
+      rooms.push(roomName);
+      emit('room join', roomName);
+    }
+
+    function leaveRoom(roomName) {
+      _.remove(rooms, roomName);
+      emit('room leave', roomName);
+    }
+
+    function leaveRooms() {
+      _.each(rooms, leaveRoom);
+    }
+
+    return signal;
   }
+  /*
+  -  Signalling
+  */
 
-  function leaveRoom(roomName) {
-    _.remove(rooms, roomName);
-    emit('room leave', roomName);
+  function createPeer(peerID, config, emit, fire) {
+    var candidates = [];
+
+    var peer = new Peer(peerID, config, {
+      'offerReady': offer => {
+        emit('peer offer', {peerID, offer});
+        fire('peer send offer', peer, offer);
+      },
+
+      ice_candidate: event => {
+        var candidate = event.candidate;
+
+        if (candidate) {
+          candidates.push(candidate);
+          emitIceCandidates();
+          fire('peer ice_candidate', peer, candidate);
+        }
+      },
+
+      // Do we want to be passing the raw event here?
+      add_stream:                   event => fire('peer add_stream', peer, event),
+      remove_stream:                event => fire('peer remove_stream', peer, event),
+      data_channel:                 event => fire('peer data_channel connected', peer, event.channel),
+      signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
+      ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
+    });
+
+    var emitIceCandidates = _.throttle(() => {
+      emit('peer candidates', {peerID, candidates});
+      candidates.splice(0);
+    }, 250);
+
+    return peer;
   }
-
-  function leaveRooms() {
-    _.each(rooms, leaveRoom);
-  }
-
-  return signal;
-}
-/*
--  Signalling
-*/
-
-module.exports = () => {
-  var signal;
-
-  return {
-    connectToSignal: (server, listeners) => {
-      if (signal === undefined) signal = connectToSignal(server);
-
-      signal.on(listeners);
-
-      if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
-
-      return signal;
-    },
-    existingSignal: () => signal
-  };
-};
+}];

@@ -2,7 +2,7 @@
 var _ = require('lodash'),
     HashList = require('./hashList');
 
-module.exports = (log, io) => {
+module.exports = ['log', 'io', (log, io) => {
   var rooms = new HashList('_roomName'),
       sockets = new HashList('id');
 
@@ -105,4 +105,4 @@ module.exports = (log, io) => {
     rooms: rooms,
     sockets: sockets
   };
-};
+}];

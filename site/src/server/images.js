@@ -3,8 +3,6 @@ module.exports = (log, router, signalStats) => {
 
   log('Mounting post /images');
   router.post('/images', (req, res) => {
-    log('POST /images');
-
     var data = req.body,
         socket = sockets.getByID(data.id);
 

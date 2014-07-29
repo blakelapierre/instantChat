@@ -5,7 +5,7 @@ module.exports = () => {
     restrict: 'E',
     template: require('./template.html'),
     link: ($scope, element, attributes) => {
-      $scope.videoLoaded = event => console.log(event);
+      $scope.videoLoaded = event => log(event);
 
       $scope.toggleFullscreen = () => {
         if (isFullscreen()) exitFullscreen();
@@ -44,7 +44,7 @@ module.exports = () => {
       ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'log', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'localStorageService',
       ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, log, rtc, localMedia, instantChatChannelHandler, instantChatManager, localStorageService) => {
 
-      log.error('Testing error logging', {test: true});
+      log.info('Entering instantChat controller');
 
       $window.addEventListener('click', toggleBars);
 
@@ -111,24 +111,24 @@ module.exports = () => {
         'peer added':   addPeer,
         'peer removed': removePeer,
 
-        // 'peer ice_candidate': () => console.log('ICE Candidate Received'),
-        'peer receive offer':  () => console.log('Offer Received'),
-        'peer receive answer': () => console.log('Answer Received'),
+        // 'peer ice_candidate': () => log('ICE Candidate Received'),
+        'peer receive offer':  () => log('Offer Received'),
+        'peer receive answer': () => log('Answer Received'),
 
-        'peer send answer':    () => console.log('Answer Sent'),
+        'peer send answer':    () => log('Answer Sent'),
 
-        'peer signaling_state_change':      peer => console.log('Signaling: ' + peer.connection.signalingState),
-        'peer ice_connection_state_change': peer => console.log(      'ICE: ' + peer.connection.iceConnectionState),
+        'peer signaling_state_change':      peer => log('Signaling: ' + peer.connection.signalingState),
+        'peer ice_connection_state_change': peer => log(      'ICE: ' + peer.connection.iceConnectionState),
 
-        //'peer ice_candidate accepted': (peer, candidate) => console.log('candidate accepted', peer, candidate),
+        //'peer ice_candidate accepted': (peer, candidate) => log('candidate accepted', peer, candidate),
 
-        'peer error set_local_description':  (peer, error, offer) => console.log('peer error set_local_description', peer, error, offer),
-        'peer error set_remote_description': (peer, error, offer) => console.log('peer error set_remote_description', peer, error, offer),
+        'peer error set_local_description':  (peer, error, offer) => log.error('peer error set_local_description', peer, error, offer),
+        'peer error set_remote_description': (peer, error, offer) => log.error('peer error set_remote_description', peer, error, offer),
 
-        'peer error create offer': (peer, error)        => console.log('peer error create offer', peer, error),
-        'peer error send answer':  (peer, error, offer) => console.log('peer error send answer', peer, error, offer),
+        'peer error create offer': (peer, error)        => log.error('peer error create offer', peer, error),
+        'peer error send answer':  (peer, error, offer) => log.error('peer error send answer', peer, error, offer),
 
-        'peer error ice_candidate': (peer, error, candidate) => console.log('peer error ice_candidate', peer, error, candidate)
+        'peer error ice_candidate': (peer, error, candidate) => log.error('peer error ice_candidate', peer, error, candidate)
       };
 
       var signal = rtc.connectToSignal('https://' + $location.host(), signalListeners);
@@ -143,7 +143,7 @@ module.exports = () => {
       }
 
       function joinRoom() {
-        console.log('joining room', $location.path());
+        log('joining room', $location.path());
         signal.leaveRooms();
 
         var room = $location.path().replace(/^\//, '');
@@ -189,11 +189,11 @@ module.exports = () => {
                       addActiveParticipant(participant);
                       $scope.$apply();
                     },
-                    error => console.log(error));
+                    error => log.error(error));
               }
               $scope.$apply();
             },
-            error => console.log('*** Error getting local media stream', error));
+            error => log.error('*** Error getting local media stream', error));
 
 
         if (!peer.config.isExistingPeer) {
@@ -229,7 +229,7 @@ module.exports = () => {
         var participant = _.find($scope.participants, {peer: peer, isLocalParticipant: undefined});
 
         if (participant) {
-          console.log('removing', participant);
+          log('removing', participant);
           var index = $scope.participants.indexOf(participant);
 
           if (index != -1) {
@@ -249,14 +249,14 @@ module.exports = () => {
       }
 
       $scope.$watchCollection('config', _.debounce(config => {
-        console.log(config);
+        log(config);
       }, 500));
 
       //onRootScope('$locationChangeSuccess', joinRoom);
 
       onRootScope('error', ($event, message, error) => {
         $scope.errorMessage = message;
-        console.log('Global Error', message, error);
+        log.error('Global Error', message, error);
         $scope.$apply(); // is this necessary?
       });
 
@@ -285,7 +285,6 @@ module.exports = () => {
       });
 
       onRootScope('participant config', ($event, data) => {
-        console.log(data);
         var from = data.from,
             config = data.config;
 
@@ -310,7 +309,6 @@ module.exports = () => {
       });
 
       $scope.$on('$destroy', () => {
-        console.log('unreging', rootScopeCleanup);
         signal.leaveRooms();
         signal.off(signalListeners);
         _.each(rootScopeCleanup, fn => fn());
