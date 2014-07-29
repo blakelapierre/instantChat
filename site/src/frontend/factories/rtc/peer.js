@@ -91,7 +91,7 @@ class Peer {
         .then(offer => this.fire('offerReady', offer))
         .catch(error => {
           console.log(error);
-          this.fire('offer error')
+          this.fire('offer error');
         });
     });
   }
