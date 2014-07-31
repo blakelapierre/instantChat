@@ -1,7 +1,5 @@
-<div ng-class="{'menu-container': true, 'collapsed': isCollapsed, 'expanded': !isCollapsed}"
-ng-click="$event.stopPropagation()">
 
-  <div ng-class="{'expanded-view': true,
+  <div ng-class="{'menu-container': true,
                   'settings-visible': settingsVisible,
                   'feedback-visible': feedbackVisible,
                   'rooms-visible': roomsVisible}"
@@ -84,13 +82,3 @@ ng-click="$event.stopPropagation()">
     <feedback ng-if="feedbackVisible"></feedback>
     <room-list ng-if="roomsVisible"</room-list>
   </div>
-
-
-  <div class="collapsed-view" ng-click="expand()">
-    <div class="overlay"></div>
-    <div class="glyph-table">
-      <span class="glyph fa fa-bars"></span>
-    </div>
-  </div>
-
-</div>

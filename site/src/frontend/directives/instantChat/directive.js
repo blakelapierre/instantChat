@@ -29,6 +29,7 @@ module.exports = () => {
         else if (document.msExitFullscreen) document.msExitFullscreen();
         else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        updateFullscreenMessage();
       }
 
       function enterFullscreen() {
@@ -36,6 +37,7 @@ module.exports = () => {
         else if (document.documentElement.msRequestFullscreen) document.documentElement.msRequestFullscreen();
         else if (document.documentElement.mozRequestFullScreen) document.documentElement.mozRequestFullScreen();
         else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        updateFullscreenMessage();
       }
 
       updateFullscreenMessage();
@@ -46,11 +48,27 @@ module.exports = () => {
 
       log.info('Entering instantChat controller');
 
-      $window.addEventListener('click', toggleBars);
-
-      function toggleBars() {
-        $scope.hideBars = !$scope.hideBars;
+      $window.addEventListener('click', () => {
+        toggleBars();
         $scope.$apply();
+      });
+
+      $scope.menuIsCollapsed = false;
+      $scope.hideBars = true;
+
+      $scope.expandMenu = () => {
+        $scope.menuIsCollapsed = false;
+        toggleBars(true);
+      };
+
+      $scope.collapseMenu = () => {
+        $scope.menuIsCollapsed = true;
+        toggleBars(false);
+      };
+
+      function toggleBars(hide) {
+        console.log('toggling', hide);
+        $scope.hideBars = hide != null ? hide === true : !$scope.hideBars;
 
         $scope.resizing = $$rAF(broadcastResize);
         $timeout(() => $scope.resizing(), 1000);

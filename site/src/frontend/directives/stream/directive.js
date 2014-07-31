@@ -32,37 +32,36 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       }
 
       function refreshSize() {
-          var videoWidth = video.videoWidth,
-              videoHeight = video.videoHeight,
-              videoRatio = (videoWidth / videoHeight) || (4 / 3),
-              cellWidth = cell.clientWidth,
-              cellHeight = cell.clientHeight,
-              cellRatio = cellWidth / cellHeight;
+        var videoWidth = video.videoWidth,
+            videoHeight = video.videoHeight,
+            videoRatio = (videoWidth / videoHeight) || (4 / 3),
+            cellWidth = cell.clientWidth,
+            cellHeight = cell.clientHeight,
+            cellRatio = cellWidth / cellHeight;
 
-          var videoSurfaceWidth, videoSurfaceHeight;
+        var videoSurfaceWidth, videoSurfaceHeight;
 
-          if (cellRatio > videoRatio) {
-            videoSurfaceWidth = cellHeight * videoRatio;
-            videoSurfaceHeight = cellHeight;
-          }
-          else {
-            videoSurfaceWidth = cellWidth;
-            videoSurfaceHeight = cellWidth / videoRatio;
-          }
+        if (cellRatio > videoRatio) {
+          videoSurfaceWidth = cellHeight * videoRatio;
+          videoSurfaceHeight = cellHeight;
+        }
+        else {
+          videoSurfaceWidth = cellWidth;
+          videoSurfaceHeight = cellWidth / videoRatio;
+        }
 
-          $scope.videoSurfaceTop = (cellHeight - videoSurfaceHeight) / 2;
-          $scope.videoSurfaceLeft = (cellWidth - videoSurfaceWidth) / 2;
-          $scope.videoSurfaceBottom = $scope.videoSurfaceTop; // CSS Bottom is inverted
-          $scope.videoSurfaceRight = cellWidth - $scope.videoSurfaceLeft;
+        $scope.videoSurfaceTop = (cellHeight - videoSurfaceHeight) / 2;
+        $scope.videoSurfaceLeft = (cellWidth - videoSurfaceWidth) / 2;
+        $scope.videoSurfaceBottom = $scope.videoSurfaceTop; // CSS Bottom is inverted
+        $scope.videoSurfaceRight = cellWidth - $scope.videoSurfaceLeft;
 
-          $scope.videoSurfaceWidth = videoSurfaceWidth;
-          $scope.videoSurfaceHeight = videoSurfaceHeight;
+        $scope.videoSurfaceWidth = videoSurfaceWidth;
+        $scope.videoSurfaceHeight = videoSurfaceHeight;
 
-          video.videoSurfaceWidth = videoSurfaceWidth;
-          video.videoSurfaceHeight = videoSurfaceHeight;
+        video.videoSurfaceWidth = videoSurfaceWidth;
+        video.videoSurfaceHeight = videoSurfaceHeight;
 
-          $scope.$apply();
-
+        $scope.$digest();
       }
 
       video.addEventListener('playing', () => {

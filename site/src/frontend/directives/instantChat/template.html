@@ -1,5 +1,5 @@
 <div ng-class="{'hide-bars':hideBars}">
-  <div class="top-bar">
+  <div class="top-bar" ng-click="$event.stopPropagation()">
     <div class="full-screen" ng-click="toggleFullscreen()">
       <span class="fa fa-arrows-alt"></span> <span>{{fullscreenMessage}}</span>
     </div>
@@ -14,7 +14,14 @@
 
     </div>
   </div>
-  <div class="bottom-bar">
-    <chat-menu config="config" current-room="currentRoom"></chat-menu>
+  <div class="bottom-bar" ng-click="$event.stopPropagation()">
+    <div class="tool add-camera">
+      <span class="plus">+</span><span class="fa fa-video-camera"></span>
+    </div>
+    <div ng-class="{'tool': true, 'show-menu': true, 'is-active': !menuIsCollapsed}">
+      <span class="fa fa-bars" ng-click="expandMenu()"></span>
+    </div>
   </div>
 </div>
+
+<chat-menu ng-class="{'collapsed': menuIsCollapsed, 'expanded': !menuIsCollapsed}" config="config" current-room="currentRoom" ng-click="$event.stopPropagation()"></chat-menu>

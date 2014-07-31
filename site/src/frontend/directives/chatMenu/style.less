@@ -81,471 +81,408 @@
 @opacity: 0.85;
 
 chat-menu {
+  position: fixed;
+
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+
+  width: 30em;
+  max-width: 100%;
+
+  height: 100%;
+
+  transform: scale(1);
+
   .menu-container {
-    .expanded-view {
-      position: fixed;
+    width: 100%;
+    height: 100%;
 
-      top: 0%;
-      right: 0%;
-      bottom: 0%;
-
-      width: 30em;
-      max-width: 100%;
-
+    .overlay {
+      width: 100%;
       height: 100%;
 
-      transform: scale(1);
+      background-color: #333;
 
-      transition: bottom @collapseDuration ease, right @collapseDuration ease, transform @collapseDuration ease-out, width 0.5s ease;
+      opacity: 0.85;
 
-      .overlay {
-        width: 100%;
-        height: 100%;
+      box-shadow: -5px 0px 10px #333;
 
-        background-color: #333;
-
-        opacity: 0.85;
-
-        box-shadow: -5px 0px 10px #333;
-
-        transition: background-color @collapseDuration ease, opacity @collapseDuration ease;
-      }
-
-      .menu-content {
-        position: absolute;
-
-        right: 0%;
-        top: 0%;
-
-        width: 100%;
-        height: 100%;
-
-        text-align: center;
-
-        color: #fff;
-        text-shadow: 0px 0px 5px #aaa;
-
-        overflow-x: hidden;
-        overflow-y: hidden;
-
-        transition: width 0.5s ease, left 0.5s ease, right 0.5s ease;
-
-        .header {
-          height: 4em;
-          width: 100%;
-
-          .badge {
-            .room-name {
-              font-size: 3em;
-              line-height: 1em;
-            }
-
-            .participants-count {
-              display: block;
-
-              font-size: x-small;
-            }
-          }
-        }
-
-        .body {
-          position: absolute;
-
-          top: 4em;
-          bottom: 4em;
-
-          width: 100%;
-
-          overflow-y: auto;
-          overflow-x: hidden;
-
-          div {
-            // margin-top: 1em;
-          }
-
-          .name-input {
-            width: 100%;
-
-            input {
-              width: 100%;
-
-              text-align: center;
-
-              font-size: 1em;
-
-              color: #fff;
-              text-shadow: 0px 0px 5px #333;
-
-              background: transparent;
-              border: none;
-
-              .placeholder({
-                color: #dff;
-              });
-            }
-          }
-
-          .thumbnail-container {
-            width: 100%;
-
-            .local-thumbnail {
-              display: block;
-              width: auto;
-              height: 5em;
-
-              margin: 0 auto 0.5em auto;
-            }
-
-            .permission {
-              display: block;
-
-              font-size: xx-small;
-
-              color: #4a4;
-              text-shadow: 0px 0px 5px #060;
-
-              input, span {
-                vertical-align: middle;
-              }
-
-              .front-page,
-              .front-page:visited {
-                color: #09f;
-                font-weight: bolder;
-                text-shadow: 0px 0px 5px #036;
-              }
-            }
-          }
-
-          .menu-items {
-            margin-top: 2em;
-
-            text-align: center;
-
-            .invite {
-              display: block;
-
-              font-size: 1.5em;
-            }
-
-            ul {
-              margin: 0 auto;
-              padding: 0;
-
-              width: inherit;
-
-              list-style: none;
-
-              li {
-                display: inline-block;
-
-                font-size: medium;
-
-                cursor: pointer;
-
-                a {
-                  display: inline-block;
-
-                  text-decoration: none;
-                  color: inherit;
-
-                  .fa {
-                    font-size: 3em;
-                  }
-                }
-
-                &:hover {
-                  text-shadow: 0px 0px 25px #fff;
-                }
-
-                &:not(:last-child) {
-                  margin-right: 2em;
-                }
-              }
-            }
-          }
-        }
-
-        .footer {
-          position: absolute;
-
-          bottom: 0%;
-
-          height: 4em;
-          width: 100%;
-
-          .trigger {
-            position: absolute;
-
-            height: 100%;
-
-            font-size: 3em;
-
-            vertical-align: middle;
-
-            cursor: pointer;
-
-            span {
-              vertical-align: middle;
-            }
-
-            &.settings-trigger {
-              left: 0%;
-              right: 66.66%;
-
-              padding-left: 1em;
-
-              text-align: left;
-
-              color: #db0;
-              text-shadow: 0px 0px 5px #db0;
-
-              &:hover {
-                text-shadow: 0px 0px 25px #db0;
-              }
-            }
-
-            &.feedback-trigger {
-              left: 33.33%;
-              right: 33.33%;
-
-              text-align: center;
-
-              color: #0fb;
-              text-shadow: 0px 0px 5px #0fb;
-
-              &:hover {
-                text-shadow: 0px 0px 25px #0fb;
-              }
-            }
-
-            &.rooms-trigger {
-              left: 66.66%;
-              right: 0%;
-
-              padding-right: 1em;
-
-              text-align: right;
-
-              color: #0bf;
-              text-shadow: 0px 0px 5px #0bf;
-
-              &:hover {
-                text-shadow: 0px 0px 25px #0bf;
-              }
-            }
-          }
-        }
-      }
-
-      settings {
-        position: absolute;
-        top: 0%;
-        left: 0%;
-
-        width: 0%;
-        height: 0%;
-
-        overflow-x: hidden;
-        overflow-y: auto;
-
-        transition: width 2.5s ease, height 2.5s ease;
-      }
-
-      &.settings-visible {
-        width: 100%;
-
-        .menu-content {
-          width: 40%;
-        }
-
-        settings {
-          width: 60%;
-          height: 100%;
-        }
-      }
-
-      feedback {
-        position: absolute;
-        top: 0%;
-        left: 0%;
-
-        width: 0%;
-        height: 0%;
-
-        overflow-x: hidden;
-        overflow-y: auto;
-
-        transition: width 2.5s ease, height 2.5s ease;
-      }
-
-      &.feedback-visible {
-        width: 100%;
-
-        .menu-content {
-          width: 40%;
-        }
-
-        feedback {
-          width: 50%;
-          height: 100%;
-        }
-      }
-
-      room-list {
-        display: block;
-
-        position: absolute;
-        top: 0%;
-        right: 0%;
-
-        width: 0%;
-        height: 0%;
-
-        overflow-x: hidden;
-        overflow-y: auto;
-
-        transition: width: 0.5s ease, height 0.5s ease;
-      }
-
-      &.rooms-visible {
-        width: 100%;
-
-        .menu-content {
-          right: 60%;
-
-          width: 40%;
-        }
-
-        room-list {
-          width: 60%;
-          height: 100%;
-        }
-      }
+      transition: background-color @collapseDuration ease, opacity @collapseDuration ease;
     }
 
-    &.collapsed .expanded-view {
-      right: -100%;
-      bottom: -100%;
-      transform: scale(0);
-
-      .overlay {
-        background-color: #bddfff;
-        opacity: 0;
-      }
-    }
-
-    &.expanded .expanded-view {
-      @highlightDuration: 1.5s;
-      @initialDelay: 1.5s;
-      @delayDuration: 0.75s;
-      .fa-envelope {
-        animation: envelopeColor @highlightDuration @initialDelay ease;
-
-        &:hover {
-          color: @envelopeColor;
-        }
-      }
-
-      .fa-mobile {
-        animation: mobileColor @highlightDuration (@initialDelay + 1 * @delayDuration) ease;
-
-        &:hover {
-          color: @mobileColor;
-        }
-      }
-
-      .fa-twitter {
-        animation: twitterColor @highlightDuration (@initialDelay + 2 * @delayDuration) ease;
-
-        &:hover {
-          color: @twitterColor;
-        }
-      }
-
-      .fa-facebook {
-        animation: facebookColor @highlightDuration (@initialDelay + 3 * @delayDuration) ease;
-
-        &:hover {
-          color: @facebookColor;
-        }
-      }
-
-      .fa-google-plus {
-        animation: gplusColor @highlightDuration (@initialDelay + 4 * @delayDuration) ease;
-
-        &:hover {
-          color: @gplusColor;
-        }
-      }
-    }
-
-    @collapsedBackgroundColor: #999;
-
-    .collapsed-view {
+    .menu-content {
       position: absolute;
 
       right: 0%;
-      bottom: 0%;
+      top: 0%;
 
-      height: 0%;
-      width: 0%;
-
-      margin-right: 0.2em;
+      width: 100%;
+      height: 100%;
 
       text-align: center;
 
       color: #fff;
+      text-shadow: 0px 0px 5px #aaa;
 
-      cursor: pointer;
+      overflow-x: hidden;
+      overflow-y: hidden;
 
-      transition: width @collapseDuration ease, height @collapseDuration ease, text-shadow 2s ease;
+      transition: width 0.5s ease, left 0.5s ease, right 0.5s ease;
 
-      .overlay {
+      .header {
+        height: 4em;
         width: 100%;
-        height: 100%;
+
+        .badge {
+          .room-name {
+            font-size: 3em;
+            line-height: 1em;
+          }
+
+          .participants-count {
+            display: block;
+
+            font-size: x-small;
+          }
+        }
       }
 
-      .glyph-table {
+      .body {
         position: absolute;
 
-        top: 0%;
-        left: 0%;
+        top: 4em;
+        bottom: 4em;
 
         width: 100%;
-        height: 100%;
 
-        display: table;
+        overflow-y: auto;
+        overflow-x: hidden;
 
-        .glyph {
-          display: table-cell;
+        div {
+          // margin-top: 1em;
+        }
+
+        .name-input {
+          width: 100%;
+
+          input {
+            width: 100%;
+
+            text-align: center;
+
+            font-size: 1em;
+
+            color: #fff;
+            text-shadow: 0px 0px 5px #333;
+
+            background: transparent;
+            border: none;
+
+            .placeholder({
+              color: #dff;
+            });
+          }
+        }
+
+        .thumbnail-container {
+          width: 100%;
+
+          .local-thumbnail {
+            display: block;
+            width: auto;
+            height: 5em;
+
+            margin: 0 auto 0.5em auto;
+          }
+
+          .permission {
+            display: block;
+
+            font-size: xx-small;
+
+            color: #4a4;
+            text-shadow: 0px 0px 5px #060;
+
+            input, span {
+              vertical-align: middle;
+            }
+
+            .front-page,
+            .front-page:visited {
+              color: #09f;
+              font-weight: bolder;
+              text-shadow: 0px 0px 5px #036;
+            }
+          }
+        }
+
+        .menu-items {
+          margin-top: 2em;
+
+          text-align: center;
+
+          .invite {
+            display: block;
+
+            font-size: 1.5em;
+          }
+
+          ul {
+            margin: 0 auto;
+            padding: 0;
+
+            width: inherit;
+
+            list-style: none;
+
+            li {
+              display: inline-block;
+
+              font-size: medium;
+
+              cursor: pointer;
+
+              a {
+                display: inline-block;
+
+                text-decoration: none;
+                color: inherit;
+
+                .fa {
+                  font-size: 3em;
+                }
+              }
+
+              &:hover {
+                text-shadow: 0px 0px 25px #fff;
+              }
+
+              &:not(:last-child) {
+                margin-right: 2em;
+              }
+            }
+          }
+        }
+      }
+
+      .footer {
+        position: absolute;
+
+        bottom: 0%;
+
+        height: 4em;
+        width: 100%;
+
+        .trigger {
+          position: absolute;
+
+          height: 100%;
+
+          font-size: 3em;
+
           vertical-align: middle;
 
-          font-size: 2em;
+          cursor: pointer;
+
+          span {
+            vertical-align: middle;
+          }
+
+          &.settings-trigger {
+            left: 0%;
+            right: 66.66%;
+
+            padding-left: 1em;
+
+            text-align: left;
+
+            color: #db0;
+            text-shadow: 0px 0px 5px #db0;
+
+            &:hover {
+              text-shadow: 0px 0px 25px #db0;
+            }
+          }
+
+          &.feedback-trigger {
+            left: 33.33%;
+            right: 33.33%;
+
+            text-align: center;
+
+            color: #0fb;
+            text-shadow: 0px 0px 5px #0fb;
+
+            &:hover {
+              text-shadow: 0px 0px 25px #0fb;
+            }
+          }
+
+          &.rooms-trigger {
+            left: 66.66%;
+            right: 0%;
+
+            padding-right: 1em;
+
+            text-align: right;
+
+            color: #0bf;
+            text-shadow: 0px 0px 5px #0bf;
+
+            &:hover {
+              text-shadow: 0px 0px 25px #0bf;
+            }
+          }
         }
       }
     }
 
-    &.collapsed .collapsed-view {
-      height: 2em;
-      width: 2em;
+    settings {
+      position: absolute;
+      top: 0%;
+      left: 0%;
 
-      text-shadow: none;
+      width: 0%;
+      height: 0%;
 
-      .overlay {
-        background-color: transparent;
-        opacity: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      transition: width 2.5s ease, height 2.5s ease;
+    }
+
+    &.settings-visible {
+      width: 100%;
+
+      .menu-content {
+        width: 40%;
       }
 
-      &:hover {
-        text-shadow: 0px 0px 20px #fff;
-
-        transition: none;
+      settings {
+        width: 60%;
+        height: 100%;
       }
     }
 
-    &.expanded .collapsed-view {
-      text-shadow: 0px 0px 20px #fff;
+    feedback {
+      position: absolute;
+      top: 0%;
+      left: 0%;
+
+      width: 0%;
+      height: 0%;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      transition: width 2.5s ease, height 2.5s ease;
+    }
+
+    &.feedback-visible {
+      width: 100%;
+
+      .menu-content {
+        width: 40%;
+      }
+
+      feedback {
+        width: 50%;
+        height: 100%;
+      }
+    }
+
+    room-list {
+      display: block;
+
+      position: absolute;
+      top: 0%;
+      right: 0%;
+
+      width: 0%;
+      height: 0%;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      transition: width: 0.5s ease, height 0.5s ease;
+    }
+
+    &.rooms-visible {
+      width: 100%;
+
+      .menu-content {
+        right: 60%;
+
+        width: 40%;
+      }
+
+      room-list {
+        width: 60%;
+        height: 100%;
+      }
+    }
+  }
+
+
+  transition: top @collapseDuration ease, left @collapseDuration ease, bottom @collapseDuration ease, right @collapseDuration ease, transform @collapseDuration ease-out, width 0.5s ease;
+
+  &.expanded {
+
+    .menu-items {
+      ul {
+        li {
+          .fa {transition: transform 1s ease;}
+
+          &.activated {
+            .fa {
+              transform: rotateY(720deg);
+            }
+          }
+
+          &:hover {
+            .fa-envelope { color: @envelopeColor; }
+            .fa-mobile { color: @mobileColor; }
+            .fa-twitter { color: @twitterColor; }
+            .fa-facebook { color: @facebookColor; }
+            .fa-google-plus { color: @gplusColor; }
+          }
+
+          @highlightDuration: 1.5s;
+          @initialDelay: 1.5s;
+          @delayDuration: 0.75s;
+          .fa-envelope {
+            animation: envelopeColor @highlightDuration @initialDelay ease;
+          }
+
+          .fa-mobile {
+            animation: mobileColor @highlightDuration (@initialDelay + 1 * @delayDuration) ease;
+          }
+
+          .fa-twitter {
+            animation: twitterColor @highlightDuration (@initialDelay + 2 * @delayDuration) ease;
+          }
+
+          .fa-facebook {
+            animation: facebookColor @highlightDuration (@initialDelay + 3 * @delayDuration) ease;
+          }
+
+          .fa-google-plus {
+            animation: gplusColor @highlightDuration (@initialDelay + 4 * @delayDuration) ease;
+          }
+        }
+      }
+    }
+  }
+
+  &.collapsed {
+    right: -100%;
+    bottom: -100%;
+    transform: scale(0);
+
+    .overlay {
+      background-color: #bddfff;
+      opacity: 0;
     }
   }
 }

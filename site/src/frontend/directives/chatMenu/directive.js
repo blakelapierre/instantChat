@@ -4,7 +4,6 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    scope: true,
     controller: ['$rootScope', '$scope', 'config',
     ($rootScope, $scope, config) => {
       $scope.havePermissionForFrontPage = true;
@@ -28,18 +27,15 @@ module.exports = () => {
         },
         mouseLeftExpandedView() {
           $scope.isMouseInside = false;
-          debouncedCollapse();
+          if (!$scope.menuIsCollapsed) debouncedCollapse();
         },
 
         collapse() {
-          $scope.isCollapsed = true;
+          console.log('collapse()');
+          $scope.collapseMenu();
           $scope.settingsVisible = false;
           $scope.feedbackVisible = false;
           $scope.roomsVisible = false;
-        },
-        expand() {
-          $scope.isCollapsed = false;
-          $scope.isMouseInside = true;
         },
 
         participantNameBlur() {
@@ -64,7 +60,7 @@ module.exports = () => {
       });
 
       var debouncedCollapse = _.debounce(() => {
-        if (!$scope.isMouseInside) {
+        if (!$scope.isMouseInside && !$scope.menuIsCollapsed) {
           $scope.collapse();
           $scope.$apply();
         }
