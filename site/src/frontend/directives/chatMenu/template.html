@@ -22,19 +22,6 @@
       </div>
 
       <div class="body">
-        <div class="name-input">
-          <input type="text"
-                 placeholder="What's Your Name?"
-                 focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
-                 ng-model="participantName"
-                 ng-click="$event.stopPropagation()"
-                 ng-blur="participantNameBlur()">
-        </div>
-
-        <div class="thumbnail-container">
-          <img class="local-thumbnail" ng-src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
-          <label class="permission" ng-click="$event.stopPropagation()"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
-        </div>
 
         <div class="menu-items">
           <ul>
@@ -62,6 +49,20 @@
           </ul>
 
           <span class="invite">Invite Someone</span>
+        </div>
+
+        <div class="thumbnail-container">
+          <img class="local-thumbnail" ng-src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
+          <label class="permission" ng-click="$event.stopPropagation()"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
+        </div>
+
+        <div class="name-input">
+          <input type="text"
+                 placeholder="What's Your Name?"
+                 focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
+                 ng-model="participantName"
+                 ng-click="$event.stopPropagation()"
+                 ng-blur="participantNameBlur()">
         </div>
       </div>
 
