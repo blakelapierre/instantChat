@@ -79,7 +79,13 @@
       </div>
     </div>
 
-    <settings ng-if="settingsVisible"></settings>
+    <div class="settings" ng-if="settingsVisible">
+      <div class="back-to-menu" ng-click="triggerSettings()">Back To Menu <span class="fa fa-share"></span></div>
+      <settings ng-if="settingsVisible"></settings>
+    </div>
     <feedback ng-if="feedbackVisible"></feedback>
-    <room-list ng-if="roomsVisible"</room-list>
+    <div class="room-list" ng-if="roomsVisible">
+      <div class="back-to-menu" ng-click="triggerRooms()"><span class="fa fa-reply"></span> Back To Menu</div>
+      <room-list></room-list>
+    </div>
   </div>

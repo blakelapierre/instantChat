@@ -339,7 +339,11 @@ chat-menu {
       }
     }
 
-    settings {
+    .back-to-menu {
+      cursor: pointer;
+    }
+
+    .settings {
       position: absolute;
       top: 0%;
       left: 0%;
@@ -356,13 +360,38 @@ chat-menu {
     &.settings-visible {
       width: 100%;
 
-      .menu-content {
-        width: 40%;
+      @media all and (max-width: 700px) {
+        .menu-content {
+          width: 0%;
+
+          .body {
+            overflow-y: hidden;
+          }
+        }
+
+        .settings,
+        settings {
+          width: 100%;
+          height: 100%;
+
+          .back-to-menu {
+            position: absolute;
+            right: 0%;
+            top: 0%;
+          }
+        }
       }
 
-      settings {
-        width: 60%;
-        height: 100%;
+      @media all and (min-width: 700px) {
+        .menu-content {
+          width: 40%;
+        }
+
+        .settings,
+        settings {
+          width: 60%;
+          height: 100%;
+        }
       }
     }
 
@@ -393,7 +422,7 @@ chat-menu {
       }
     }
 
-    room-list {
+    .room-list {
       display: block;
 
       position: absolute;
@@ -412,15 +441,37 @@ chat-menu {
     &.rooms-visible {
       width: 100%;
 
-      .menu-content {
-        right: 60%;
+      @media all and (max-width: 700px) {
+        .menu-content {
+          right: 100%;
+          width: 0%;
 
-        width: 40%;
+          .body {
+            overflow-y: hidden;
+          }
+        }
+
+        .room-list {
+          width: 100%;
+          height: 100%;
+        }
       }
 
-      room-list {
-        width: 60%;
-        height: 100%;
+      @media all and (min-width: 700px) {
+        .menu-content {
+          right: 60%;
+
+          width: 40%;
+        }
+
+        .room-list {
+          width: 60%;
+          height: 100%;
+
+          .back-to-menu {
+            display: none;
+          }
+        }
       }
     }
   }

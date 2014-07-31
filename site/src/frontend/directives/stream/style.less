@@ -101,7 +101,7 @@ stream {
         .vote {
           text-align: right;
 
-          transition: all linear 0.5s;
+          transition: all ease 0.5s;
 
           span,
           video {
@@ -124,18 +124,6 @@ stream {
           .fa-thumbs-down {
             color: @deactivatedColor;
           }
-        }
-
-        .vote.ng-move,
-        .vote.ng-enter,
-        .vote.ng-leave {
-
-          video {
-            width: 100%;
-            height: 100%;
-          }
-
-          transition: all linear 0.5s;
         }
 
         .vote.ng-enter {
