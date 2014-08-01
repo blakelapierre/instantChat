@@ -4,10 +4,10 @@ module.exports = () => {
     template: require('./template.html'),
     controller: ($scope, localMedia) => {
       localMedia
-        .getSources()
-        .then(sources => {
-          $scope.sources = sources;
-          console.log(sources);
+        .getDevices()
+        .then(devices => {
+          $scope.sources = devices;
+          console.log(devices);
         });
     }
   };

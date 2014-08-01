@@ -1,6 +1,8 @@
 var _ = require('lodash');
 
 var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+var getMediaDevices = navigator.getMediaDevices || (MediaStreamTrack && MediaStreamTrack.getSources ? (MediaStreamTrack.getSources) : () => { return []; });
+
 
 module.exports = ($q) => {
   var promise;
@@ -23,14 +25,14 @@ module.exports = ($q) => {
 
       return promise;
     },
-    getSources: () => {
+    getDevices: () => {
       var deferred = $q.defer();
 
-      MediaStreamTrack.getSources(sources => {
+      getMediaDevices(devices => {
         var ret = {audio:[], video: []};
-        _.each(sources, source => {
-          if (source.kind == 'audio') ret.audio.push(source);
-          else if (source.kind == 'video') ret.video.push(source);
+        _.each(devices, device => {
+          if (device.kind == 'audio') ret.audio.push(device);
+          else if (device.kind == 'video') ret.video.push(device);
         });
         deferred.resolve(ret);
       });

@@ -48,8 +48,8 @@ module.exports = () => {
 
       log.info('Entering instantChat controller');
 
-      localMedia.getSources()
-        .then(sources => $scope.sources = sources)
+      localMedia.getDevices()
+        .then(devices => $scope.sources = devices)
         .catch(error => log.error('Error retrieving sources', error));
 
       $window.addEventListener('click', () => {
