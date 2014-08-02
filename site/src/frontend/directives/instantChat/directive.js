@@ -86,11 +86,12 @@ module.exports = () => {
       var rootScopeCleanup = [];
 
       var localParticipant = {
-        isLocalParticipant: true,
+        isLocal: true,
         config: config,
         streams: []
       };
 
+      $scope.localParticipant = localParticipant;
       $scope.config = localParticipant.config;
       $scope.participants = [localParticipant];
       $scope.activeParticipants = [];
@@ -240,7 +241,7 @@ module.exports = () => {
       function removePeer(peer) {
         // Occasionally, the localParticipant has been removed. It's likely that is because a null/undefined
         // is being passed as peer here. Not sure what's causing it, but adding a guard here for now.
-        var participant = _.find($scope.participants, {peer: peer, isLocalParticipant: undefined});
+        var participant = _.find($scope.participants, {peer: peer, isLocal: undefined});
 
         if (participant) {
           log('removing', participant);

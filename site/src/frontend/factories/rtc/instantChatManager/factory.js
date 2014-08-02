@@ -65,7 +65,7 @@ module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
     participants.push(participant);
 
     // This may be the local participant, which doesn't have a peer
-    if (!participant.isLocalParticipant) {
+    if (!participant.isLocal) {
       var channel = participant.peer.channel('instantChat');
 
       channel.on('message', (channel, event) => {
@@ -91,7 +91,7 @@ module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
   }
 
   function sendMessage(participant, message) {
-    if (!participant.isLocalParticipant) {
+    if (!participant.isLocal) {
       try {
           var peer = participant.peer,
               chatChannel = peer.channel('instantChat');

@@ -4,7 +4,16 @@ module.exports = function() {
   return {
     restrict: 'A',
     link: function($scope, element, attributes) {
-      fitText(element);
+      console.log(element);
+      element.on('resize', sizeElement);
+      element.on('input', sizeElement);
+      $scope.$on('$destroy', sizeElement);
+
+      sizeElement();
+
+      function sizeElement() {
+        fitText(element);
+      }
     }
   };
 };

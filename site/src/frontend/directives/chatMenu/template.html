@@ -12,12 +12,6 @@
       <div class="header">
         <div class="badge" ng-click="$event.stopPropagation()">
           <div class="room-name">#{{currentRoom.name}}</div>
-          <ng-pluralize
-            class="participants-count"
-            count="activeParticipants.length"
-            when="{'0': 'Nobody is here (not even you!)',
-                   '1': '1 Participant',
-                   'other': '{} Participants'}"></ng-pluralize>
         </div>
       </div>
 
@@ -51,19 +45,38 @@
           <span class="invite">Invite Someone</span>
         </div>
 
-        <div class="thumbnail-container">
-          <img class="local-thumbnail" ng-src="{{localThumbnailSrc}}" ng-click="$event.stopPropagation()">
-          <label class="permission" ng-click="$event.stopPropagation()"><input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span></label>
+        <div class="participants-list">
+          <ng-pluralize
+              class="participants-count"
+              count="activeParticipants.length"
+              when="{'0': 'Nobody is here (not even you!)',
+                     '1': '1 Person Here',
+                     'other': '{} People Here'}"></ng-pluralize>
+
+          <div class="participant" ng-repeat="participant in participants">
+            <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}" ng-click="$event.stopPropagation()">
+
+            <div ng-if="participant.isLocal" class="local-participant">
+              <div contenteditable
+                   placeholder="What's Your Name?"
+                   class="name-input"
+                   fit-text
+                   focus-on="!isCollapsed && (participant.config.name == null || participant.config.name == undefined || participant.config.name == '')"
+                   ng-model="participant.config.name"
+                   ng-click="$event.stopPropagation()"></div>
+
+              <label class="permission" ng-click="$event.stopPropagation()">
+                <input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span>
+              </label>
+            </div>
+
+            <div ng-if="!participant.isLocal" class="remote-participant">
+              <span class="name">{{participant.config.name}}</span>
+            </div>
+          </div>
+
         </div>
 
-        <div class="name-input">
-          <input type="text"
-                 placeholder="What's Your Name?"
-                 focus-on="!isCollapsed && (config.participantName == null || config.participantName == undefined || config.participantName == '')"
-                 ng-model="participantName"
-                 ng-click="$event.stopPropagation()"
-                 ng-blur="participantNameBlur()">
-        </div>
       </div>
 
       <div class="footer" ng-click="$event.stopPropagation()">
@@ -74,14 +87,14 @@
           <span class="fa fa-comments"></span>
         </div>
         <div class="trigger rooms-trigger" ng-click="triggerRooms()">
-          <span class="fa fa-building-o"></span>
+          <span class="fa fa-globe"></span>
         </div>
       </div>
     </div>
 
     <div class="settings" ng-if="settingsVisible">
       <div class="back-to-menu" ng-click="triggerSettings()">Back To Menu <span class="fa fa-share"></span></div>
-      <settings ng-if="settingsVisible"></settings>
+      <settings></settings>
     </div>
     <feedback ng-if="feedbackVisible"></feedback>
     <div class="room-list" ng-if="roomsVisible">

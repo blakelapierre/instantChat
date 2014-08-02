@@ -4,13 +4,11 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    controller: ['$rootScope', '$scope', 'config',
-    ($rootScope, $scope, config) => {
+    controller: ['$rootScope', '$scope',
+    ($rootScope, $scope) => {
       $scope.havePermissionForFrontPage = true;
 
       $rootScope.test = () => console.log('worked');
-
-      $scope.participantName = config.name;
 
       _.extend($scope, {
         emailSubject: 'I want to chat with you!',
@@ -38,10 +36,6 @@ module.exports = () => {
           $scope.roomsVisible = false;
         },
 
-        participantNameBlur() {
-          config.name = $scope.participantName;
-        },
-
         triggerSettings() {
           $scope.roomsVisible = false;
           $scope.feedbackVisible = false;
@@ -56,6 +50,10 @@ module.exports = () => {
           $scope.settingsVisible = false;
           $scope.feedbackVisible = false;
           $scope.roomsVisible = !$scope.roomsVisible;
+        },
+
+        participantNameBlur() {
+          console.log($scope.localParticipant);
         }
       });
 
@@ -67,7 +65,7 @@ module.exports = () => {
       }, 1250);
 
       $rootScope.$on('localThumbnail', ($event, dataUrl) => {
-        if (dataUrl) $scope.localThumbnailSrc = dataUrl;
+        $scope.localParticipant.thumbnailSrc = dataUrl;
       });
 
       debouncedCollapse();
