@@ -4,7 +4,8 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
     template: require('./template.html'),
     scope: {
       stream: '=',
-      streamName: '='
+      streamName: '=',
+      participant: '='
     },
     link: ($scope, element, attributes) => {
       var video = element.find('video')[0],
@@ -66,8 +67,10 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
       video.addEventListener('playing', () => {
         if ($scope.stream.isLocal) {
-          $timeout($scope.generateLocalThumbnail, 100); // Allow some time for camera to adjust
+          // Allow some time for camera to adjust
+          $timeout($scope.generateLocalThumbnail, 100);
         }
+        else $scope.generateLocalThumbnail();
       });
 
 
@@ -78,9 +81,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
         video.muted = stream.isMuted;
 
-        if (stream.isLocal) {
-          $scope.thumbnailInterval = $interval($scope.generateLocalThumbnail, 15000);
-        }
+        $scope.thumbnailInterval = $interval($scope.generateLocalThumbnail, 15000);
       });
 
       $scope.toggleMute = $event => {
@@ -125,7 +126,13 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       };
 
       $scope.generateLocalThumbnail = () => {
-        $scope.captureFrame(null, dataUrl => $rootScope.$broadcast('localThumbnail', dataUrl));
+        var participant = $scope.participant,
+            stream = $scope.stream;
+
+        $scope.captureFrame(null, dataUrl => {
+          $rootScope.$broadcast('thumbnail', participant, stream, dataUrl);
+          if (stream.isLocal) $rootScope.$broadcast('localThumbnail', participant, stream, dataUrl);
+        });
       };
 
       $scope.$on('$destroy', () => {

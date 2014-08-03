@@ -73,8 +73,8 @@ module.exports = () => {
         }
       }, 1250);
 
-      $rootScope.$on('localThumbnail', ($event, dataUrl) => {
-        $scope.localParticipant.thumbnailSrc = dataUrl;
+      $rootScope.$on('thumbnail', ($event, participant, stream, dataUrl) => {
+        participant.thumbnailSrc = dataUrl;
       });
 
       debouncedCollapse();

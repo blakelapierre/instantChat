@@ -308,7 +308,7 @@ module.exports = () => {
       });
 
       var Images = $resource('/images');
-      onRootScope('localThumbnail', ($event, imageData) => {
+      onRootScope('localThumbnail', ($event, participant, stream, imageData) => {
         Images.save({
           id: localParticipant.id,
           data: imageData

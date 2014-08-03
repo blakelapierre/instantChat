@@ -1,7 +1,7 @@
 <div class="streams streams-count-{{participant.streams.length}}">
 
   <stream ng-repeat="stream in participant.streams"
-    class="stream stream-{{$index}}" stream="stream" stream-name="participant.config.name">
+    class="stream stream-{{$index}}" stream="stream" stream-name="participant.config.name" participant="participant">
   </stream>
 
 </div>
