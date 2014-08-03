@@ -19,6 +19,10 @@ module.exports = () => {
 
 
         isMouseInside: true,
+        mainVisible: true,
+        settingsVisible: false,
+        feedbackVisible: false,
+        roomsVisible: false,
 
         mouseEnterExpandedView() {
           $scope.isMouseInside = true;
@@ -31,6 +35,7 @@ module.exports = () => {
         collapse() {
           console.log('collapse()');
           $scope.collapseMenu();
+          $scope.mainVisible = true;
           $scope.settingsVisible = false;
           $scope.feedbackVisible = false;
           $scope.roomsVisible = false;
@@ -40,16 +45,20 @@ module.exports = () => {
           $scope.roomsVisible = false;
           $scope.feedbackVisible = false;
           $scope.settingsVisible = !$scope.settingsVisible;
+          $scope.mainVisible = !$scope.settingsVisible;
         },
         triggerFeedback() {
+          $scope.mainVisible = false;
           $scope.settingsVisible = false;
           $scope.roomsVisible = false;
           $scope.feedbackVisible = !$scope.feedbackVisible;
+          $scope.mainVisible = !$scope.feedbackVisible;
         },
         triggerRooms() {
           $scope.settingsVisible = false;
           $scope.feedbackVisible = false;
           $scope.roomsVisible = !$scope.roomsVisible;
+          $scope.mainVisible = !$scope.roomsVisible;
         },
 
         participantNameBlur() {

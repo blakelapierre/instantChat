@@ -16,89 +16,94 @@
       </div>
 
       <div class="body">
+        <div ng-if="mainVisible" class="main panel">
+          <div class="menu-items">
+            <ul>
+              <li ng-click="$event.stopPropagation()">
+                <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
+                   target="_blank"><span class="fa fa-envelope"></span></a>
+              </li>
 
-        <div class="menu-items">
-          <ul>
-            <li ng-click="$event.stopPropagation()">
-              <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
-                 target="_blank"><span class="fa fa-envelope"></span></a>
-            </li>
+              <li ng-click="$event.stopPropagation()">
+                <a href="sms:?body={{smsBody()}}"
+                   target="_blank"><span class="fa fa-mobile"></span></a>
+              </li>
 
-            <li ng-click="$event.stopPropagation()">
-              <a href="sms:?body={{smsBody()}}"
-                 target="_blank"><span class="fa fa-mobile"></span></a>
-            </li>
+              <li ng-click="$event.stopPropagation()">
+                <a href="https://twitter.com/share?url={{inviteLink()}}&text={{inviteText}}" target="_blank"><span class="fa fa-twitter"></span></a>
+              </li>
 
-            <li ng-click="$event.stopPropagation()">
-              <a href="https://twitter.com/share?url={{inviteLink()}}&text={{inviteText}}" target="_blank"><span class="fa fa-twitter"></span></a>
-            </li>
+              <li ng-click="$event.stopPropagation()">
+                <a href="https://facebook.com/dialog/feed?app_id=1443412259259623&display=popup&link={{inviteLink()}}&redirect_uri={{inviteLink()}}&caption={{inviteText}}" target="_blank"><span class="fa fa-facebook"></span></a>
+              </li>
 
-            <li ng-click="$event.stopPropagation()">
-              <a href="https://facebook.com/dialog/feed?app_id=1443412259259623&display=popup&link={{inviteLink()}}&redirect_uri={{inviteLink()}}&caption={{inviteText}}" target="_blank"><span class="fa fa-facebook"></span></a>
-            </li>
+              <li ng-click="$event.stopPropagation()">
+                <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span></a>
+              </li>
+            </ul>
 
-            <li ng-click="$event.stopPropagation()">
-              <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span></a>
-            </li>
-          </ul>
+            <span class="invite">Invite Someone</span>
+          </div>
 
-          <span class="invite">Invite Someone</span>
-        </div>
+          <div class="participants-list">
+            <ng-pluralize
+                class="participants-count"
+                count="activeParticipants.length"
+                when="{'0': 'Nobody is here (not even you!)',
+                       '1': '1 Person Here',
+                       'other': '{} People Here'}"></ng-pluralize>
 
-        <div class="participants-list">
-          <ng-pluralize
-              class="participants-count"
-              count="activeParticipants.length"
-              when="{'0': 'Nobody is here (not even you!)',
-                     '1': '1 Person Here',
-                     'other': '{} People Here'}"></ng-pluralize>
+            <div class="participant" ng-repeat="participant in participants">
+              <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}" ng-click="$event.stopPropagation()">
 
-          <div class="participant" ng-repeat="participant in participants">
-            <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}" ng-click="$event.stopPropagation()">
+              <div ng-if="participant.isLocal" class="local-participant">
+                <div contenteditable
+                     placeholder="What's Your Name?"
+                     class="name-input"
+                     fit-text
+                     focus-on="!isCollapsed && (participant.config.name == null || participant.config.name == undefined || participant.config.name == '')"
+                     ng-model="participant.config.name"
+                     ng-click="$event.stopPropagation()"></div>
 
-            <div ng-if="participant.isLocal" class="local-participant">
-              <div contenteditable
-                   placeholder="What's Your Name?"
-                   class="name-input"
-                   fit-text
-                   focus-on="!isCollapsed && (participant.config.name == null || participant.config.name == undefined || participant.config.name == '')"
-                   ng-model="participant.config.name"
-                   ng-click="$event.stopPropagation()"></div>
+                <label class="permission" ng-click="$event.stopPropagation()">
+                  <input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span>
+                </label>
+              </div>
 
-              <label class="permission" ng-click="$event.stopPropagation()">
-                <input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span>
-              </label>
+              <div ng-if="!participant.isLocal" class="remote-participant">
+                <span class="name">{{participant.config.name}}</span>
+              </div>
             </div>
 
-            <div ng-if="!participant.isLocal" class="remote-participant">
-              <span class="name">{{participant.config.name}}</span>
-            </div>
           </div>
 
         </div>
 
+        <settings ng-if="settingsVisible" class="panel" ng-click="$event.stopPropagation()"></settings>
+
+        <feedback ng-if="feedbackVisible" class="panel" ng-click="$event.stopPropagation()"></feedback>
+
+        <room-list ng-if="roomsVisible" class="panel" ng-click="$event.stopPropagation()"></room-list>
+
       </div>
 
       <div class="footer" ng-click="$event.stopPropagation()">
-        <div class="trigger settings-trigger" ng-click="triggerSettings()">
+        <div ng-class="{'trigger': true,
+                        'settings-trigger': true,
+                        'settings-visible': settingsVisible}" ng-click="triggerSettings()">
           <span class="fa fa-cog"></span>
         </div>
-        <div class="trigger feedback-trigger" ng-click="triggerFeedback()">
+        <div ng-class="{'trigger': true,
+                        'feedback-trigger': true,
+                        'feedback-visible': feedbackVisible}" ng-click="triggerFeedback()">
           <span class="fa fa-comments"></span>
         </div>
-        <div class="trigger rooms-trigger" ng-click="triggerRooms()">
+        <div ng-class="{'trigger': true,
+                        'rooms-trigger': true,
+                        'rooms-visible': roomsVisible}" ng-click="triggerRooms()">
           <span class="fa fa-globe"></span>
         </div>
       </div>
-    </div>
 
-    <div class="settings" ng-if="settingsVisible">
-      <div class="back-to-menu" ng-click="triggerSettings()">Back To Menu <span class="fa fa-share"></span></div>
-      <settings></settings>
-    </div>
-    <feedback ng-if="feedbackVisible"></feedback>
-    <div class="room-list" ng-if="roomsVisible">
-      <div class="back-to-menu" ng-click="triggerRooms()"><span class="fa fa-reply"></span> Back To Menu</div>
-      <room-list></room-list>
     </div>
   </div>

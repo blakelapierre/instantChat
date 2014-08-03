@@ -150,144 +150,170 @@ chat-menu {
         overflow-y: auto;
         overflow-x: hidden;
 
-        .menu-items {
-          margin-top: 2em;
+        .panel {
+          display: block;
+          position: absolute;
 
-          text-align: center;
+          top: 0%;
+          left: 0%;
 
-          .invite {
-            display: block;
+          width: 100%;
+          height: 100%;
 
-            font-size: 1.5em;
+          backface-visibility: hidden;
+          transition: transform 0.33s ease;
+
+          &.ng-enter,
+          &.ng-leave.ng-leave-active {
+            transform: rotateY(-180deg);
           }
 
-          ul {
-            margin: 0 auto;
-            padding: 0;
-
-            width: inherit;
-
-            list-style: none;
-
-            li {
-              display: inline-block;
-
-              font-size: medium;
-
-              cursor: pointer;
-
-              a {
-                display: inline-block;
-
-                text-decoration: none;
-                color: inherit;
-
-                .fa {
-                  font-size: 3em;
-                }
-              }
-
-              &:hover {
-                text-shadow: 0px 0px 25px #fff;
-              }
-
-              &:not(:last-child) {
-                margin-right: 2em;
-              }
-            }
+          &.ng-leave,
+          &.ng-enter.ng-enter-active {
+            transform: rotateY(0deg);
           }
         }
 
-        .participants-list {
-          margin-top: 2em;
-          margin-left: 1em;
-          margin-right: 1em;
+        .main {
+          .menu-items {
+            margin-top: 2em;
 
-          padding: 0.25em;
+            text-align: center;
 
-          background-color: rgba(0, 0, 0, 0.1);
+            .invite {
+              display: block;
 
-          overflow: auto;
+              font-size: 1.5em;
+            }
 
-          .participants-count {
-            font-size: 0.9em;
-            line-height: 1em;
+            ul {
+              margin: 0 auto;
+              padding: 0;
+
+              width: inherit;
+
+              list-style: none;
+
+              li {
+                display: inline-block;
+
+                font-size: medium;
+
+                cursor: pointer;
+
+                a {
+                  display: inline-block;
+
+                  text-decoration: none;
+                  color: inherit;
+
+                  .fa {
+                    font-size: 3em;
+                  }
+                }
+
+                &:hover {
+                  text-shadow: 0px 0px 25px #fff;
+                }
+
+                &:not(:last-child) {
+                  margin-right: 2em;
+                }
+              }
+            }
           }
 
-          .participant {
-            display: table;
-            width: 100%;
+          .participants-list {
+            margin-top: 2em;
+            margin-left: 1em;
+            margin-right: 1em;
 
-            margin-top: 0.5em;
+            padding: 0.25em;
+
+            background-color: rgba(0, 0, 0, 0.1);
 
             overflow: auto;
 
-            background-color: rgba(0, 0, 0, 0.2);
-
-            .thumbnail {
-              display: table-cell;
-              width: 8em;
-
-              float: left;
+            .participants-count {
+              font-size: 0.9em;
+              line-height: 1em;
             }
 
-            .local-participant {
-              display: table-cell;
-              margin-left: 1em;
-              width: auto;
+            .participant {
+              display: table;
+              width: 100%;
 
-              line-height: 1em;
+              margin-top: 0.5em;
 
-              vertical-align: middle;
+              overflow: auto;
 
-              .name-input {
-                // width: 100%;
+              background-color: rgba(0, 0, 0, 0.2);
+
+              .thumbnail {
+                display: table-cell;
+                width: 8em;
+
+                float: left;
+              }
+
+              .local-participant {
+                display: table-cell;
+                margin-left: 1em;
+                width: auto;
 
                 line-height: 1em;
 
-                color: #fff;
-                text-shadow: 0px 0px 5px #333;
+                vertical-align: middle;
 
-                background: transparent;
-                border: none;
+                .name-input {
+                  // width: 100%;
 
-                &[placeholder]:empty:before {
-                  content: attr(placeholder);
-                  color: #dff;
+                  line-height: 1em;
+
+                  color: #fff;
+                  text-shadow: 0px 0px 5px #333;
+
+                  background: transparent;
+                  border: none;
+
+                  &[placeholder]:empty:before {
+                    content: attr(placeholder);
+                    color: #dff;
+                  }
+
+                  &:focus {
+                    outline: none;
+                  }
                 }
 
-                &:focus {
-                  outline: none;
+                .permission {
+                  display: inline-block;
+
+                  width: auto;
+
+                  margin-top: 1em; // Figure out how to get rid of these?
+
+                  font-size: 0.9em;
+
+                  text-shadow: 0px 0px 5px #333;
+
+                  input, span {
+                    vertical-align: middle;
+                  }
+
+                  .front-page,
+                  .front-page:visited {
+                    color: #09f;
+                    font-weight: bolder;
+                    text-shadow: 0px 0px 5px #036;
+                  }
                 }
               }
 
-              .permission {
+              .remote-participant {
                 display: inline-block;
-
-                width: auto;
-
-                margin-top: 1em; // Figure out how to get rid of these?
-
-                font-size: 0.9em;
-
-                text-shadow: 0px 0px 5px #333;
-
-                input, span {
-                  vertical-align: middle;
-                }
-
-                .front-page,
-                .front-page:visited {
-                  color: #09f;
-                  font-weight: bolder;
-                  text-shadow: 0px 0px 5px #036;
-                }
+                marign-left: 1em;
               }
-            }
-
-            .remote-participant {
-              display: inline-block;
-              marign-left: 1em;
             }
           }
         }
@@ -298,7 +324,7 @@ chat-menu {
 
         bottom: 0%;
 
-        height: 4em;
+        height: 3em;
         width: 100%;
 
         .trigger {
@@ -306,7 +332,7 @@ chat-menu {
 
           height: 100%;
 
-          font-size: 3em;
+          font-size: 2.25em;
 
           vertical-align: middle;
 
@@ -326,7 +352,8 @@ chat-menu {
 
             text-shadow: 0px 0px 5px #db0;
 
-            &:hover {
+            &:hover,
+            &.settings-visible {
               color: #db0;
               text-shadow: 0px 0px 25px #db0;
             }
@@ -340,7 +367,8 @@ chat-menu {
 
             text-shadow: 0px 0px 5px #0fb;
 
-            &:hover {
+            &:hover,
+            &.feedback-visible {
               color: #0fb;
               text-shadow: 0px 0px 25px #0fb;
             }
@@ -356,157 +384,11 @@ chat-menu {
 
             text-shadow: 0px 0px 5px #0bf;
 
-            &:hover {
+            &:hover,
+            &.rooms-visible {
               color: #0bf;
               text-shadow: 0px 0px 25px #0bf;
             }
-          }
-        }
-      }
-    }
-
-    .back-to-menu {
-      cursor: pointer;
-    }
-
-    .settings {
-      position: absolute;
-      top: 0%;
-      left: 0%;
-
-      width: 0%;
-      height: 0%;
-
-      overflow-x: hidden;
-      overflow-y: hidden;
-
-      transition: width 2.5s ease, height 2.5s ease;
-
-      settings {
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    &.settings.ng-enter,
-    &.settings.ng-leave.ng-leave-active,
-    &.settings-visible {
-      width: 100%;
-
-      @media all and (max-width: 90em) {
-        .menu-content {
-          width: 0%;
-
-          .body {
-            overflow-y: hidden;
-          }
-        }
-
-        .settings {
-          width: 100%;
-          height: 100%;
-
-          .back-to-menu {
-            position: absolute;
-            right: 0%;
-            top: 0%;
-          }
-        }
-      }
-
-      @media all and (min-width: 90em) {
-        .menu-content {
-          width: 30em;
-        }
-
-        .settings {
-          right: 30em;
-
-          width: auto;
-          height: 100%;
-
-          .back-to-menu {
-            display: none;
-          }
-        }
-      }
-    }
-
-    feedback {
-      position: absolute;
-      top: 0%;
-      left: 0%;
-
-      width: 0%;
-      height: 0%;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      transition: width 2.5s ease, height 2.5s ease;
-    }
-
-    &.feedback-visible {
-      width: 100%;
-
-      .menu-content {
-        width: 40%;
-      }
-
-      feedback {
-        width: 50%;
-        height: 100%;
-      }
-    }
-
-    .room-list {
-      display: block;
-
-      position: absolute;
-      top: 0%;
-      right: 0%;
-
-      width: 0%;
-      height: 0%;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      transition: width: 0.5s ease, height 0.5s ease;
-    }
-
-    &.rooms-visible {
-      width: 100%;
-
-      @media all and (max-width: 700px) {
-        .menu-content {
-          right: 100%;
-          width: 0%;
-
-          .body {
-            overflow-y: hidden;
-          }
-        }
-
-        .room-list {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      @media all and (min-width: 700px) {
-        .menu-content {
-          right: 60%;
-
-          width: 40%;
-        }
-
-        .room-list {
-          width: 60%;
-          height: 100%;
-
-          .back-to-menu {
-            display: none;
           }
         }
       }
