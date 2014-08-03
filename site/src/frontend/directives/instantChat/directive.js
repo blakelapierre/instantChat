@@ -57,16 +57,6 @@ module.exports = () => {
         $scope.$apply();
       });
 
-      $window.addEventListener('mousemove', e => {
-        var y = e.y,
-            height = $window.innerHeight,
-            threshold = height * 0.15;
-
-        if (y < threshold || y > (height - threshold)) {
-          toggleBars(false);
-        }
-      });
-
       $scope.menuIsCollapsed = false;
       $scope.hideBars = true;
 
