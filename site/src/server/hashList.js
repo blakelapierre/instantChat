@@ -57,7 +57,10 @@ module.exports = function HashList(idProperty) {
 
       var length = list.length;
       for (var i = hObj.index; i < length; i++) {
-        hash[list[i][idProperty]].index = i;
+        var obj = hash[list[i][idProperty]];
+
+        if (obj === undefined) console.log('uh oh');
+        else obj.index = i;
       }
     };
   }
