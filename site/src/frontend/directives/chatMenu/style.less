@@ -125,6 +125,22 @@ chat-menu {
 
       transition: left 0.5s ease, right 0.5s ease;
 
+      .exit {
+        position: absolute;
+
+        top: 0.25em;
+        left: 0.25em;
+
+        font-size: 1.75em;
+
+        cursor: pointer;
+
+        &:hover {
+          color: #3d3;
+          text-shadow: 0px 0px 5px #3d3;
+        }
+      }
+
       .header {
         height: 3em;
         width: 100%;
@@ -447,6 +463,8 @@ chat-menu {
     .menu-container {
       right: -100%;
       bottom: -100%;
+
+      backface-visibility: hidden;
       transform: scale(0);
 
       .overlay {

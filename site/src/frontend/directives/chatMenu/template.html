@@ -8,9 +8,10 @@
 
     <div class="overlay"></div>
 
-    <div class="menu-content" ng-click="collapse()">
+    <div class="menu-content">
+      <span class="fa fa-reply exit" ng-click="collapse()"></span>
       <div class="header">
-        <div class="badge" ng-click="$event.stopPropagation()">
+        <div class="badge">
           <div class="room-name">#{{currentRoom.name}}</div>
         </div>
       </div>
@@ -19,25 +20,25 @@
         <div ng-if="mainVisible" class="main panel">
           <div class="menu-items">
             <ul>
-              <li ng-click="$event.stopPropagation()">
+              <li>
                 <a href="mailto:?subject={{emailSubject}}&body={{emailBody()}}"
                    target="_blank"><span class="fa fa-envelope"></span></a>
               </li>
 
-              <li ng-click="$event.stopPropagation()">
+              <li>
                 <a href="sms:?body={{smsBody()}}"
                    target="_blank"><span class="fa fa-mobile"></span></a>
               </li>
 
-              <li ng-click="$event.stopPropagation()">
+              <li>
                 <a href="https://twitter.com/share?url={{inviteLink()}}&text={{inviteText}}" target="_blank"><span class="fa fa-twitter"></span></a>
               </li>
 
-              <li ng-click="$event.stopPropagation()">
+              <li>
                 <a href="https://facebook.com/dialog/feed?app_id=1443412259259623&display=popup&link={{inviteLink()}}&redirect_uri={{inviteLink()}}&caption={{inviteText}}" target="_blank"><span class="fa fa-facebook"></span></a>
               </li>
 
-              <li ng-click="$event.stopPropagation()">
+              <li>
                 <a href="https://plus.google.com/share?url={{inviteLink()}}" target="_blank"><span class="fa fa-google-plus"></span></a>
               </li>
             </ul>
@@ -54,7 +55,7 @@
                        'other': '{} People Here'}"></ng-pluralize>
 
             <div class="participant" ng-repeat="participant in participants">
-              <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}" ng-click="$event.stopPropagation()">
+              <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}">
 
               <div ng-if="participant.isLocal" class="local-participant">
                 <div contenteditable
@@ -63,9 +64,9 @@
                      fit-text
                      focus-on="!isCollapsed && (participant.config.name == null || participant.config.name == undefined || participant.config.name == '')"
                      ng-model="participant.config.name"
-                     ng-click="$event.stopPropagation()"></div>
+                    ></div>
 
-                <label class="permission" ng-click="$event.stopPropagation()">
+                <label class="permission">
                   <input type="checkbox" ng-model="havePermissionForFrontPage"> <span>Use My Image On The <a href="https://instachat.io" class="front-page" target="_blank">Front Page</a></span>
                 </label>
               </div>
@@ -79,15 +80,15 @@
 
         </div>
 
-        <settings ng-if="settingsVisible" class="panel" ng-click="$event.stopPropagation()"></settings>
+        <settings ng-if="settingsVisible" class="panel"></settings>
 
-        <feedback ng-if="feedbackVisible" class="panel" ng-click="$event.stopPropagation()"></feedback>
+        <feedback ng-if="feedbackVisible" class="panel"></feedback>
 
-        <room-list ng-if="roomsVisible" class="panel" ng-click="$event.stopPropagation()"></room-list>
+        <room-list ng-if="roomsVisible" class="panel"></room-list>
 
       </div>
 
-      <div class="footer" ng-click="$event.stopPropagation()">
+      <div class="footer">
         <div ng-class="{'trigger': true,
                         'settings-trigger': true,
                         'settings-visible': settingsVisible}" ng-click="triggerSettings()">
