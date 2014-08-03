@@ -66,7 +66,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
       video.addEventListener('playing', () => {
         if ($scope.stream.isLocal) {
-          $scope.generateLocalThumbnail(); // Yeah, we want to do something different here, but I'm not sure what
+          $timeout($scope.generateLocalThumbnail, 100); // Allow some time for camera to adjust
         }
       });
 
