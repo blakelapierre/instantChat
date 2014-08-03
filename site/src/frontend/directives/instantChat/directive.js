@@ -71,7 +71,7 @@ module.exports = () => {
       };
 
       function toggleBars(hide) {
-        var changed = $scope.hideBars == hide;
+        var changed = $scope.hideBars != hide;
 
         $scope.hideBars = hide != null ? hide === true : !$scope.hideBars;
 
