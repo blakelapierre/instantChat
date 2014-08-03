@@ -66,11 +66,8 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       }
 
       video.addEventListener('playing', () => {
-        if ($scope.stream.isLocal) {
-          // Allow some time for camera to adjust
-          $timeout($scope.generateLocalThumbnail, 100);
-        }
-        else $scope.generateLocalThumbnail();
+        // Allow some time for camera to adjust
+        $timeout($scope.generateLocalThumbnail, $scope.stream.isLocal ? 100, 0);
       });
 
 
@@ -94,12 +91,7 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       };
 
       $scope.captureFrame = (options, callback) => {
-        if ($scope.haveSize) {
-          videoTools.captureFrame(video, options || {width: 96}, callback);
-        }
-        else {
-          console.log('we probably want to return something here?!');
-        }
+        videoTools.captureFrame(video, options || {width: 96}, callback);
       };
     },
     controller: ['$scope', 'instantChatManager', ($scope, instantChatManager) => {
