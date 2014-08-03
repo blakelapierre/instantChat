@@ -57,6 +57,16 @@ module.exports = () => {
         $scope.$apply();
       });
 
+      $window.addEventListener('mousemove', e => {
+        var y = e.y,
+            height = $window.innerHeight,
+            threshold = height * 0.15;
+
+        if (y < threshold || y > (height - threshold)) {
+          toggleBars(false);
+        }
+      });
+
       $scope.menuIsCollapsed = false;
       $scope.hideBars = true;
 
@@ -71,11 +81,14 @@ module.exports = () => {
       };
 
       function toggleBars(hide) {
-        console.log('toggling', hide);
+        var changed = $scope.hideBars == hide;
+
         $scope.hideBars = hide != null ? hide === true : !$scope.hideBars;
 
-        $scope.resizing = $$rAF(broadcastResize);
-        $timeout(() => $scope.resizing(), 1000);
+        if (changed) {
+          $scope.resizing = $$rAF(broadcastResize);
+          $timeout(() => $scope.resizing(), 1000);
+        }
       }
 
       function broadcastResize() {
