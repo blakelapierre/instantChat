@@ -132,8 +132,8 @@ module.exports = () => {
           joinRoom();
         },
 
-        'peer added':   addPeer,
-        'peer removed': removePeer,
+        'peer added':   createParticipant,
+        'peer removed': removeParticipant,
 
         // 'peer ice_candidate': () => log('ICE Candidate Received'),
         'peer receive offer':  () => log('Offer Received'),
@@ -182,25 +182,24 @@ module.exports = () => {
         }
       }
 
-      function addPeer(peer) {
-        var participant = {
-          id: peer.id,
-          peer: peer,
-          streams: [],
-          isActive: false,
-          config: {}
-        };
-
-        $scope.participants.push(participant);
-
+      function createParticipant(peer) {
         localMedia.getStream()
           .then(
             stream => {
+              var participant = {
+                id: peer.id,
+                peer: peer,
+                streams: [],
+                isActive: false,
+                config: {}
+              };
+
+              $scope.participants.push(participant);
+
               peer.addLocalStream('local', stream);
 
               if (peer.config.isExistingPeer) {
                 var channel = peer.addChannel('instantChat', null, instantChatChannelHandler($scope));
-
                 peer.connect()
                   .then(
                     peer => {
@@ -209,39 +208,36 @@ module.exports = () => {
                     },
                     error => log.error(error));
               }
+              else {
+                peer.on('channel added', channel => {
+                  if (channel.label === 'instantChat') {
+                    channel.attachHandler(instantChatChannelHandler($scope));
+                    addActiveParticipant(participant);
+                  }
+                  $scope.$apply();
+                });
+              }
+
+              peer.on('remoteStream added', stream => {
+                participant.streams.push({
+                  peer: peer,
+                  votes: [],
+                  src: $sce.trustAsResourceUrl(URL.createObjectURL(stream.stream))
+                });
+
+                $scope.$apply();
+              });
+
+              peer.on('disconnected', removeParticipant);
+
               $scope.$apply();
+
+              $rootScope.$broadcast('participant added', participant);
             },
             error => log.error('*** Error getting local media stream', error));
-
-
-        if (!peer.config.isExistingPeer) {
-          peer.on('channel added', channel => {
-            if (channel.label === 'instantChat') {
-              channel.attachHandler(instantChatChannelHandler($scope));
-              addActiveParticipant(participant);
-            }
-            $scope.$apply();
-          });
-        }
-
-        peer.on('remoteStream added', stream => {
-          participant.streams.push({
-            peer: peer,
-            votes: [],
-            src: $sce.trustAsResourceUrl(URL.createObjectURL(stream.stream))
-          });
-
-          $scope.$apply();
-        });
-
-        peer.on('disconnected', removePeer);
-
-        $scope.$apply();
-
-        $rootScope.$broadcast('participant added', participant);
       }
 
-      function removePeer(peer) {
+      function removeParticipant(peer) {
         // Occasionally, the localParticipant has been removed. It's likely that is because a null/undefined
         // is being passed as peer here. Not sure what's causing it, but adding a guard here for now.
         var participant = _.find($scope.participants, {peer: peer, isLocal: undefined});
