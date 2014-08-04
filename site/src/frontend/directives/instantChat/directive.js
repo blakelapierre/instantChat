@@ -230,9 +230,9 @@ module.exports = () => {
 
               peer.on('disconnected', removeParticipant);
 
-              $scope.$apply();
-
               $rootScope.$broadcast('participant added', participant);
+
+              $scope.$apply();
             },
             error => log.error('*** Error getting local media stream', error));
       }

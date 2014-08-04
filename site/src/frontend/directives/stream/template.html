@@ -1,4 +1,4 @@
-<div ng-show="haveSize" class="have-size">
+<div ng-show="stream.src != null" class="stream-container">
   <div class="cell">
     <video src="{{stream.src}}" autoplay></video>
   </div>
@@ -49,6 +49,6 @@
   </div>
 </div>
 
-<div ng-show="!haveSize">
+<div ng-show="stream.src == null">
 Stream Interrupted!
 </div>

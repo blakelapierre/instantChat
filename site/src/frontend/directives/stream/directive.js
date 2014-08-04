@@ -18,16 +18,19 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       video.addEventListener('playing',        () => gotSize());
       video.addEventListener('play',           () => gotSize());
 
-      element.on('resize',    () => refreshSize());
-      video.addEventListener('resize',      () => refreshSize());
-      window.addEventListener('resize',     () => refreshSize());
+      element.on('resize',                  () => gotSize());
+      cell.addEventListener('resize',       () => gotSize());
+      video.addEventListener('resize',      () => gotSize());
+      window.addEventListener('resize',     () => gotSize());
 
-      $rootScope.$on('resize',              () => refreshSize());
+      $rootScope.$on('resize',              () => gotSize());
+      $rootScope.$on('participant added',   () => {console.log('added');gotSize();});
+      $rootScope.$on('participant removed', () => gotSize());
+
       $rootScope.$on('haveVideoSize',       () => refreshSize());
-      $rootScope.$on('participant added',   () => refreshSize());
-      $rootScope.$on('participant removed', () => refreshSize());
 
       function gotSize() {
+        console.log('gotSize')
         $scope.haveSize = true;
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
       }
@@ -39,6 +42,8 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
             cellWidth = cell.clientWidth,
             cellHeight = cell.clientHeight,
             cellRatio = cellWidth / cellHeight;
+
+        console.log('refresh', video.src, videoWidth, videoHeight, cellWidth, cellHeight);
 
         var videoSurfaceWidth, videoSurfaceHeight;
 
