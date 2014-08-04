@@ -30,7 +30,6 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       $rootScope.$on('haveVideoSize',       () => refreshSize());
 
       function gotSize() {
-        console.log('gotSize')
         $scope.haveSize = true;
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
       }
@@ -42,8 +41,6 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
             cellWidth = cell.clientWidth,
             cellHeight = cell.clientHeight,
             cellRatio = cellWidth / cellHeight;
-
-        console.log('refresh', video.src, videoWidth, videoHeight, cellWidth, cellHeight);
 
         var videoSurfaceWidth, videoSurfaceHeight;
 

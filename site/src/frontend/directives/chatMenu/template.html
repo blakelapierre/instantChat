@@ -56,6 +56,7 @@
 
             <div class="participant" ng-repeat="participant in participants">
               <img class="thumbnail" ng-src="{{participant.thumbnailSrc}}">
+              <!-- <video ng-if="participant.streams.length > 0" ng-src="{{participant.streams[0].src}}" autoplay></video> -->
 
               <div ng-if="participant.isLocal" class="local-participant">
                 <div contenteditable

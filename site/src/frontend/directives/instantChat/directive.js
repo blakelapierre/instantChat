@@ -60,6 +60,10 @@ module.exports = () => {
       $scope.menuIsCollapsed = false;
       $scope.hideBars = true;
 
+      $scope.showCameras = () => $scope.camerasVisible = true;
+      $scope.hideCameras = () => $scope.camerasVisible = false;
+      $scope.toggleCameras = () => $scope.camerasVisible = !$scope.camerasVisible;
+
       $scope.expandMenu = () => {
         $scope.menuIsCollapsed = false;
         toggleBars(true);
@@ -74,6 +78,8 @@ module.exports = () => {
         var changed = $scope.hideBars != hide;
 
         $scope.hideBars = hide != null ? hide === true : !$scope.hideBars;
+
+        $scope.hideCameras();
 
         if (changed) {
           $scope.resizing = $$rAF(broadcastResize);
@@ -111,12 +117,7 @@ module.exports = () => {
         }
       })
         .then(stream => {
-          localParticipant.streams.push({
-            isLocal: true,
-            stream: stream,
-            votes: [],
-            src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
-          });
+          localParticipant.streams.push(createStream(stream, {isLocal: true}));
 
           addActiveParticipant(localParticipant);
 
@@ -196,7 +197,10 @@ module.exports = () => {
 
               $scope.participants.push(participant);
 
-              peer.addLocalStream('local', stream);
+              _.each($scope.localParticipant.streams, (stream, index) => {
+                console.log('adding stream local-' + index, stream);
+                peer.addLocalStream('local-' + index, stream.stream);
+              });
 
               if (peer.config.isExistingPeer) {
                 var channel = peer.addChannel('instantChat', null, instantChatChannelHandler($scope));
@@ -219,11 +223,7 @@ module.exports = () => {
               }
 
               peer.on('remoteStream added', stream => {
-                participant.streams.push({
-                  peer: peer,
-                  votes: [],
-                  src: $sce.trustAsResourceUrl(URL.createObjectURL(stream.stream))
-                });
+                participant.streams.push(createStream(stream.stream, {peer: peer}));
 
                 $scope.$apply();
               });
@@ -265,6 +265,24 @@ module.exports = () => {
       $scope.$watchCollection('config', _.debounce(config => {
         log(config);
       }, 500));
+
+      $scope.addCamera = source => {
+        localMedia
+          .getStream({audio: false, video: {sourceId: source.id}})
+          .then(
+            stream => {
+              console.log('got stream and adding it', stream);
+              $scope.localParticipant.streams.push(createStream(stream, {isLocal: true}));
+
+              _.each($scope.participants, participant => {
+                if (participant.peer) participant.peer.addLocalStream('local-2', stream);
+              });
+
+              console.log($scope.activeParticipants);
+              $scope.$apply();
+            },
+            error => log.error(error));
+      };
 
       //onRootScope('$locationChangeSuccess', joinRoom);
 
@@ -324,6 +342,14 @@ module.exports = () => {
 
       function onRootScope(eventName, listener) {
         rootScopeCleanup.push($rootScope.$on(eventName, listener));
+      }
+
+      function createStream(stream, options) {
+        return _.extend({
+          stream: stream,
+          votes: [],
+          src: $sce.trustAsResourceUrl(URL.createObjectURL(stream))
+        }, options);
       }
     }]
   };

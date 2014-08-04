@@ -61,31 +61,28 @@ instant-chat {
 
     overflow: visible;
 
-    text-align: right;
+    text-align: center;
 
     transition: bottom @hideBarsTransitionDuration ease;
 
     .tool {
       display: inline-block;
-      height: 2em;
 
-      margin-left: 2em;
+      height: 100%;
 
       cursor: pointer;
 
-      span {
-        line-height: 1em;
+      line-height: 1em;
 
-        font-size: 2em;
-      }
-      &:last-child {
-        margin-right: 0.2em;
+      font-size: 1.9em;
+
+      &:hover,
+      &.is-active {
+        text-shadow: 0px 0px 5px #fff;
       }
     }
 
     .add-camera {
-      font-size: 0.9em;
-
       .plus {
         position: absolute;
         margin-top: -0.02em;
@@ -93,6 +90,13 @@ instant-chat {
 
         color: #000;
       }
+    }
+
+    .show-menu {
+      position: absolute;
+
+      bottom: 0%;
+      right: 0.25em;
     }
   }
 
@@ -111,9 +115,86 @@ instant-chat {
     }
   }
 
+  .cameras {
+    position: absolute;
+
+    bottom: 2.5em;
+
+    left: 0;
+    right: 0;
+
+    margin: 0 auto;
+
+    text-align: center;
+
+    .cameras-container {
+      display: inline-block;
+
+      padding: 2em;
+
+      background-color: rgba(0, 0, 0, 0.8);
+
+      text-align: left;
+
+      .source {
+        cursor: pointer;
+      }
+    }
+  }
+
   .participants {
     height: 100%;
     width: 100%;
+
+    .participant {
+      .streams {
+        display: block;
+        position: absolute;
+
+        top: 0%;
+        left: 0%;
+
+        height: 100%;
+        width: 100%;
+
+        .stream {
+          position: absolute;
+
+          height: 100%;
+          width: 100%;
+
+          top: 0%;
+          left: 0%;
+        }
+
+        &.streams-count-1 {
+          .stream {
+            height: 100%;
+            width: 100%;
+          }
+        }
+
+        &.streams-count-2 {
+          .stream {
+            width: 100%;
+
+            left: 0%;
+          }
+
+          .stream-0 {
+            height: 50%;
+
+            top: 0%;
+          }
+
+          .stream-1 {
+            height: 50%;
+
+            top: 50%;
+          }
+        }
+      }
+    }
   }
 
   .participants-count-1 {
@@ -315,17 +396,6 @@ instant-chat {
       top: 50%;
       left: 66.66%;
     }
-  }
-
-  .streams-count-1 {
-    .stream {
-      height: 100%;
-      width: 100%;
-    }
-  }
-
-  .streams-count-2 {
-
   }
 
   .error-message {

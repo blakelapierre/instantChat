@@ -211,12 +211,14 @@ class Peer {
 
   _addLocalStream(stream) {
     this._connection.addStream(stream);
+    console.log('_adding local stream');
     if (navigator.mozGetUserMedia) this.fire('negotiation_needed', {target: this._connection});
     this.fire('localStream added', stream);
     return stream;
   }
 
   _addRemoteStream(stream) {
+    console.log('add remote stream');
     this._remoteStreams.push(stream);
     this.fire('remoteStream added', stream);
     return stream;

@@ -2,11 +2,8 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    scope: {
-      participant: '='
-    },
     link: ($scope, element, attributes) => {
-
+console.log('!!part', $scope);
     },
     controller: ['$scope', ($scope) => {
 

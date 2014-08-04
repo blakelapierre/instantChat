@@ -1,49 +1,49 @@
-<div ng-show="stream.src != null" class="stream-container">
+<div ng-show="stream.src != null" ng-class="{'stream-container': true, 'has-votes': stream.votes.length > 0}">
   <div class="cell">
-    <video src="{{stream.src}}" autoplay></video>
-  </div>
+    <video class="stream-video" src="{{stream.src}}" autoplay></video>
 
-  <div class="stream-overlay"
+    <div class="stream-overlay"
        style="top: {{videoSurfaceTop}}; left: {{videoSurfaceLeft}}px; bottom: {{videoSurfaceBottom}}px; right: {{videoSurfaceRight}}px; height: {{videoSurfaceHeight}}px; width: {{videoSurfaceWidth}}px;">
-    <span class="stream-name">{{streamName}}</span>
-    <div class="stream-controls">
-      <div ng-show="!stream.isLocal">
-        <span ng-class="{
-                'fa': true,
-                'volume': true,
-                'fa-volume-off': stream.isMuted,
-                'volume-off': stream.isMuted,
-                'fa-volume-up': !stream.isMuted,
-                'volume-on': !stream.isMuted}"
-              ng-click="toggleMute($event); $event.stopPropagation()"></span>
-
-        <span ng-class="{
-                'fa': true,
-                'thumbs': true,
-                'fa-thumbs-o-up': !stream.isVotedUp,
-                'fa-thumbs-up': stream.isVotedUp,
-                'thumbs-up': true,
-                'thumbs-up-selected': stream.isVotedUp}"
-              ng-click="toggleVoteUp(); $event.stopPropagation()"></span>
-
-        <span ng-class="{
-                'fa': true,
-                'thumbs': true,
-                'fa-thumbs-o-down': !stream.isVotedDown,
-                'fa-thumbs-down': stream.isVotedDown,
-                'thumbs-down': true,
-                'thumbs-down-selected': stream.isVotedDown}"
-              ng-click="toggleVoteDown(); $event.stopPropagation()"></span>
+      <span class="stream-name">{{streamName}}</span>
+      <div class="votes">
+        <div class="vote" ng-repeat="vote in stream.votes">
+          <video class="video" src="{{vote.from.streams[0].src}}" muted="muted" autoplay></video>
+          <span ng-class="{
+                  'fa': true,
+                  'fa-thumbs-up': vote.vote == 'up',
+                  'fa-thumbs-down': vote.vote == 'down',
+                  'thumbs': true}"></span>
+        </div>
       </div>
-    </div>
-    <div class="votes">
-      <div class="vote" ng-repeat="vote in stream.votes">
-        <video src="{{vote.from.streams[0].src}}" muted="muted" autoplay></video>
-        <span ng-class="{
-                'fa': true,
-                'fa-thumbs-up': vote.vote == 'up',
-                'fa-thumbs-down': vote.vote == 'down',
-                'thumbs': true}"></span>
+      <div class="stream-controls">
+        <div ng-show="!stream.isLocal">
+          <span ng-class="{
+                  'fa': true,
+                  'volume': true,
+                  'fa-volume-off': stream.isMuted,
+                  'volume-off': stream.isMuted,
+                  'fa-volume-up': !stream.isMuted,
+                  'volume-on': !stream.isMuted}"
+                ng-click="toggleMute($event); $event.stopPropagation()"></span>
+
+          <span ng-class="{
+                  'fa': true,
+                  'thumbs': true,
+                  'fa-thumbs-o-up': !stream.isVotedUp,
+                  'fa-thumbs-up': stream.isVotedUp,
+                  'thumbs-up': true,
+                  'thumbs-up-selected': stream.isVotedUp}"
+                ng-click="toggleVoteUp(); $event.stopPropagation()"></span>
+
+          <span ng-class="{
+                  'fa': true,
+                  'thumbs': true,
+                  'fa-thumbs-o-down': !stream.isVotedDown,
+                  'fa-thumbs-down': stream.isVotedDown,
+                  'thumbs-down': true,
+                  'thumbs-down-selected': stream.isVotedDown}"
+                ng-click="toggleVoteDown(); $event.stopPropagation()"></span>
+        </div>
       </div>
     </div>
   </div>

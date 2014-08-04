@@ -15,11 +15,30 @@
     </div>
   </div>
   <div class="bottom-bar">
-    <div class="tool add-camera" ng-show="sources.video.length > 1">
+    <!-- <div class="tool add-camera" ng-show="sources.video.length > 1"> -->
+    <div ng-click="toggleCameras(); $event.stopPropagation()"
+         ng-class="{'tool': true,
+                    'add-camera': true,
+                    'is-active': camerasVisible}">
       <span class="plus">+</span><span class="fa fa-video-camera"></span>
     </div>
-    <div ng-class="{'tool': true, 'show-menu': true, 'is-active': !menuIsCollapsed}">
+
+    <div ng-class="{'tool': true,
+                    'show-menu': true,
+                    'is-active': !menuIsCollapsed}">
       <span class="fa fa-bars" ng-click="expandMenu(); $event.stopPropagation()"></span>
+    </div>
+  </div>
+</div>
+
+<div class="cameras" ng-if="camerasVisible" ng-click="hideCameras(); $event.stopPropagation()">
+  <div class="cameras-container">
+    <div class="source video-source"
+         ng-repeat="video in sources.video"
+         ng-click="addCamera(video)">
+      <span class="fa fa-video-camera"></span>
+      <span class="source-label">{{video.label}}</span>
+      <span ng-show="video.facing != '' && video.facing != null"> - {{video.facing}}</span>
     </div>
   </div>
 </div>

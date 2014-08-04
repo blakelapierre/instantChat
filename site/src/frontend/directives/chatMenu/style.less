@@ -268,11 +268,16 @@ chat-menu {
 
               background-color: rgba(0, 0, 0, 0.2);
 
-              .thumbnail {
+              .thumbnail,
+              video {
                 display: table-cell;
-                width: 8em;
+                width: 7em;
 
                 float: left;
+              }
+
+              video {
+                backface-visibility: hidden;
               }
 
               .local-participant {
