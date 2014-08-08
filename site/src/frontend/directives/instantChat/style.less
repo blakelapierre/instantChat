@@ -80,13 +80,17 @@ instant-chat {
       &.is-active {
         text-shadow: 0px 0px 5px #fff;
       }
+
+      &.show-menu.is-active {
+        bottom: -100%;
+      }
     }
 
     .add-camera {
       .plus {
         position: absolute;
-        margin-top: -0.02em;
-        margin-left: 0.06em;
+        margin-top: -0.01em;
+        margin-left: 0.07em;
 
         color: #000;
       }
@@ -97,6 +101,8 @@ instant-chat {
 
       bottom: 0%;
       right: 0.25em;
+
+      transition: bottom 0.25s cubic-bezier(0, -0.7, 1, 1.7);
     }
   }
 

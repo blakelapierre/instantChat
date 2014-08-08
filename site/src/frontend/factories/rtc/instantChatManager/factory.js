@@ -1,10 +1,6 @@
 var _ = require('lodash');
 
-module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
-  var participants = [];
-
-  console.log(config);
-
+module.exports = ['log', '$emit', 'config', 'participants', (log, $emit, config, participants) => {
   config.on('$change', _.debounce(() => _.each(participants, p => sendConfig(p))));
 
   function sendConfig(participant) {
@@ -15,9 +11,10 @@ module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
   }
 
   function sendToggleVoteUp(stream, voteUpStatus) {
+    console.log(stream);
     sendMessageToAll({
       type: 'voteUp',
-      participantID: stream.peer.id,
+      peerID: stream.participant.id,
       streamID: stream.id,
       status: voteUpStatus
     });
@@ -26,64 +23,68 @@ module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
   function sendToggleVoteDown(stream, voteDownStatus) {
     sendMessageToAll({
       type: 'voteDown',
-      participantID: stream.peer.id,
+      peerID: stream.participant.id,
       streamID: stream.id,
       status: voteDownStatus
     });
   }
 
-  function receiveConfig(fromPeer, participantID, config) {
-    var fromParticipant = _.find(participants, {id: fromPeer.id}),
-        targetParticipant = _.find(participants, {id: participantID});
+  function receiveConfig(fromParticipant, peerID, config) {
+    var targetParticipant = participants.getByID(peerID);
+
+    fromParticipant.config = config;
 
     $emit('participant config', {from: fromParticipant, to: targetParticipant, config: config});
   }
 
-  function receiveToggleVoteUp(fromPeer, participantID, streamID, voteUpStatus) {
-    var fromParticipant = _.find(participants, {id: fromPeer.id}),
-        targetParticipant = _.find(participants, {id: participantID}),
+  function receiveToggleVoteUp(fromParticipant, peerID, streamID, voteUpStatus) {
+    console.log(peerID, participants);
+    var targetParticipant = participants.getByID(peerID),
         targetStream = _.find(targetParticipant.streams, {id: streamID});
 
+    console.log('got vote up');
     $emit('stream vote up', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteUpStatus});
   }
 
-  function receiveToggleVoteDown(fromPeer, participantID, streamID, voteDownStatus) {
-    var fromParticipant = _.find(participants, {id: fromPeer.id}),
-        targetParticipant = _.find(participants, {id: participantID}),
+  function receiveToggleVoteDown(fromParticipant, peerID, streamID, voteDownStatus) {
+    var targetParticipant = participants.getByID(peerID),
         targetStream = _.find(targetParticipant.streams, {id: streamID});
 
     $emit('stream vote down', {from: fromParticipant, to: targetParticipant, stream: targetStream, status: voteDownStatus});
   }
 
   var messageHandlers = {
-    'voteUp': (peer, data) => receiveToggleVoteUp(peer, data.participantID, data.streamID, data.status),
-    'voteDown': (peer, data) => receiveToggleVoteDown(peer, data.participantID, data.streamID, data.status),
-    'config': (peer, data) => receiveConfig(peer, data.participantID, data.config)
+    'voteUp': (participant, data) => receiveToggleVoteUp(participant, data.peerID, data.streamID, data.status),
+    'voteDown': (participant, data) => receiveToggleVoteDown(participant, data.peerID, data.streamID, data.status),
+    'config': (participant, data) => receiveConfig(participant, data.peerID, data.config)
   };
 
-  function addParticipant(participant) {
-    participants.push(participant);
+  participants.on({
+    'active': addParticipant,
+    'inactive': removeParticipant
+  });
 
+  function addParticipant(participant) {
     // This may be the local participant, which doesn't have a peer
     if (!participant.isLocal) {
-      var channel = participant.peer.channel('instantChat');
+      participant
+        .peer
+        .channel('instantChat')
+        .then(channel => {
+          channel.on('message', (channel, event) => {
+            console.log(channel, event);
+            var message = JSON.parse(event.data);
+            messageHandlers[message.type](participant, message);
+          });
 
-      channel.on('message', (channel, event) => {
-        console.log(channel, event);
-        var message = JSON.parse(event.data);
-        messageHandlers[message.type](channel.peer, message);
-      });
-
-      if (channel.channel.readyState == 'open') sendConfig(participant);
-      else channel.on('open', () => sendConfig(participant));
+          if (channel.channel.readyState == 'open') sendConfig(participant);
+          else channel.on('open', () => sendConfig(participant));
+        });
     }
   }
 
   function removeParticipant(participant) {
-    var index = participants.indexOf(participant);
-    if (index != -1) {
-      participants.splice(index, 1);
-    }
+    // Should clean up event handlers? Yes, probably
   }
 
   function sendMessageToAll(message) {
@@ -93,9 +94,10 @@ module.exports = ['log', '$emit', 'config', (log, $emit, config) => {
   function sendMessage(participant, message) {
     if (!participant.isLocal) {
       try {
-          var peer = participant.peer,
-              chatChannel = peer.channel('instantChat');
-          if (chatChannel) chatChannel.sendJSON(message);
+          var peer = participant.peer;
+
+          console.log('sending', message, 'to', participant);
+          peer.channel('instantChat').then(channel => channel.sendJSON(message));
       }
       catch (e) {
         log.error('Chat send error', e, chatChannel, message);

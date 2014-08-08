@@ -8,10 +8,26 @@ module.exports = ['emitter', 'localStorageService', (emitter, localStorageServic
       data = {};
 
   var config = _.extend({
-    name: undefined
+    name: undefined,
+    defaultStream: {
+      audio: true,
+      //video: true
+      video: {
+        mandatory: {
+          minWidth: 320,
+          maxWidth: 320,
+          minHeight: 240,
+          maxHeight: 240
+        }
+        // mandatory: {
+        //   minWidth: 720,
+        //   maxWidth: 720,
+        //   minHeight: 540,
+        //   maxHeight: 540
+        // }
+      }
+    }
   }, localStorageService.get(storageKey) || {});
-
-  console.log(config);
 
   _.each(config, (value, key) => {
     console.log('setting', value, key);
@@ -33,8 +49,6 @@ module.exports = ['emitter', 'localStorageService', (emitter, localStorageServic
     'on': {get: () => (...args) => on(...args)},
     'off': {get: () => (...args) => off(...args)}
   });
-
-  console.log(data);
 
   return data;
 }];

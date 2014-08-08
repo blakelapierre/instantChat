@@ -34,7 +34,7 @@ module.exports = function(config, callback) {
   clientLogger(log, router);
   images(log, router, signalStats);
   rooms(log, router, signalStats);
-  stats(log, router);
+  stats(log, router, signalStats);
   suggestions(log, router);
 
   app.use('/', router);

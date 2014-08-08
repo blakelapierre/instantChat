@@ -11,17 +11,14 @@ module.exports = ['log', 'emitter', (log, emitter) => {
 
   var {emit: fire, on, off} = emitter();
 
-  return {
-    connectToSignal: (server, listeners) => {
-      if (signal === undefined) signal = connectToSignal(server);
+  return (server, listeners) => {
+    if (signal === undefined) signal = connectToSignal(server);
 
-      signal.on(listeners);
+    if (listeners) signal.on(listeners);
 
-      if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
+    if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
 
-      return signal;
-    },
-    existingSignal: () => signal
+    return signal;
   };
 
     /*
@@ -34,8 +31,12 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       joinRoom: joinRoom,
       leaveRoom: leaveRoom,
       leaveRooms: leaveRooms,
-      currentRooms: rooms
+      currentRooms: rooms,
+      close: close
     };
+
+    var peers = [],
+        peersHash = {};
 
     var socket = io(server);
 
@@ -49,9 +50,6 @@ module.exports = ['log', 'emitter', (log, emitter) => {
 
     socket.on('your_id', myID => {
       log('Got ID', myID);
-
-      var peers = [],
-          peersHash = {};
 
       signal.myID = myID;
 
@@ -86,7 +84,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
         peers.push(peer);
         peersHash[id] = peer;
 
-        fire('peer added', peer);
+        fire('peer add', peer);
       }
 
       function removePeerByID(id) {
@@ -95,7 +93,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
           peer.close();
           _.remove(peers, peer => { return peer.id === id; });
           delete peersHash[id];
-          fire('peer removed', peer);
+          fire('peer remove', peer);
         }
       }
 
@@ -141,15 +139,24 @@ module.exports = ['log', 'emitter', (log, emitter) => {
     function joinRoom(roomName) {
       rooms.push(roomName);
       emit('room join', roomName);
+      fire('room join', roomName);
     }
 
     function leaveRoom(roomName) {
-      _.remove(rooms, roomName);
+      var index = _.indexOf(rooms, roomName);
+      if (index >= 0) rooms.splice(index, 1);
       emit('room leave', roomName);
+      fire('room leave', roomName);
     }
 
     function leaveRooms() {
-      _.each(rooms, leaveRoom);
+      for (var i = rooms.length -1; i >= 0; i--) leaveRoom(rooms[i]);
+    }
+
+    function close() {
+      socket.close();
+      _.each(peers, peer => peer.close());
+      signal = undefined;
     }
 
     return signal;

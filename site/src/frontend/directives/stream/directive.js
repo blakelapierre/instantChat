@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootScope, $interval, $timeout, videoTools) => {
   return {
     restrict: 'E',
@@ -14,25 +16,43 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       $scope.haveSize = false;
       $scope.thumbSrc = 'about:blank';
 
-      video.addEventListener('loadedmetadata', () => gotSize());
-      video.addEventListener('playing',        () => gotSize());
-      video.addEventListener('play',           () => gotSize());
+      $scope.listenersCleanup = [];
 
-      element.on('resize',                  () => gotSize());
-      cell.addEventListener('resize',       () => gotSize());
-      video.addEventListener('resize',      () => gotSize());
-      window.addEventListener('resize',     () => gotSize());
-
-      $rootScope.$on('resize',              () => gotSize());
-      $rootScope.$on('participant added',   () => {console.log('added');gotSize();});
-      $rootScope.$on('participant removed', () => gotSize());
-
-      $rootScope.$on('haveVideoSize',       () => refreshSize());
-
-      function gotSize() {
+      // Cheap, but effective. Without debouncing this function
+      // we can get many calls in a row
+      var gotSize = $scope.gotSize =  _.debounce(() => {
         $scope.haveSize = true;
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
+      }, 10, {maxWait: 10});
+
+      video.addEventListener('loadedmetadata', gotSize);
+      video.addEventListener('playing',        gotSize);
+      video.addEventListener('play',           gotSize);
+
+      element.on('resize',                     gotSize);
+      cell.addEventListener('resize',          gotSize);
+      video.addEventListener('resize',         gotSize);
+      window.addEventListener('resize',        gotSize);
+
+      onRootScope({
+        'resize':               gotSize,
+        'participant active':   gotSize,
+        'participant inactive': gotSize,
+        'stream add':           gotSize,
+        'stream remove':        gotSize,
+        'haveVideoSize':        refreshSize
+      });
+
+      function onRootScope(listeners) {
+        _.each(listeners, (listener, eventName) => {
+          $scope.listenersCleanup.push($rootScope.$on(eventName, listener));
+        });
       }
+
+      // function gotSize() {
+      //   $scope.haveSize = true;
+      //   $timeout(() => $rootScope.$broadcast('haveVideoSize', $scope.stream), 0);
+      // }
 
       function refreshSize() {
         var videoWidth = video.videoWidth,
@@ -68,13 +88,13 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
       }
 
       video.addEventListener('playing', () => {
-        // Allow some time for camera to adjust
-        $timeout($scope.generateLocalThumbnail, $scope.stream.isLocal ? 100 : 0);
+        // Allow some time for camera/stream to adjust
+        $timeout($scope.generateLocalThumbnail, 100);
       });
 
 
       $scope.$watch('stream', stream => {
-        stream.isMuted = stream.isLocal || stream.isMuted;
+        stream.isMuted = $scope.participant.isLocal || stream.isMuted;
         stream.isVotedUp = false;
         stream.isVotedDown = false;
 
@@ -125,11 +145,14 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
         $scope.captureFrame(null, dataUrl => {
           $rootScope.$broadcast('thumbnail', participant, stream, dataUrl);
-          if (stream.isLocal) $rootScope.$broadcast('localThumbnail', participant, stream, dataUrl);
+
+          if (participant.isLocal) $rootScope.$broadcast('localThumbnail', participant, stream, dataUrl);
         });
       };
 
       $scope.$on('$destroy', () => {
+        window.removeEventListener('resize', $scope.gotSize);
+        _.each($scope.listenersCleanup, fn => fn());
         if ($scope.thumbnailInterval) $interval.cancel($scope.thumbnailInterval);
       });
     }]

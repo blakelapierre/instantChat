@@ -14,7 +14,6 @@ module.exports = () => {
       });
 
       function read() {
-        console.log("read()");
         return ngModel.$setViewValue(element.html().trim());
       }
     }

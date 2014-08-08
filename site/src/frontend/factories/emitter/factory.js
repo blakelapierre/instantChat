@@ -20,12 +20,16 @@ module.exports = () => {
 
   function on(events, event, listener) {
     if (typeof event == 'object') {
-      for (var eventName in event) on(events, eventName, event[eventName]);
-      return;
+      var unregister = () => _.each(unregister, fn => fn());
+      return _.transform(event, (result, listener, eventName) => {
+        result[eventName] = on(events, eventName, listener);
+      }, unregister);
     }
 
     events[event] = events[event] || [];
     events[event].push(listener);
+
+    return () => off(events, event, listener);
   }
 
   function off(events, event, listener) {

@@ -36,7 +36,6 @@ module.exports = () => {
 
       function getSuggestions() {
         Suggestions.get(null, suggestions => {
-          console.log(suggestions);
           $scope.suggestions = suggestions.suggestions;
         });
       }

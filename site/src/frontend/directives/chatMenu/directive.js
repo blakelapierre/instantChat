@@ -33,7 +33,6 @@ module.exports = () => {
         },
 
         collapse() {
-          console.log('collapse()');
           $scope.collapseMenu();
           $scope.mainVisible = true;
           $scope.settingsVisible = false;
@@ -62,7 +61,6 @@ module.exports = () => {
         },
 
         participantNameBlur() {
-          console.log($scope.localParticipant);
         }
       });
 

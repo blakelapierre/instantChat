@@ -43,8 +43,14 @@ module.exports = () => {
       updateFullscreenMessage();
     },
     controller:
-      ['$rootScope', '$scope', '$sce', '$location', '$timeout', '$interval', '$resource', '$window', '$$rAF', 'log', 'rtc', 'localMedia', 'instantChatChannelHandler', 'instantChatManager', 'config',
-      ($rootScope, $scope, $sce, $location, $timeout, $interval, $resource, $window, $$rAF, log, rtc, localMedia, instantChatChannelHandler, instantChatManager, config) => {
+      ['$rootScope', '$scope', '$sce', '$location', '$timeout',
+       '$interval', '$resource', '$window', '$$rAF', 'log', 'instantChat',
+       'localMedia', 'instantChatChannelHandler', 'instantChatManager',
+       'config', 'participants',
+      ($rootScope, $scope, $sce, $location, $timeout,
+        $interval, $resource, $window, $$rAF, log, instantChat,
+        localMedia, instantChatChannelHandler, instantChatManager,
+        config, participants) => {
 
       log.info('Entering instantChat controller');
 
@@ -58,7 +64,7 @@ module.exports = () => {
       });
 
       $scope.menuIsCollapsed = false;
-      $scope.hideBars = true;
+      $scope.hideBars = false;
 
       $scope.showCameras = () => $scope.camerasVisible = true;
       $scope.hideCameras = () => $scope.camerasVisible = false;
@@ -66,7 +72,7 @@ module.exports = () => {
 
       $scope.expandMenu = () => {
         $scope.menuIsCollapsed = false;
-        toggleBars(true);
+        //toggleBars(true);
       };
 
       $scope.collapseMenu = () => {
@@ -92,175 +98,49 @@ module.exports = () => {
         $scope.resizing = $$rAF(broadcastResize);
       }
 
-      var rootScopeCleanup = [];
+      var listenersCleanup = [];
 
-      var localParticipant = {
-        isLocal: true,
-        config: config,
-        streams: []
-      };
-
-      $scope.localParticipant = localParticipant;
-      $scope.config = localParticipant.config;
-      $scope.participants = [localParticipant];
-      $scope.activeParticipants = [];
-
-      localMedia.getStream({
-        audio: true,
-        video: {
-          mandatory: {
-            minWidth: 320,
-            maxWidth: 320,
-            minHeight: 240,
-            maxHeight: 240
-          }
-        }
-      })
+      // Using nested Promises here because we need the stream
+      // after connecting to the signal...so we capture it in a closure :)
+      localMedia.getStream(config.defaultStream)
         .then(stream => {
-          localParticipant.streams.push(createStream(stream, {isLocal: true}));
+          if ($scope.$$destroyed) {
+            stream.__doneWithStream();
+            return;
+          }
 
-          addActiveParticipant(localParticipant);
+          instantChat
+            .connect('https://' + $location.host())
+            .then(signal => {
+              if ($scope.$$destroyed) {
+                stream.__doneWithStream();
+                return;
+              }
+              $scope.signal = signal;
 
-          $rootScope.localStream = stream;
+              $scope.localParticipant = instantChat.localParticipant;
+              $scope.participants = instantChat.participants;
+              $scope.activeParticipants = instantChat.activeParticipants;
 
-          $scope.$apply();
+              $scope.currentRoom = {name: null};
+              $scope.currentRooms = signal.currentRooms;
+
+              if (!$scope.localParticipant.streams.contains(stream)) {
+                $scope.localParticipant.streams.add(stream);
+              }
+
+              joinRoom();
+            })
+            .catch(error => $rootScope.$broadcast('error', 'Could not access signalling server. Please refreshing the page!', error));
         })
         .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
 
-      var signalListeners = {
-        'ready': handle => {
-          localParticipant.id = handle;
-          joinRoom();
-        },
-
-        'peer added':   createParticipant,
-        'peer removed': removeParticipant,
-
-        // 'peer ice_candidate': () => log('ICE Candidate Received'),
-        'peer receive offer':  () => log('Offer Received'),
-        'peer receive answer': () => log('Answer Received'),
-
-        'peer send answer':    () => log('Answer Sent'),
-
-        'peer signaling_state_change':      peer => log('Signaling: ' + peer.connection.signalingState),
-        'peer ice_connection_state_change': peer => log(      'ICE: ' + peer.connection.iceConnectionState),
-
-        //'peer ice_candidate accepted': (peer, candidate) => log('candidate accepted', peer, candidate),
-
-        'peer error set_local_description':  (peer, error, offer) => log.error('peer error set_local_description', peer, error, offer),
-        'peer error set_remote_description': (peer, error, offer) => log.error('peer error set_remote_description', peer, error, offer),
-
-        'peer error create offer': (peer, error)        => log.error('peer error create offer', peer, error),
-        'peer error send answer':  (peer, error, offer) => log.error('peer error send answer', peer, error, offer),
-
-        'peer error ice_candidate': (peer, error, candidate) => log.error('peer error ice_candidate', peer, error, candidate)
-      };
-
-      var signal = rtc.connectToSignal('https://' + $location.host(), signalListeners);
-
-      $scope.currentRoom = {name: null};
-      $scope.currentRooms = signal.currentRooms;
-
-      function joinRoom() {
-        log('joining room', $location.path());
-        signal.leaveRooms();
-
-        var room = $location.path().replace(/^\//, '');
-
-        if (room) {
-          $scope.currentRoom.name = room;
-          signal.joinRoom(room);
-        }
-      }
-
-      function addActiveParticipant(participant) {
-        if (!participant.isActive) {
-          participant.isActive = true;
-
-          $scope.activeParticipants.push(participant);
-
-          instantChatManager.addParticipant(participant);
-        }
-      }
-
-      function createParticipant(peer) {
-        localMedia.getStream()
-          .then(
-            stream => {
-              var participant = {
-                id: peer.id,
-                peer: peer,
-                streams: [],
-                isActive: false,
-                config: {}
-              };
-
-              $scope.participants.push(participant);
-
-              _.each($scope.localParticipant.streams, (stream, index) => {
-                console.log('adding stream local-' + index, stream);
-                peer.addLocalStream('local-' + index, stream.stream);
-              });
-
-              if (peer.config.isExistingPeer) {
-                var channel = peer.addChannel('instantChat', null, instantChatChannelHandler($scope));
-                peer.connect()
-                  .then(
-                    peer => {
-                      addActiveParticipant(participant);
-                      $scope.$apply();
-                    },
-                    error => log.error(error));
-              }
-              else {
-                peer.on('channel added', channel => {
-                  if (channel.label === 'instantChat') {
-                    channel.attachHandler(instantChatChannelHandler($scope));
-                    addActiveParticipant(participant);
-                  }
-                  $scope.$apply();
-                });
-              }
-
-              peer.on('remoteStream added', stream => {
-                participant.streams.push(createStream(stream.stream, {peer: peer}));
-
-                $scope.$apply();
-              });
-
-              peer.on('disconnected', removeParticipant);
-
-              $rootScope.$broadcast('participant added', participant);
-
-              $scope.$apply();
-            },
-            error => log.error('*** Error getting local media stream', error));
-      }
-
-      function removeParticipant(peer) {
-        // Occasionally, the localParticipant has been removed. It's likely that is because a null/undefined
-        // is being passed as peer here. Not sure what's causing it, but adding a guard here for now.
-        var participant = _.find($scope.participants, {peer: peer, isLocal: undefined});
-
-        if (participant) {
-          log('removing', participant);
-          var index = $scope.participants.indexOf(participant);
-
-          if (index != -1) {
-            $scope.participants.splice(index, 1);
-            $scope.$apply();
-            $timeout(() => $rootScope.$broadcast('participant removed', participant), 0);
-          }
-
-          if (participant.isActive) {
-            index = $scope.activeParticipants.indexOf(participant);
-            instantChatManager.removeParticipant(participant);
-            $scope.activeParticipants.splice(index, 1);
-            $scope.$apply();
-            $rootScope.$broadcast('activeParticipant removed', participant);
-          }
-        }
-      }
+      listenersCleanup.push(instantChat.on({
+        'participant active':   participant => { $rootScope.$broadcast('participant active',   participant); },
+        'participant inactive': participant => { $rootScope.$broadcast('participant inactive', participant); },
+        'stream add':           stream =>      { $rootScope.$broadcast('stream add',           stream); },
+        'stream remove':        stream =>      { $rootScope.$broadcast('stream remove',        stream); }
+      }));
 
       $scope.$watchCollection('config', _.debounce(config => {
         log(config);
@@ -268,18 +148,10 @@ module.exports = () => {
 
       $scope.addCamera = source => {
         localMedia
-          .getStream({audio: false, video: {sourceId: source.id}})
+          .getStream({audio: false, video: {optional: [{sourceId: source.id}]}})
           .then(
             stream => {
-              console.log('got stream and adding it', stream);
-              $scope.localParticipant.streams.push(createStream(stream, {isLocal: true}));
-
-              _.each($scope.participants, participant => {
-                if (participant.peer) participant.peer.addLocalStream('local-2', stream);
-              });
-
-              console.log($scope.activeParticipants);
-              $scope.$apply();
+              $scope.localParticipant.streams.add(stream);
             },
             error => log.error(error));
       };
@@ -316,32 +188,37 @@ module.exports = () => {
         $scope.$apply();
       });
 
-      onRootScope('participant config', ($event, data) => {
-        var from = data.from,
-            config = data.config;
-
-        from.config = config;
-        $scope.$apply();
-      });
+      onRootScope('participant config', ($event, data) => $scope.$apply());
 
       var Images = $resource('/images');
       onRootScope('localThumbnail', ($event, participant, stream, imageData) => {
         Images.save({
-          id: localParticipant.id,
+          id: participant.id,
           data: imageData
         });
       });
 
       $scope.$on('$destroy', () => {
-        signal.leaveRooms();
-        signal.off(signalListeners);
-        _.each(rootScopeCleanup, fn => fn());
-        rootScopeCleanup.splice(0);
+        if ($scope.signal) $scope.signal.leaveRooms();
+        _.each(listenersCleanup, fn => fn());
+        listenersCleanup.splice(0);
         $window.removeEventListener(toggleBars);
       });
 
+      function joinRoom() {
+        log('joining room', $location.path());
+        $scope.signal.leaveRooms();
+
+        var room = $location.path().replace(/^\//, '');
+
+        if (room) {
+          $scope.currentRoom.name = room;
+          $scope.signal.joinRoom(room);
+        }
+      }
+
       function onRootScope(eventName, listener) {
-        rootScopeCleanup.push($rootScope.$on(eventName, listener));
+        listenersCleanup.push($rootScope.$on(eventName, listener));
       }
 
       function createStream(stream, options) {

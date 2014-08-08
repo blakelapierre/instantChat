@@ -1,4 +1,4 @@
-module.exports = (log, router) => {
+module.exports = (log, router, signalStats) => {
   log('Mounting /stats');
 
   router.get('/stats', (req, res) => {

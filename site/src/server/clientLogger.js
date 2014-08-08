@@ -1,4 +1,5 @@
-var mkdirp = require('mkdirp'),
+var _ = require('lodash'),
+    mkdirp = require('mkdirp'),
     winston = require('winston');
 
 module.exports = (log, router) => {
@@ -16,10 +17,16 @@ module.exports = (log, router) => {
 
   log('Mounting /log');
   router.post('/log', (req, res) => {
-    var level = req.body.level,
-        args = req.body.args;
+    var logs = req.body.logs;
 
-    console.log('Got from browser:', level, args);
-    logger.log(level, ...args);
+    _.each(logs, log => {
+      var level = log.level,
+          args = log.args;
+
+      console.log('Got from browser:', level, args);
+      logger.log(level, ...args);
+    });
+
+    res.end();
   });
 };

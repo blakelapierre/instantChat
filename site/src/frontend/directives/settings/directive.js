@@ -7,7 +7,6 @@ module.exports = () => {
         .getDevices()
         .then(devices => {
           $scope.sources = devices;
-          console.log(devices);
         });
     }
   };

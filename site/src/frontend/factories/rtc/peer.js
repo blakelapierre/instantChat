@@ -47,8 +47,8 @@ class Peer {
 
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
-      'data_channel':   event => this._addChannel(new Channel(this, event.channel)),
-      'add_stream':     event => this._addRemoteStream(new Stream(this, event.stream))
+      'data_channel':   event => this._addChannel(event.channel),
+      'add_stream':     event => this._addRemoteStream(event.stream)
     });
 
     this.on({
@@ -56,7 +56,7 @@ class Peer {
         switch (connection.iceConnectionState) {
           case 'failed':
           case 'disconnected':
-          case 'close':
+          case 'closed':
             this.fire('disconnected');
         }
       }
@@ -156,7 +156,7 @@ class Peer {
     // options = options || {};
     // options.negotiated = false;
 
-    var channel = this._addChannel(new Channel(this, this._connection.createDataChannel(label, options), channelHandler));
+    var channel = this._addChannel(this._connection.createDataChannel(label, options), channelHandler);
 
     return channel;
   }
@@ -170,7 +170,7 @@ class Peer {
   }
 
   addLocalStream(id, stream) {
-    var localStream = new Stream(this, id, stream);
+    var localStream = new Stream(this, stream);
 
     this._localStreams.push(localStream);
 
@@ -180,7 +180,7 @@ class Peer {
   }
 
   close() {
-    this._connection.close();
+    if (this._connection && this._connection.iceConnectionState != 'closed') this._connection.close();
   }
 
   get id() { return this._id; }
@@ -191,20 +191,45 @@ class Peer {
   get isConnectingPeer() { return this._isConnectingPeer; }
   get log() { return this._log; }
 
-  channel(label) { return this._channels[label]; }
+  //channel(label) { return this._channels[label]; }
+
+  channel(label) {
+    var promises = this._channelPromises = this._channelPromises || {};
+
+    var promise = promises[label] = promises[label] || new Promise((resolve, reject) => {
+      var channel = this._channels[label];
+
+      if (channel) resolve(channel);
+      else {
+        var listener = channel => {
+          if (channel.label == label) {
+            this.off('channel add', listener);
+            resolve(channel);
+          }
+        };
+
+        this.on('channel add', listener);
+      }
+    });
+
+    return promise;
+  }
+
   stream(id) { return _.find(this._remoteStreams, {'id': id}); }
 
   // Do we want to expose this?!
   get connection() { return this._connection; }
 
   _addChannel(channel) {
+    channel = new Channel(this, channel);
+
     channel.on({
       'close': () => this.removeChannel(channel.label)
     });
 
     this._channels[channel.label] = channel;
 
-    this.fire('channel added', channel);
+    this.fire('channel add', channel);
 
     return channel;
   }
@@ -213,14 +238,15 @@ class Peer {
     this._connection.addStream(stream);
     console.log('_adding local stream');
     if (navigator.mozGetUserMedia) this.fire('negotiation_needed', {target: this._connection});
-    this.fire('localStream added', stream);
+    this.fire('localStream add', stream);
     return stream;
   }
 
   _addRemoteStream(stream) {
     console.log('add remote stream');
+    stream = new Stream(this, stream);
     this._remoteStreams.push(stream);
-    this.fire('remoteStream added', stream);
+    this.fire('remoteStream add', stream);
     return stream;
   }
 
@@ -274,7 +300,7 @@ class Peer {
 
     var listeners = events[event];
     if (listeners && listeners.length > 0) {
-      for (var i = listeners.length - 1; i >= 0; i++) {
+      for (var i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i] === listener) {
           listeners.splice(i, 1);
         }

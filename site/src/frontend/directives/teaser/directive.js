@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function() {
+module.exports = ['instantChat', instantChat => {
   return {
     restrict: 'E',
     template: require('./template.html'),
@@ -16,8 +16,6 @@ module.exports = function() {
         $scope.joinChannel();
         $scope.$apply();
       }, 1500);
-
-      if ($scope.localStream) $scope.localStream.stop();
     }]
   };
-};
+}];

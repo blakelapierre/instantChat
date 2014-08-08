@@ -27,14 +27,21 @@ module.exports = angular.module('instantChat', ['ngAnimate', 'ngRoute', 'ngResou
   .factory('emitter',         require('./factories/emitter/factory'))
 
   .factory('localMedia',      require('./factories/localMedia/factory'))
+
+  .factory('instantChat',     require('./factories/instantChat/factory'))
+
   .factory('rtc',             require('./factories/rtc/factory'))
+
+  .factory('streams',         require('./factories/streams/factory'))
 
   .factory('chatReceiveHandlers',           require('./factories/rtc/chatReceiveHandlers/factory'))
   .factory('chatServeHandlers',             require('./factories/rtc/chatServeHandlers/factory'))
   .factory('instantChatChannelHandler',     require('./factories/rtc/instantChatChannelHandler/factory'))
   .factory('instantChatManager',            require('./factories/rtc/instantChatManager/factory'))
 
-  .factory('log',                        require('./factories/log/factory'))
+  .factory('log',                           require('./factories/log/factory'))
+
+  .factory('participants',                  require('./factories/participants/factory'))
 
   .factory('videoTools',            require('./factories/videoTools/factory'))
 

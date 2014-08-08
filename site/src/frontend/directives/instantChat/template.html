@@ -15,8 +15,8 @@
     </div>
   </div>
   <div class="bottom-bar">
-    <!-- <div class="tool add-camera" ng-show="sources.video.length > 1"> -->
-    <div ng-click="toggleCameras(); $event.stopPropagation()"
+    <div ng-show="sources.video.length > 1"
+         ng-click="toggleCameras(); $event.stopPropagation()"
          ng-class="{'tool': true,
                     'add-camera': true,
                     'is-active': camerasVisible}">
