@@ -76,7 +76,20 @@ module.exports = [
           emit('participant inactive', participant);
         },
 
-        'stream add':    (participant, stream) => emit('stream add', participant, stream),
+        'stream add':    (participant, stream) => {
+          // Probably not the best place for this!
+          if (participant.isLocal) {
+            console.log('new local stream, adding to all participants');
+            _.each(participants, remoteParticipant => {
+              console.log(participant, remoteParticipant);
+              if (participant != remoteParticipant) {
+                console.log('adding stream to', remoteParticipant)
+                remoteParticipant.peer.addLocalStream(stream.rawStream);
+              }
+            });
+          }
+          emit('stream add', participant, stream);
+        },
         'stream remove': (participant, stream) => emit('stream remove', participant, stream)
       });
 

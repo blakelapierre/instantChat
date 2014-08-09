@@ -34,6 +34,9 @@ class Peer {
 
     this._isConnectingPeer = false;
 
+    this._connectCalled = false;
+    this._connected = false;
+
     this._isReadyForIceCandidates = false;
     this._iceCandidatePromises = [];
 
@@ -54,9 +57,14 @@ class Peer {
     this.on({
       'ice_connection_state_change': event => {
         switch (connection.iceConnectionState) {
+          case 'connected':
+          case 'completed':
+            this._connected = true;
+            break;
           case 'failed':
           case 'disconnected':
           case 'closed':
+            this._connected = false;
             this.fire('disconnected');
         }
       }
@@ -69,11 +77,14 @@ class Peer {
 
     return new Promise((resolve, reject) => {
       var connectWatcher = event => {
+        this._connectCalled = true;
+
         var connection = event.target;
 
         switch (connection.iceConnectionState) {
           case 'connected':
           case 'completed':
+            this._connected = true;
             connection.removeEventListener('iceconnectionstatechange', connectWatcher);
             resolve(this);
             break;
@@ -169,7 +180,7 @@ class Peer {
     }
   }
 
-  addLocalStream(id, stream) {
+  addLocalStream(stream) {
     var localStream = new Stream(this, stream);
 
     this._localStreams.push(localStream);
@@ -237,7 +248,16 @@ class Peer {
   _addLocalStream(stream) {
     this._connection.addStream(stream);
     console.log('_adding local stream');
-    if (navigator.mozGetUserMedia) this.fire('negotiation_needed', {target: this._connection});
+    // This might not be a good idea. What happens if
+    // _addLocalStream is called again before the offer is full resolved?
+    if (this._connected) {
+      this.initiateOffer()
+        .then(offer => this.fire('offerReady', offer))
+        .catch(error => {
+          console.log(error);
+          this.fire('offer error');
+        });
+    }
     this.fire('localStream add', stream);
     return stream;
   }

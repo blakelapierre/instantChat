@@ -54,7 +54,7 @@ module.exports = ['$timeout', 'rtc', 'emitter', 'streams', 'instantChatChannelHa
     if (peer) {
       participant.id = peer.id;
 
-      _.each(config.localStreams, stream => peer.addLocalStream(stream.id, stream.rawStream));
+      _.each(config.localStreams, stream => peer.addLocalStream(stream.rawStream));
 
       listenTo(peer, {
         'remoteStream add': stream => {

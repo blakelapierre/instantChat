@@ -54,7 +54,7 @@ module.exports = ['$sce', 'emitter', ($sce, emitter) => {
         id: rawStream.id,
         participant: participant,
         rawStream: rawStream,
-        votes: [],
+        votes: [], // Is this where we should be tracking these?
         src: $sce.trustAsResourceUrl(URL.createObjectURL(rawStream))
       };
     }
