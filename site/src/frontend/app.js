@@ -20,6 +20,7 @@ module.exports = angular.module('instantChat', ['ngAnimate', 'ngRoute', 'ngResou
   .directive('contenteditable', require('./directives/util/contenteditable/directive'))
   .directive('fitText',         require('./directives/util/fitText/directive'))
   .directive('focusOn',         require('./directives/util/focusOn/directive'))
+  .directive('rotator',         require('./directives/util/rotator/directive'))
   .directive('selectOnClick',   require('./directives/util/selectOnClick/directive'))
 
   .factory('config',          require('./factories/config/factory'))
