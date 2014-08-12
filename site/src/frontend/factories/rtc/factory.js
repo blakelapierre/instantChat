@@ -123,7 +123,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       peer
         .receiveAnswer(answer)
         .then(
-          () =>    fire('peer accepted answer', peer, answer),
+          () =>       fire('peer accepted answer', peer, answer),
           ...error => fire('peer error answer', peer, answer, ...error));
     }
 
@@ -134,7 +134,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       peer
         .addIceCandidates(candidates)
         .then(
-          () =>    fire('peer candidates accepted', peer, candidates),
+          () =>       fire('peer candidates accepted', peer, candidates),
           ...error => fire('peer error candidates', peer, candidates, ...error));
     }
 
