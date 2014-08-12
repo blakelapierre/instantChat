@@ -61,7 +61,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
 
         'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
 
-        'peer offer': data => sendAnswer(data.peerID, data.offer),
+        'peer offer': data => receiveOffer(data.peerID, data.offer),
         'peer answer':data => receiveAnswer(data.peerID, data.answer),
 
         'peer candidates': data => addIceCandidates(data.peerID, data.candidates)
@@ -99,9 +99,10 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       }
     }
 
-    function sendAnswer(peerID, offer) {
+    function receiveOffer(peerID, offer) {
       var peer = getPeer(peerID);
 
+      fire('peer receive offer', peer, offer);
       peer
         .receiveOffer(offer)
         .then(
@@ -118,21 +119,23 @@ module.exports = ['log', 'emitter', (log, emitter) => {
     function receiveAnswer(peerID, answer) {
       var peer = getPeer(peerID);
 
+      fire('peer receive answer', peer, answer);
       peer
         .receiveAnswer(answer)
         .then(
-          () =>    fire('peer receive answer', peer, answer),
-          error => fire('peer error answer', peer, error, answer));
+          () =>    fire('peer accepted answer', peer, answer),
+          ...error => fire('peer error answer', peer, answer, ...error));
     }
 
     function addIceCandidates(peerID, candidates) {
       var peer = getPeer(peerID);
 
+      fire('peer candidates receieved', peer, candidates);
       peer
         .addIceCandidates(candidates)
         .then(
           () =>    fire('peer candidates accepted', peer, candidates),
-          error => fire('peer error candidates', peer, error, candidates));
+          ...error => fire('peer error candidates', peer, candidates, ...error));
     }
 
     function joinRoom(roomName) {
