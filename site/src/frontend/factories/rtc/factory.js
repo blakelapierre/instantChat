@@ -36,7 +36,8 @@ module.exports = ['log', 'emitter', (log, emitter) => {
     };
 
     var peers = [],
-        peersHash = {};
+        peersHash = {},
+        rooms = [];
 
     var socket = io(server);
 
@@ -72,69 +73,67 @@ module.exports = ['log', 'emitter', (log, emitter) => {
 
       signal.ready = true;
       fire('ready', myID);
-
-      function getPeer(id) {
-        return peersHash[id];
-      }
-
-      function addPeer(id, config) {
-        config = config || {isExistingPeer: false};
-
-        var peer = createPeer(id, config, emit, fire);
-        peers.push(peer);
-        peersHash[id] = peer;
-
-        fire('peer add', peer);
-      }
-
-      function removePeerByID(id) {
-        var peer = getPeer(id);
-        if (peer) {
-          peer.close();
-          _.remove(peers, peer => { return peer.id === id; });
-          delete peersHash[id];
-          fire('peer remove', peer);
-        }
-      }
-
-      function sendAnswer(peerID, offer) {
-        var peer = getPeer(peerID);
-
-        peer
-          .receiveOffer(offer)
-          .then(
-            answer => {
-              emit('peer answer', {peerID, answer});
-              fire('peer send answer', peer, answer);
-            },
-            ...error => fire(...error)
-          );
-
-        fire('peer receive offer', peer, offer);
-      }
-
-      function receiveAnswer(peerID, answer) {
-        var peer = getPeer(peerID);
-
-        peer
-          .receiveAnswer(answer)
-          .then(
-            () =>    fire('peer receive answer', peer, answer),
-            error => fire('peer error answer', peer, error, answer));
-      }
-
-      function addIceCandidates(peerID, candidates) {
-        var peer = getPeer(peerID);
-
-        peer
-          .addIceCandidates(candidates)
-          .then(
-            () =>    fire('peer candidates accepted', peer, candidates),
-            error => fire('peer error candidates', peer, error, candidates));
-      }
     });
 
-    var rooms = [];
+    function getPeer(id) {
+      return peersHash[id];
+    }
+
+    function addPeer(id, config) {
+      config = config || {isExistingPeer: false};
+
+      var peer = createPeer(id, config, emit, fire);
+      peers.push(peer);
+      peersHash[id] = peer;
+
+      fire('peer add', peer);
+    }
+
+    function removePeerByID(id) {
+      var peer = getPeer(id);
+      if (peer) {
+        peer.close();
+        _.remove(peers, peer => { return peer.id === id; });
+        delete peersHash[id];
+        fire('peer remove', peer);
+      }
+    }
+
+    function sendAnswer(peerID, offer) {
+      var peer = getPeer(peerID);
+
+      peer
+        .receiveOffer(offer)
+        .then(
+          answer => {
+            emit('peer answer', {peerID, answer});
+            fire('peer send answer', peer, answer);
+          },
+          ...error => fire(...error)
+        );
+
+      fire('peer receive offer', peer, offer);
+    }
+
+    function receiveAnswer(peerID, answer) {
+      var peer = getPeer(peerID);
+
+      peer
+        .receiveAnswer(answer)
+        .then(
+          () =>    fire('peer receive answer', peer, answer),
+          error => fire('peer error answer', peer, error, answer));
+    }
+
+    function addIceCandidates(peerID, candidates) {
+      var peer = getPeer(peerID);
+
+      peer
+        .addIceCandidates(candidates)
+        .then(
+          () =>    fire('peer candidates accepted', peer, candidates),
+          error => fire('peer error candidates', peer, error, candidates));
+    }
 
     function joinRoom(roomName) {
       rooms.push(roomName);
