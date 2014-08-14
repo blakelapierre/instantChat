@@ -4,6 +4,8 @@ module.exports = function HashList(idProperty) {
   var list = [],
       hash = {};
 
+  idProperty = idProperty || '_self';
+
   if (idProperty == '_self') {
     this.push = function(obj) {
       list.push(obj);
@@ -63,9 +65,6 @@ module.exports = function HashList(idProperty) {
         else obj.index = i;
       }
     };
-  }
-  else {
-    throw Error('You must specify an id. Use "_self" to use the object itself.');
   }
 
   this.length = function() {

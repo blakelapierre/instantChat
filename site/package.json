@@ -35,8 +35,11 @@
     "mkdirp": "~0.5.0"
   },
   "devDependencies": {
+    "benchmark": "^1.0.0",
+    "browserify": "4.1.6",
+    "browserify-shim": "3.5.0",
+    "es6ify": "~1.1.0",
     "grunt": "~0.4.5",
-    "load-grunt-tasks": "~0.4.0",
     "grunt-autoprefixer": "~0.7.3",
     "grunt-bg-shell": "~2.3.1",
     "grunt-browserify": "~2.1.0",
@@ -45,12 +48,12 @@
     "grunt-contrib-less": "~0.11.1",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-express-server": "~0.4.17",
-    "grunt-traceur": "~0.2.0",
     "grunt-preprocess": "~4.0.0",
-    "browserify": "4.1.6",
-    "browserify-shim": "3.5.0",
+    "grunt-traceur": "~0.2.0",
+    "load-grunt-tasks": "~0.4.0",
+    "microtime": "^1.0.1",
     "partialify": "~3.1.1",
-    "es6ify": "~1.1.0"
+    "phantomjs": "^1.9.7-15"
   },
   "browserify": {
     "transform": [
