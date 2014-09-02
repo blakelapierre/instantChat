@@ -33,6 +33,7 @@ class Peer {
     this._connectionListeners = connectionListeners;
 
     this._isConnectingPeer = false;
+    this._connectPromise = null;
 
     this._connectCalled = false;
     this._connected = false;
@@ -75,7 +76,7 @@ class Peer {
   connect() {
     this._isConnectingPeer = true;
 
-    return new Promise((resolve, reject) => {
+    this._connectPromise = this._connectPromise || new Promise((resolve, reject) => {
       var connectWatcher = event => {
         this._connectCalled = true;
 
@@ -105,6 +106,8 @@ class Peer {
           this.fire('offer error');
         });
     });
+
+    return this._connectPromise;
   }
 
   initiateOffer(options) {
