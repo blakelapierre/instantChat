@@ -21,7 +21,7 @@ var iceServers = {
 };
 
 class Peer {
-  constructor(id, config, connectionListeners) {
+  constructor(id, config) {
     this._id = id;
     this._config = config;
     this._remoteCandidates = [];
@@ -30,7 +30,6 @@ class Peer {
     this._localStreams = [];
     this._channels = {};
     this._events = {};
-    this._connectionListeners = connectionListeners;
 
     this._isConnectingPeer = false;
     this._connectPromise = null;
@@ -46,8 +45,6 @@ class Peer {
     this._log = [];
 
     var connection = this._connection = new RTCPeerConnection(iceServers);
-
-    this.on(this._connectionListeners);
 
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
@@ -100,7 +97,7 @@ class Peer {
       this._connection.addEventListener('iceconnectionstatechange', connectWatcher);
 
       this.initiateOffer()
-        .then(offer => this.fire('offerReady', offer))
+        .then(offer => this.fire('offer ready', offer))
         .catch(error => {
           console.log(error);
           this.fire('offer error');
@@ -255,7 +252,7 @@ class Peer {
     // _addLocalStream is called again before the offer is full resolved?
     if (this._connected) {
       this.initiateOffer()
-        .then(offer => this.fire('offerReady', offer))
+        .then(offer => this.fire('offer ready', offer))
         .catch(error => {
           console.log(error);
           this.fire('offer error');

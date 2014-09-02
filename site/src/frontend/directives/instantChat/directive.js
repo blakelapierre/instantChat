@@ -131,9 +131,9 @@ module.exports = () => {
 
               joinRoom();
             })
-            .catch(error => $rootScope.$broadcast('error', 'Could not access signalling server. Please refreshing the page!', error));
+            .catch(error => $rootScope.$broadcast('error', 'Could not access signalling server. Please refresh the page!', error));
         })
-        .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please try refreshing the page!', error));
+        .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please refresh the page!', error));
 
       listenersCleanup.push(instantChat.on({
         'participant active':   participant => { $rootScope.$broadcast('participant active',   participant); },
