@@ -56,6 +56,7 @@ module.exports = ['emitter', emitter => {
       if (storedPeer) {
         storedPeer.off();
         delete peers[peer.id];
+        signaler.peerCount--;
       }
     }
 

@@ -21,7 +21,7 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
     return signal;
   };
 
-    /*
+  /*
   +  Signalling
   */
   function connectToSignal(server) {
@@ -133,7 +133,9 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
   */
 
   function createPeer(peerID, config, emit, fire) {
-    var peer = new Peer(peerID, config, {
+    var peer = new Peer(peerID, config);
+
+    peer.on({
       // Do we want to be passing the raw event here?
       add_stream:                   event => fire('peer add_stream', peer, event),
       remove_stream:                event => fire('peer remove_stream', peer, event),
