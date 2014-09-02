@@ -1,5 +1,8 @@
 module.exports = ['emitter', emitter => {
   return transport => {
+    var {emit, on, off} = emitter();
+    var {send} = transport;
+
     var signaler = {
       peers: {},
       peerCount: 0,
@@ -7,12 +10,7 @@ module.exports = ['emitter', emitter => {
       managePeer: managePeer,
       dropPeer: dropPeer
     };
-
     var {peers} = signaler;
-
-    var {emit, on, off} = emitter();
-
-    var send = transport.send;
 
     transport.on({
       'offer':      data => receiveOffer(data.peerID, data.offer),
