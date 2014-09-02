@@ -100,7 +100,7 @@ class Peer {
       this._connection.addEventListener('iceconnectionstatechange', connectWatcher);
 
       this.initiateOffer()
-        .then(offer => this.fire('offerReady', offer))
+        .then(offer => this.fire('offer ready', offer))
         .catch(error => {
           console.log(error);
           this.fire('offer error');
@@ -255,7 +255,7 @@ class Peer {
     // _addLocalStream is called again before the offer is full resolved?
     if (this._connected) {
       this.initiateOffer()
-        .then(offer => this.fire('offerReady', offer))
+        .then(offer => this.fire('offer ready', offer))
         .catch(error => {
           console.log(error);
           this.fire('offer error');

@@ -6,7 +6,7 @@ import {Peer} from './peer';
 var _ = require('lodash'),
     io = require('socket.io');
 
-module.exports = ['log', 'emitter', (log, emitter) => {
+module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
   var signal;
 
   var {emit: fire, on, off} = emitter();
@@ -42,6 +42,11 @@ module.exports = ['log', 'emitter', (log, emitter) => {
     var socket = io(server);
 
     var emit = (event, data) => socket.emit(event, data);
+    var signalEmitter = emitter();
+    var socketSignaler = signaler({
+        send: emit,
+        on: signalEmitter.on
+      });
 
     socket.on('error', (...args) => log.error('Failed to connect socket.io', ...args));
 
@@ -55,17 +60,13 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       signal.myID = myID;
 
       _.each({
+        'peer join':    id => socketSignaler.managePeer(addPeer(id)),
+        'peer leave':   id => socketSignaler.dropPeer(removePeerByID(id)), // What happens if id is non-existent?
+        'peer list':  data => _.each(data.peerIDs, peerID => socketSignaler.managePeer(addPeer(peerID, {isExistingPeer: true}))),
 
-        'peer join':    id => addPeer(id),
-        'peer leave':   id => removePeerByID(id),
-
-        'peer list':  data => _.each(data.peerIDs, peerID => addPeer(peerID, {isExistingPeer: true})),
-
-        'peer offer': data => receiveOffer(data.peerID, data.offer),
-        'peer answer':data => receiveAnswer(data.peerID, data.answer),
-
-        'peer candidates': data => addIceCandidates(data.peerID, data.candidates)
-
+        'peer offer':      data => signalEmitter.emit('offer', data),
+        'peer answer':     data => signalEmitter.emit('answer', data),
+        'peer candidates': data => signalEmitter.emit('candidates', data)
       }, (handler, name) => socket.on(name, function() {
         handler.apply(this, arguments);
         fire(name, ...arguments);
@@ -87,6 +88,8 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       peersHash[id] = peer;
 
       fire('peer add', peer);
+
+      return peer;
     }
 
     function removePeerByID(id) {
@@ -96,46 +99,8 @@ module.exports = ['log', 'emitter', (log, emitter) => {
         _.remove(peers, peer => { return peer.id === id; });
         delete peersHash[id];
         fire('peer remove', peer);
+        return peer;
       }
-    }
-
-    function receiveOffer(peerID, offer) {
-      var peer = getPeer(peerID);
-
-      fire('peer receive offer', peer, offer);
-      peer
-        .receiveOffer(offer)
-        .then(
-          answer => {
-            emit('peer answer', {peerID, answer});
-            fire('peer send answer', peer, answer);
-          },
-          ...error => fire(...error)
-        );
-
-      fire('peer receive offer', peer, offer);
-    }
-
-    function receiveAnswer(peerID, answer) {
-      var peer = getPeer(peerID);
-
-      fire('peer receive answer', peer, answer);
-      peer
-        .receiveAnswer(answer)
-        .then(
-          () =>       fire('peer accepted answer', peer, answer),
-          ...error => fire('peer error answer', peer, answer, ...error));
-    }
-
-    function addIceCandidates(peerID, candidates) {
-      var peer = getPeer(peerID);
-
-      fire('peer candidates receieved', peer, candidates);
-      peer
-        .addIceCandidates(candidates)
-        .then(
-          () =>       fire('peer candidates accepted', peer, candidates),
-          ...error => fire('peer error candidates', peer, candidates, ...error));
     }
 
     function joinRoom(roomName) {
@@ -168,24 +133,7 @@ module.exports = ['log', 'emitter', (log, emitter) => {
   */
 
   function createPeer(peerID, config, emit, fire) {
-    var candidates = [];
-
     var peer = new Peer(peerID, config, {
-      'offerReady': offer => {
-        emit('peer offer', {peerID, offer});
-        fire('peer send offer', peer, offer);
-      },
-
-      ice_candidate: event => {
-        var candidate = event.candidate;
-
-        if (candidate) {
-          candidates.push(candidate);
-          emitIceCandidates();
-          fire('peer ice_candidate', peer, candidate);
-        }
-      },
-
       // Do we want to be passing the raw event here?
       add_stream:                   event => fire('peer add_stream', peer, event),
       remove_stream:                event => fire('peer remove_stream', peer, event),
@@ -193,11 +141,6 @@ module.exports = ['log', 'emitter', (log, emitter) => {
       signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
       ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
     });
-
-    var emitIceCandidates = _.throttle(() => {
-      emit('peer candidates', {peerID, candidates});
-      candidates.splice(0);
-    }, 250);
 
     return peer;
   }
