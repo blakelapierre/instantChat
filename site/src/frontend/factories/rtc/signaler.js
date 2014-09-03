@@ -46,7 +46,7 @@ module.exports = ['emitter', emitter => {
       var sendIceCandidates = _.throttle(() => {
         send('peer candidates', {peerID, candidates});
         candidates.splice(0);
-      }, 250);
+      }, 0);
     }
 
     function dropPeer(peer) {
