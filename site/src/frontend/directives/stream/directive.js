@@ -84,6 +84,22 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         video.videoSurfaceWidth = videoSurfaceWidth;
         video.videoSurfaceHeight = videoSurfaceHeight;
 
+        if (Math.abs((16 / 9) - videoRatio) < 0.01) {
+          $scope.is16_9 = true;
+          $scope.is16_10 = false;
+          $scope.is4_3 = false;
+        }
+        else if (Math.abs((16 / 10) - videoRatio) < 0.01) {
+          $scope.is16_9 = false;
+          $scope.is16_10 = true;
+          $scope.is4_3 = false;
+        }
+        else if (Math.abs((4 / 3) - videoRatio) < 0.01) {
+          $scope.is16_9 = false;
+          $scope.is16_10 = false;
+          $scope.is4_3 = true;
+        }
+
         $scope.$digest();
       }
 
