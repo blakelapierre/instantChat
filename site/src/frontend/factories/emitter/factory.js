@@ -1,10 +1,10 @@
 module.exports = () => {
-  return () => {
+  return listenerInterceptor => {
     var events = {};
 
     return {
       emit: (...args) => emit(events, ...args),
-      on: (...args) => on(events, ...args),
+      on: (...args) => on(events, listenerInterceptor, ...args),
       off: (...args) => off(events, ...args)
     };
   };
@@ -18,12 +18,17 @@ module.exports = () => {
     }
   }
 
-  function on(events, event, listener) {
+  function on(events, listenerInterceptor, event, listener) {
     if (typeof event == 'object') {
       var unregister = () => _.each(unregister, fn => fn());
       return _.transform(event, (result, listener, eventName) => {
-        result[eventName] = on(events, eventName, listener);
+        result[eventName] = on(events, listenerInterceptor, eventName, listener);
       }, unregister);
+    }
+
+    if (listenerInterceptor) {
+      var ret = listenerInterceptor.attemptIntercept(event, listener);
+      if (ret) return ret;
     }
 
     events[event] = events[event] || [];
@@ -40,12 +45,17 @@ module.exports = () => {
 
     var listeners = events[event];
     if (listeners && listeners.length > 0) {
+      removeListener(listeners, listener);
+      if (listeners.length === 0) delete events[event];
+    }
+
+    function removeListener(listeners, listener) {
       for (var i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i] === listener) {
           listeners.splice(i, 1);
         }
       }
-      if (listeners.length === 0) delete events[event];
+      return listeners;
     }
   }
 };

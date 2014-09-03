@@ -1,7 +1,8 @@
 import {Channel} from './channel';
 import {Stream} from './stream';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    emitter = require('../emitter/factory.js')();
 
 
 var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
@@ -46,6 +47,20 @@ class Peer {
 
     var connection = this._connection = new RTCPeerConnection(iceServers);
 
+    var {emit, on, off} = emitter({
+      attemptIntercept: (event, listener) => {
+        if (connection && CONNECTION_EVENTS.indexOf(event) != -1) {
+          connection.addEventListener(event.replace(/_/g, ''), listener);
+          return true;
+        }
+        return false;
+      }
+    });
+
+    this.fire = emit;
+    this.on = on;
+    this.off = off;
+
     this.on({
       'ice_candidate':  event => this._localCandidates.push(event.candidate),
       'data_channel':   event => this._addChannel(event.channel),
@@ -69,7 +84,6 @@ class Peer {
     });
   }
 
-  // This is kind of misleading. It doesn't cause the connection...
   connect() {
     this._isConnectingPeer = true;
 
@@ -89,6 +103,7 @@ class Peer {
           case 'failed':
           case 'disconnected':
           case 'closed':
+            connection.removeEventListener('iceconnectionstatechange', connectWatcher);
             reject({peer: this, event: event});
             break;
         }
@@ -98,10 +113,7 @@ class Peer {
 
       this.initiateOffer()
         .then(offer => this.fire('offer ready', offer))
-        .catch(error => {
-          console.log(error);
-          this.fire('offer error');
-        });
+        .catch(error => this.fire('offer error'));
     });
 
     return this._connectPromise;
@@ -287,61 +299,6 @@ class Peer {
       args: [...arguments]
     });
   }
-
-  /*
-  +  Event Handling
-  */
-  on(event, listener) {
-    if (typeof event == 'object') {
-      for (var eventName in event) this.on(eventName, event[eventName]);
-      return;
-    }
-
-    if (this._connection && CONNECTION_EVENTS.indexOf(event) != -1) {
-      this._connection.addEventListener(event.replace(/_/g, ''), listener);
-      return;
-    }
-
-    var events = this._events;
-
-    events[event] = events[event] || [];
-    events[event].push(listener);
-
-    this._events = events;
-  }
-
-  off(event, listener) {
-    var events = this._events;
-
-    if (typeof event == 'object') {
-      for (var eventName in event) off(eventName, event[eventName]);
-      return;
-    }
-
-    var listeners = events[event];
-    if (listeners && listeners.length > 0) {
-      for (var i = listeners.length - 1; i >= 0; i--) {
-        if (listeners[i] === listener) {
-          listeners.splice(i, 1);
-        }
-      }
-      if (listeners.length === 0) delete events[event];
-    }
-  }
-
-  fire(event) {
-    var events = this._events = this._events || {};
-
-    var listeners = events[event] || [],
-        args = Array.prototype.slice.call(arguments, 1);
-
-    for (var i = 0; i < listeners.length; i++) {
-      listeners[i].apply(null, args);
-    }
-  }
-  /*
-  -  Event Handling
-  */
 }
 
 export {Peer};
