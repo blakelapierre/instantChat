@@ -72,6 +72,7 @@ module.exports = [
         },
 
         'inactive': participant => {
+          console.log('inactive');
           _.remove(activeParticipants, {id: participant.id});
           emit('participant inactive', participant);
         },

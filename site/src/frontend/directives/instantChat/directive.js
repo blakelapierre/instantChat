@@ -136,10 +136,10 @@ module.exports = () => {
         .catch(error => $rootScope.$broadcast('error', 'Could not access your camera. Please refresh the page!', error));
 
       listenersCleanup.push(instantChat.on({
-        'participant active':   participant => { $rootScope.$broadcast('participant active',   participant); },
-        'participant inactive': participant => { $rootScope.$broadcast('participant inactive', participant); },
-        'stream add':           stream =>      { $rootScope.$broadcast('stream add',           stream); },
-        'stream remove':        stream =>      { $rootScope.$broadcast('stream remove',        stream); }
+        'participant active':   participant => { $scope.$apply(); $rootScope.$broadcast('participant active',   participant); },
+        'participant inactive': participant => { $scope.$apply(); $rootScope.$broadcast('participant inactive', participant); },
+        'stream add':           stream =>      { $scope.$apply(); $rootScope.$broadcast('stream add',           stream); },
+        'stream remove':        stream =>      { $scope.$apply(); $rootScope.$broadcast('stream remove',        stream); }
       }));
 
       $scope.$watchCollection('config', _.debounce(config => {

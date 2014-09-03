@@ -20,10 +20,10 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
       // Cheap, but effective. Without debouncing this function
       // we can get many calls in a row
-      var gotSize = $scope.gotSize =  _.debounce(() => {
+      var gotSize = $scope.gotSize =  () => {
         $scope.haveSize = true;
         $rootScope.$broadcast('haveVideoSize', $scope.stream);
-      }, 10, {maxWait: 10});
+      };
 
       video.addEventListener('loadedmetadata', gotSize);
       video.addEventListener('playing',        gotSize);
@@ -36,12 +36,28 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
 
       onRootScope({
         'resize':               gotSize,
-        'participant active':   gotSize,
-        'participant inactive': gotSize,
-        'stream add':           gotSize,
-        'stream remove':        gotSize,
+        'participant active':   stateChange,
+        'participant inactive': stateChange,
+        'stream add':           stateChange,
+        'stream remove':        stateChange,
         'haveVideoSize':        refreshSize
       });
+
+      $scope.$on('$destroy', () => {
+        video.removeEventListener('loadedmetadata', gotSize);
+        video.removeEventListener('playing',        gotSize);
+        video.removeEventListener('play',           gotSize);
+
+        element.off('resize',                       gotSize);
+        cell.removeEventListener('resize',          gotSize);
+        video.removeEventListener('resize',         gotSize);
+        window.removeEventListener('resize',        gotSize);
+      });
+
+      function stateChange() {
+        console.log('state change');
+        $timeout(refreshSize, 0);
+      }
 
       function onRootScope(listeners) {
         _.each(listeners, (listener, eventName) => {
@@ -49,12 +65,9 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
         });
       }
 
-      // function gotSize() {
-      //   $scope.haveSize = true;
-      //   $timeout(() => $rootScope.$broadcast('haveVideoSize', $scope.stream), 0);
-      // }
-
       function refreshSize() {
+        if (!$scope.haveSize) return;
+
         var videoWidth = video.videoWidth,
             videoHeight = video.videoHeight,
             videoRatio = (videoWidth / videoHeight) || (4 / 3),
@@ -73,18 +86,22 @@ module.exports = ['$rootScope', '$interval', '$timeout', 'videoTools', ($rootSco
           videoSurfaceHeight = cellWidth / videoRatio;
         }
 
-        $scope.videoSurfaceTop = (cellHeight - videoSurfaceHeight) / 2;
-        $scope.videoSurfaceLeft = (cellWidth - videoSurfaceWidth) / 2;
-        $scope.videoSurfaceBottom = $scope.videoSurfaceTop; // CSS Bottom is inverted
-        $scope.videoSurfaceRight = cellWidth - $scope.videoSurfaceLeft;
-
-        $scope.videoSurfaceWidth = videoSurfaceWidth;
-        $scope.videoSurfaceHeight = videoSurfaceHeight;
-
         video.videoSurfaceWidth = videoSurfaceWidth;
         video.videoSurfaceHeight = videoSurfaceHeight;
 
-        $scope.$digest();
+        var top = (cellHeight - videoSurfaceHeight) / 2,
+            left = (cellWidth - videoSurfaceWidth) / 2,
+            bottom = top, // CSS Bottom is inverted
+            right = cellWidth - left;
+
+        $scope.streamOverlay.css({
+          top: top + 'px',
+          left: left + 'px',
+          bottom: bottom + 'px',
+          right: right + 'px',
+          width: videoSurfaceWidth + 'px',
+          height: videoSurfaceHeight + 'px'
+        });
       }
 
       video.addEventListener('playing', () => {

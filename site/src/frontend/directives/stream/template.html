@@ -2,8 +2,8 @@
   <div class="cell">
     <video class="stream-video" src="{{stream.src}}" autoplay></video>
 
-    <div class="stream-overlay"
-       style="top: {{videoSurfaceTop}}; left: {{videoSurfaceLeft}}px; bottom: {{videoSurfaceBottom}}px; right: {{videoSurfaceRight}}px; height: {{videoSurfaceHeight}}px; width: {{videoSurfaceWidth}}px;">
+    <div ng-scope-element="streamOverlay"
+         class="stream-overlay">
       <span class="stream-name">{{streamName}}</span>
       <div class="votes">
         <div class="vote" ng-repeat="vote in stream.votes">
