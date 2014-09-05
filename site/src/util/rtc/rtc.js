@@ -11,10 +11,8 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
 
   var {emit: fire, on, off} = emitter();
 
-  return (server, listeners) => {
+  return server => {
     if (signal === undefined) signal = connectToSignal(server);
-
-    if (listeners) signal.on(listeners);
 
     if (signal.ready) setTimeout(() => fire('ready', signal.myID), 0); // oof, get me (this line of code) out of here
 
