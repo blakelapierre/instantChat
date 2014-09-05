@@ -1,1 +1,1 @@
-module.exports = require('../../../util/rtc/signaler');
+module.exports = require('../../../../util/rtc/signaler');

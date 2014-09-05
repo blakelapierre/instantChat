@@ -33,7 +33,7 @@ module.exports = angular.module('instantChat', ['ngAnimate', 'ngRoute', 'ngResou
   .factory('instantChat',     require('./factories/instantChat/factory'))
 
   .factory('rtc',             require('./factories/rtc/factory'))
-  .factory('signaler',        require('./factories/rtc/signaler'))
+  .factory('signaler',        require('./factories/rtc/signaler/factory'))
 
   .factory('streams',         require('./factories/streams/factory'))
 
