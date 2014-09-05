@@ -8,6 +8,7 @@ module.exports = function(config, callback) {
       io = require('socket.io'),
       log = require('./log'),
       clientLogger = require('./clientLogger'),
+      broadcasters = require('./broadcasters'),
       images = require('./images'),
       rooms = require('./rooms'),
       signal = require('./signal/signal'),
@@ -15,9 +16,9 @@ module.exports = function(config, callback) {
       suggestions = require('./suggestions'),
       app = express();
 
-  var serverRoot = config.serverRoot;
+  var distRoot = config.distRoot;
 
-  app.use(express.static(path.join(serverRoot, 'frontend')));
+  app.use(express.static(path.join(distRoot, 'frontend')));
   app.use(bodyParser.json());
 
   var sslOptions = {
@@ -32,6 +33,7 @@ module.exports = function(config, callback) {
       router = express.Router();
 
   clientLogger(log, router);
+  broadcasters(log, socketIO);
   images(log, router, signalStats);
   rooms(log, router, signalStats);
   stats(log, router, signalStats);
@@ -42,7 +44,7 @@ module.exports = function(config, callback) {
   webserver.listen(config.port);
   redirectServer.listen(config.httpPort);
 
-  log('Server up!');
+  log('Server up on', config.publicAddress + ':' + config.port, '!');
 
   callback(webserver, redirectServer, signal);
 

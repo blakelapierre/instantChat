@@ -2,7 +2,7 @@ import {Channel} from './channel';
 import {Stream} from './stream';
 
 var _ = require('lodash'),
-    emitter = require('../emitter/factory.js')();
+    emitter = require('../emitter')();
 
 
 var RTCPeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);

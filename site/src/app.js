@@ -98,8 +98,8 @@ startServer({
   httpPort: 2777,
   rtcport: 2776,
   serverRoot: __dirname,
-  repoLocation: path.join(__dirname, './../../'),
-  distRoot: path.join(__dirname, './dist'),
+  repoLocation: path.join(__dirname, '../../'),
+  distRoot: path.join(__dirname, '../dist'),
   ca: ca,
   key: key,
   cert: cert

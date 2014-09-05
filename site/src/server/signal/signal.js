@@ -8,7 +8,7 @@ module.exports = (log, io) => {
   var rooms = new HashList('_roomName'),
       sockets = new HashList('id');
 
-  io.sockets.on('connection', addSocket);
+  io.of('/signal').on('connection', addSocket);
 
   function addSocket(socket) {
     log('New socket');

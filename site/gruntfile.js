@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       },
       site: {
         files: ['src/app.js', 'src/**/*.*', 'dist/frontend/index.html'],
-        tasks: ['preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
+        tasks: ['copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
         options: {
           livereload: {
             port: 2775,
@@ -86,6 +86,11 @@ module.exports = function(grunt) {
         files: [
           {expand: true, flatten: true, src: ['./src/server/cert/**/*'], dest: './dist/server/cert/'}
         ]
+      },
+      broadcaster: {
+        files: [
+          {expand: true, flatten: true, src: ['./src/frontend/broadcaster.html'], dest: './dist/frontend/'}
+        ]
       }
     },
     browserify: {
@@ -128,6 +133,11 @@ module.exports = function(grunt) {
           cwd: 'src',
           src: ['*.js'],
           dest: 'dist'
+        },{
+          expand: true,
+          cwd: 'src/server',
+          src: ['**/*.js'],
+          dest: 'dist/server'
         },{
           expand: true,
           cwd: 'src/server',
@@ -175,10 +185,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('serve', 'test', function() {
-    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
   });
 
   grunt.registerTask('debug', 'test', function() {
-    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
   });
 };
