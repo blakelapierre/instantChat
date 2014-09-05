@@ -1,7 +1,6 @@
 module.exports = ['emitter', emitter => {
   return transport => {
     var {emit, on, off} = emitter();
-    var {send} = transport;
 
     var signaler = {
       peers: {},
@@ -10,13 +9,15 @@ module.exports = ['emitter', emitter => {
       managePeer: managePeer,
       dropPeer: dropPeer
     };
-    var {peers} = signaler;
 
     transport.on({
       'offer':      data => receiveOffer(data.peerID, data.offer),
       'answer':     data => receiveAnswer(data.peerID, data.answer),
       'candidates': data => receiveIceCandidates(data.peerID, data.candidates)
     });
+
+    var {peers} = signaler;
+    var {send} = transport;
 
     function managePeer(peer) {
       var peerID = peer.id,
@@ -92,7 +93,7 @@ module.exports = ['emitter', emitter => {
       peer
         .addIceCandidates(candidates)
         .then(
-          () =>       emit('peer candidates accepted', peer, candidates),
+          () =>       emit('peer accepted candidates', peer, candidates),
           ...error => emit('peer error candidates', peer, candidates, ...error));
     }
 
