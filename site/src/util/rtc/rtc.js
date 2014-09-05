@@ -81,7 +81,7 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
     function newPeer(id, config) {
       config = config || {isExistingPeer: false};
 
-      var peer = createPeer(id, config, emit, fire);
+      var peer = new Peer(id, config);
       peers.push(peer);
       peersHash[id] = peer;
 
@@ -133,19 +133,4 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
   /*
   -  Signalling
   */
-
-  function createPeer(peerID, config, emit, fire) {
-    var peer = new Peer(peerID, config);
-
-    peer.on({
-      // Do we want to be passing the raw event here?
-      add_stream:                   event => fire('peer add_stream', peer, event),
-      remove_stream:                event => fire('peer remove_stream', peer, event),
-      data_channel:                 event => fire('peer data_channel connected', peer, event.channel),
-      signaling_state_change:       event => fire('peer signaling_state_change', peer, event),
-      ice_connection_state_change:  event => fire('peer ice_connection_state_change', peer, event)
-    });
-
-    return peer;
-  }
 }];
