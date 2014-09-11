@@ -3,7 +3,7 @@ var Benchmark = require('benchmark'),
     microtime = require('microtime');
 
 //this global is annoying, but required currently
-global.HashList = require('../hashList');
+global.HashList = require('../util/hashList');
 
 var suite = new Benchmark.Suite();
 

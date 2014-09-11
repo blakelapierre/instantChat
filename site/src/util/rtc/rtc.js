@@ -6,7 +6,11 @@ import {Peer} from './peer';
 var _ = require('lodash'),
     io = require('socket.io');
 
-module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
+module.exports = (log, emitter, signaler) => {
+  if (!log) log = require('../log');
+  if (!emitter) emitter = require('../emitter')();
+  if (!signaler) signaler = require('./signaler')();
+
   var signal;
 
   var {emit: fire, on, off} = emitter();
@@ -29,6 +33,7 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
       joinRoom: joinRoom,
       leaveRoom: leaveRoom,
       leaveRooms: leaveRooms,
+      adminRoom: adminRoom,
       currentRooms: rooms,
       close: close
     };
@@ -37,44 +42,48 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
         peersHash = {},
         rooms = [];
 
-    var signalEmitter = emitter();
+    var signalerEmitter = emitter();
 
     var socket = io(server + '/signal');
 
     var emit = (event, data) => socket.emit(event, data);
     var socketSignaler = signaler({
-        send: emit,
-        on: signalEmitter.on
+        emit: (name, data) => emit('peer ' + name, data),
+        on: signalerEmitter.on
       });
 
     socket.on('error', (...args) => log.error('Failed to connect socket.io', ...args));
 
-    socket.on('connect', () => {
-      log.info('Connected to server');
-    });
+    // These are the messages we receive from the signal and their handlers
+    _.each({
+      'connect':      () => log.info('Connected to server'),
+      'your_id':    myID => gotID(myID),
 
-    socket.on('your_id', myID => {
+      'peer join':  data => socketSignaler.managePeer(newPeer(data.id)),
+      'peer leave': data => socketSignaler.dropPeer(removePeerByID(data.id)), // What happens if id is non-existent?
+      'peer list':  data => _.each(data.peerIDs, peerID => socketSignaler.managePeer(newPeer(peerID, {isExistingPeer: true}))),
+
+      'peer offer':      data => signalerEmitter.emit('offer', data),
+      'peer answer':     data => signalerEmitter.emit('answer', data),
+      'peer candidates': data => signalerEmitter.emit('candidates', data),
+
+      'broadcast ready': data => fire('broadcast_ready', socketSignaler.managePeer(newPeer(data.broadcasterID))), // think of better event names for this?
+      'broadcast error': data => fire('broadcast_error', data),
+
+      'error': error => log.error(error)
+    }, (handler, name) => socket.on(name, function() {
+      handler.apply(this, arguments);
+      fire(name, ...arguments);
+    }));
+
+    function gotID(myID) {
       log('Got ID', myID);
 
       signal.myID = myID;
 
-      // These are the messages we receive from the signal and their handlers
-      _.each({
-        'peer join':    id => socketSignaler.managePeer(newPeer(id)),
-        'peer leave':   id => socketSignaler.dropPeer(removePeerByID(id)), // What happens if id is non-existent?
-        'peer list':  data => _.each(data.peerIDs, peerID => socketSignaler.managePeer(newPeer(peerID, {isExistingPeer: true}))),
-
-        'peer offer':      data => signalEmitter.emit('offer', data),
-        'peer answer':     data => signalEmitter.emit('answer', data),
-        'peer candidates': data => signalEmitter.emit('candidates', data)
-      }, (handler, name) => socket.on(name, function() {
-        handler.apply(this, arguments);
-        fire(name, ...arguments);
-      }));
-
       signal.ready = true;
       fire('ready', myID);
-    });
+    }
 
     function newPeer(id, config) {
       config = config || {isExistingPeer: false};
@@ -116,6 +125,12 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
       for (var i = rooms.length -1; i >= 0; i--) leaveRoom(rooms[i]);
     }
 
+    function adminRoom(command) {
+      log('admining', command);
+      emit('room admin', _.extend({roomName: rooms[0]}, command));
+      //Should we check for responses or something?
+    }
+
     function close() {
       socket.close();
       _.each(peers, peer => peer.close());
@@ -131,4 +146,4 @@ module.exports = ['log', 'emitter', 'signaler', (log, emitter, signaler) => {
   /*
   -  Signalling
   */
-}];
+};

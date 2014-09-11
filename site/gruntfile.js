@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       },
       site: {
         files: ['src/app.js', 'src/**/*.*', 'dist/frontend/index.html'],
-        tasks: ['copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev'],
+        tasks: ['copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'browserify:broadcaster', 'express:dev'],
         options: {
           livereload: {
             port: 2775,
@@ -103,6 +103,16 @@ module.exports = function(grunt) {
             debug: true // Source maps
           }
         }
+      },
+      broadcaster: {
+        files: {
+          'dist/frontend/broadcaster.js': ['src/frontend/broadcaster.js']
+        },
+        options: {
+          bundleOptions: {
+            debug: true // Source maps
+          }
+        }
       }
     },
     preprocess: {
@@ -143,6 +153,16 @@ module.exports = function(grunt) {
           cwd: 'src/server',
           src: ['*/**/*.js'],
           dest: 'dist/server'
+        },{
+          expand: true,
+          cwd: 'src/util',
+          src: ['**/*.js'],
+          dest: 'dist/util'
+        },{
+          expand: true,
+          cwd: 'src/util',
+          src: ['*/**/*.js'],
+          dest: 'dist/util'
         }]
       }
     },
@@ -185,10 +205,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('serve', 'test', function() {
-    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:prod', 'watch:prod');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:index', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'browserify:broadcaster', 'express:prod', 'watch:prod');
   });
 
   grunt.registerTask('debug', 'test', function() {
-    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'express:dev', 'watch:site');
+    grunt.task.run('traceur:server', 'copy:libs', 'copy:cert', 'copy:broadcaster', 'preprocess:livereload', 'less:bundle', 'autoprefixer:dist', 'browserify:instantChat', 'browserify:broadcaster', 'express:dev', 'watch:site');
   });
 };

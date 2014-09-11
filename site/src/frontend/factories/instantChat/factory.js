@@ -11,6 +11,8 @@ module.exports = [
     sendMessage: sendMessage,
     shareFile: shareFile,
 
+    broadcast: broadcast,
+
     connect: connect,
     disconnect: disconnect,
 
@@ -27,9 +29,10 @@ module.exports = [
     roomName: undefined
   };
 
-  var activeParticipants = instantChat.activeParticipants;
+  var {activeParticipants} = instantChat;
 
-  var connectPromise;
+  var connectPromise,
+      broadcastPromiseFns = {};
 
   // Should this be what we return as the factory?
   function connect(url) {
@@ -44,6 +47,9 @@ module.exports = [
 
         'peer add':    peer => participants.add({peer: peer, localStreams: instantChat.localParticipant.streams}),
         'peer remove': peer => participants.removeByPeer(peer),
+
+        'broadcast_ready': peer => broadcastReady(peer),
+        'broadcast_error': error => broadcastError(error),
 
         // Informational
         'peer receive offer':               peer => log.status(peer.id, 'Offer Received'),
@@ -72,23 +78,12 @@ module.exports = [
         },
 
         'inactive': participant => {
-          console.log('inactive');
+          log('inactive');
           _.remove(activeParticipants, {id: participant.id});
           emit('participant inactive', participant);
         },
 
         'stream add':    (participant, stream) => {
-          // Probably not the best place for this!
-          if (participant.isLocal) {
-            console.log('new local stream, adding to all participants');
-            _.each(participants, remoteParticipant => {
-              console.log(participant, remoteParticipant);
-              if (participant != remoteParticipant) {
-                console.log('adding stream to', remoteParticipant)
-                remoteParticipant.peer.addLocalStream(stream.rawStream);
-              }
-            });
-          }
           emit('stream add', participant, stream);
         },
         'stream remove': (participant, stream) => emit('stream remove', participant, stream)
@@ -114,6 +109,20 @@ module.exports = [
 
         emit('room leave', name);
       }
+
+      function broadcastReady(peer) {
+        console.log('broadcast readly', peer, broadcastPromiseFns);
+        broadcastPromiseFns.resolve(peer);
+        broadcastPromiseFns.resolve = undefined;
+        broadcastPromiseFns.reject = undefined;
+      }
+
+      function broadcastError(error) {
+        console.log('broadcast error', error);
+        broadcastPromiseFns.reject(error);
+        broadcastPromiseFns.resolve = undefined;
+        broadcastPromiseFns.reject = undefined;
+      }
     });
 
     return connectPromise;
@@ -122,7 +131,7 @@ module.exports = [
   function disconnect() {
     //Need to do more here
     connectPromise = null;
-    _.each(instantChat.localParticipant.streams, stream => stream.rawStream.__doneWithStream())
+    _.each(instantChat.localParticipant.streams, stream => stream.rawStream.__doneWithStream());
     instantChat.signal.close();
   }
 
@@ -132,6 +141,15 @@ module.exports = [
 
   function shareFile(file) {
 
+  }
+
+  function broadcast() {
+    return new Promise((resolve, reject) => {
+      instantChat.signal.adminRoom({command: 'broadcast'});
+      broadcastPromiseFns.resolve = resolve;
+      broadcastPromiseFns.reject = reject;
+      console.log(broadcastPromiseFns);
+    });
   }
 
   return instantChat;

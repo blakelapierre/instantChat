@@ -1,1 +1,3 @@
-module.exports = require('../../../../util/rtc/signaler');
+var signaler = require('../../../../util/rtc/signaler');
+
+module.exports = ['emitter', signaler];

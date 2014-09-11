@@ -29,11 +29,13 @@ module.exports = function(config, callback) {
       redirectServer = createRedirectServer(),
       webserver = https.createServer(sslOptions, app),
       socketIO = io(webserver),
-      signalStats = signal(log, socketIO),
+      broadcastController = broadcasters(log, socketIO),
+      signalStats = signal(log, socketIO, broadcastController),
       router = express.Router();
 
+  broadcastController.validTokens.push('9999'); // Need a more secure way to manage tokens!
+
   clientLogger(log, router);
-  broadcasters(log, socketIO);
   images(log, router, signalStats);
   rooms(log, router, signalStats);
   stats(log, router, signalStats);

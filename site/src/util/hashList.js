@@ -76,6 +76,11 @@ module.exports = function HashList(idProperty) {
     return record ? record.obj : null;
   };
 
+  this.at = function(index) {
+    var record = list[index];
+    return record;
+  };
+
   this.asList = function() {
     return list;
   };

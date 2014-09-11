@@ -1,4 +1,6 @@
-module.exports = ['emitter', emitter => {
+module.exports = emitter => {
+  if (!emitter) emitter = require('../emitter')(); // please, please, please get rid of this
+
   return transport => {
     var {emit, on, off} = emitter();
 
@@ -7,7 +9,9 @@ module.exports = ['emitter', emitter => {
       peerCount: 0,
 
       managePeer: managePeer,
-      dropPeer: dropPeer
+      dropPeer: dropPeer,
+
+      managesPeer: managesPeer
     };
 
     transport.on({
@@ -17,19 +21,19 @@ module.exports = ['emitter', emitter => {
     });
 
     var {peers} = signaler;
-    var {send} = transport;
+    var {emit: send} = transport;
 
     function managePeer(peer) {
       var peerID = peer.id,
           candidates = [];
 
       peers[peerID] = peer;
-      signaler.peersCount++;
+      signaler.peerCount++;
 
       peer.on({
         'offer ready': offer => {
-          send('peer offer', {peerID, offer});
-          emit('peer send offer', peer, offer);
+          send('offer', {peerID, offer});
+          emit('send offer', peer, offer);
         },
 
         ice_candidate: event => {
@@ -38,16 +42,18 @@ module.exports = ['emitter', emitter => {
           if (candidate) {
             candidates.push(candidate);
             sendIceCandidates();
-            emit('peer ice_candidate', peer, candidate);
+            emit('ice_candidate', peer, candidate);
           }
         },
       });
 
       // Is this the best way to do this?
       var sendIceCandidates = _.throttle(() => {
-        send('peer candidates', {peerID, candidates});
+        send('candidates', {peerID, candidates});
         candidates.splice(0);
       }, 0);
+
+      return peer;
     }
 
     function dropPeer(peer) {
@@ -57,6 +63,8 @@ module.exports = ['emitter', emitter => {
         delete peers[peer.id];
         signaler.peerCount--;
       }
+
+      return peer;
     }
 
     function receiveOffer(peerID, offer) {
@@ -67,12 +75,10 @@ module.exports = ['emitter', emitter => {
         .receiveOffer(offer)
         .then(
           answer => {
-            send('peer answer', {peerID, answer});
-            emit('peer send answer', peer, answer);
+            send('answer', {peerID, answer});
+            emit('send answer', peer, answer);
           },
-          ...error => emit(...error));
-
-      emit('peer receive offer', peer, offer);
+          ...error => emit('error offer', peer, answer, ...error));
     }
 
     function receiveAnswer(peerID, answer) {
@@ -82,19 +88,19 @@ module.exports = ['emitter', emitter => {
       peer
         .receiveAnswer(answer)
         .then(
-          () =>       emit('peer accepted answer', peer, answer),
-          ...error => emit('peer error answer', peer, answer, ...error));
+          () =>       emit('accepted answer', peer, answer),
+          ...error => emit('error answer', peer, answer, ...error));
     }
 
     function receiveIceCandidates(peerID, candidates) {
       var peer = getPeer(peerID);
 
-      emit('peer candidates receieved', peer, candidates);
+      emit('peer receive candidates', peer, candidates);
       peer
         .addIceCandidates(candidates)
         .then(
-          () =>       emit('peer accepted candidates', peer, candidates),
-          ...error => emit('peer error candidates', peer, candidates, ...error));
+          () =>       emit('accepted candidates', peer, candidates),
+          ...error => emit('error candidates', peer, candidates, ...error));
     }
 
     function getPeer(id) {
@@ -105,6 +111,10 @@ module.exports = ['emitter', emitter => {
       throw 'Tried to get non-existent peer!';
     }
 
+    function managesPeer(id) {
+      return peers[id] != null;
+    }
+
     return signaler;
   };
-}];
+};

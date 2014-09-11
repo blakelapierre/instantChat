@@ -4,8 +4,8 @@ module.exports = () => {
   return {
     restrict: 'E',
     template: require('./template.html'),
-    controller: ['$rootScope', '$scope',
-    ($rootScope, $scope) => {
+    controller: ['$rootScope', '$scope', 'instantChat',
+    ($rootScope, $scope, instantChat) => {
       $scope.havePermissionForFrontPage = true;
 
       $rootScope.test = () => console.log('worked');
@@ -61,6 +61,10 @@ module.exports = () => {
         },
 
         participantNameBlur() {
+        },
+
+        broadcast() {
+          instantChat.broadcast().then(peer => console.log('got broadcaster', peer), error => console.log('broadcast error!', error));
         }
       });
 
