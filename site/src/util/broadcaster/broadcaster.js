@@ -10,13 +10,13 @@ module.exports = function() {
     addChannelSource: addChannelSource,
     removeChannelSource: removeChannelSource,
 
-    addListener: addListener
+    addChannelListener: addChannelListener
   };
 
   return broadcaster;
 
   function addChannel(name) {
-    var channel = broadcaster.channels[name];
+    var channel = getChannel(name);
 
     if (channel) {
       console.log('Tried to add channel that already exists!', name);
@@ -29,13 +29,13 @@ module.exports = function() {
   }
 
   function addChannelSource(channelName, source) {
-    var channel = getChannel(name) || addChannel(channelName);
+    var channel = getChannel(channelName) || addChannel(channelName);
 
     channel.addSource(source);
   }
 
   function removeChannelSource(channelName, source) {
-    var channel = getChannel(name);
+    var channel = getChannel(channelName);
 
     if (!channel) {
       console.log('Tried to remove source from non-existent channel!', channelName, source);
@@ -43,7 +43,7 @@ module.exports = function() {
     else channel.removeSource(source);
   }
 
-  function addListener(channelName, listenerPeer) {
+  function addChannelListener(channelName, listenerPeer) {
     var channel = getChannel(channelName);
 
     if (!channel) {

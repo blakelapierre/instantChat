@@ -34,13 +34,14 @@ module.exports = (log, emitter, signaler) => {
       leaveRoom: leaveRoom,
       leaveRooms: leaveRooms,
       adminRoom: adminRoom,
-      currentRooms: rooms,
+      currentRooms: {},
       close: close
     };
 
+    var {currentRooms: rooms} = signal;
+
     var peers = [],
-        peersHash = {},
-        rooms = [];
+        peersHash = {};
 
     var signalerEmitter = emitter();
 
@@ -59,9 +60,10 @@ module.exports = (log, emitter, signaler) => {
       'connect':      () => log.info('Connected to server'),
       'your_id':    myID => gotID(myID),
 
+      'room':       data => updateRoom(data),
+
       'peer join':  data => socketSignaler.managePeer(newPeer(data.id)),
       'peer leave': data => socketSignaler.dropPeer(removePeerByID(data.id)), // What happens if id is non-existent?
-      'peer list':  data => _.each(data.peerIDs, peerID => socketSignaler.managePeer(newPeer(peerID, {isExistingPeer: true}))),
 
       'peer offer':      data => signalerEmitter.emit('offer', data),
       'peer answer':     data => signalerEmitter.emit('answer', data),
@@ -83,6 +85,14 @@ module.exports = (log, emitter, signaler) => {
 
       signal.ready = true;
       fire('ready', myID);
+    }
+
+    function updateRoom(data) {
+      var room = rooms[data.roomName] || {};
+      _.extend(room, data); // can do better than this!
+      console.log('got room', room);
+      if (room.broadcasterID) socketSignaler.managePeer(newPeer(room.broadcasterID, {isExistingPeer: true}));
+      else _.each(data.peerIDs, peerID => socketSignaler.managePeer(newPeer(peerID, {isExistingPeer: true})));
     }
 
     function newPeer(id, config) {
@@ -109,14 +119,14 @@ module.exports = (log, emitter, signaler) => {
     }
 
     function joinRoom(roomName) {
-      rooms.push(roomName);
+      rooms[roomName] = rooms[roomName] || {roomName: roomName};
       emit('room join', roomName);
       fire('room join', roomName);
     }
 
     function leaveRoom(roomName) {
-      var index = _.indexOf(rooms, roomName);
-      if (index >= 0) rooms.splice(index, 1);
+      delete rooms[roomName];
+
       emit('room leave', roomName);
       fire('room leave', roomName);
     }
@@ -125,9 +135,9 @@ module.exports = (log, emitter, signaler) => {
       for (var i = rooms.length -1; i >= 0; i--) leaveRoom(rooms[i]);
     }
 
-    function adminRoom(command) {
-      log('admining', command);
-      emit('room admin', _.extend({roomName: rooms[0]}, command));
+    function adminRoom(roomName, command) {
+      log('admining', roomName, command);
+      emit('room admin', _.extend({roomName}, command));
       //Should we check for responses or something?
     }
 

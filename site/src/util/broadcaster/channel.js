@@ -1,3 +1,5 @@
+var Listener = require('./listener');
+
 module.exports = name => {
   var channel;
   var {
@@ -8,8 +10,12 @@ module.exports = name => {
   } = channel ={
     name: name,
 
-    sources: [],
-    dataChannels: [],
+    sources: {},
+    sourceCount: 0,
+
+    dataChannels: {},
+    dataChannelCount: 0,
+
     streams: [],
     listeners: [],
 
@@ -19,16 +25,23 @@ module.exports = name => {
     addListener: addListener
   };
 
+  console.log(sources, dataChannels, streams, listeners);
+
   return channel;
 
-  // source should be a PeerConnection
+  // source should be a Peer
   function addSource(source) {
-    var id = source.id = sources.length;
+    var id = source.id;
 
     sources[id] = source;
     channel.sourceCount++;
 
-    _.each(source.getRemoteStreams(), addStream);
+    _.each(source.remoteStreams, stream => {
+      streams.push(stream);
+      _.each(listeners, listener => {
+        listener.peer.forwardStream(stream);
+      });
+    });
 
     source.on({
       'data_channel':  dataChannelListener,
@@ -92,7 +105,7 @@ module.exports = name => {
     }
   }
 
-  function addListener(channelName, listenerPeer) {
+  function addListener(listenerPeer) {
     var listener = Listener(channel, listenerPeer);
     channel.listeners.push(listener);
     return listener;

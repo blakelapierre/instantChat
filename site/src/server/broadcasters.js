@@ -3,7 +3,15 @@
 
 var hashList = require('./../util/hashList'),
     emitter = require('./../util/emitter')(),
-    _ = require('lodash');
+    _ = require('lodash'),
+    fs = require('fs'),
+    path = require('path');
+
+var logPath = path.join('logs', 'broadcasters');
+
+if (!fs.existsSync(logPath)) {
+  fs.mkdirSync(logPath);
+}
 
 module.exports = (log, io) => {
   var {emit, on, off} = emitter();
@@ -63,7 +71,13 @@ module.exports = (log, io) => {
       channels: {},
       stats: {},
       pendingSources: {},
-      emit: (name, data) => socket.emit(name, data)
+      emit: (name, data) => socket.emit(name, data),
+      log: new Promise((resolve, reject) => {
+        fs.open(path.join('logs', 'broadcasters', socket.id), 'a', (err, fd) => {
+          if (err) reject(err);
+          else resolve(fd);
+        });
+      })
     };
 
     broadcasterCount++;
@@ -91,25 +105,38 @@ module.exports = (log, io) => {
 
     log('disconnecting broadcaster', id);
 
-    _.each(broadcaster.pendingSources, fns => {
-      if (!fns || !fns.reject) {
-        log.warn('Pending source fns missing', broadcaster.pendingSources, fns);
-        return;
-      }
-      fns.reject('Broadcaster Disconnected');
+    _.each(broadcaster.pendingSources, channel => {
+      _.each(channel, fns => {
+        if (!fns || !fns.reject) {
+          log.warn('Pending source fns missing', broadcaster.pendingSources, fns);
+          return;
+        }
+        fns.reject('Broadcaster Disconnected');
+      });
     });
     _.each(broadcaster.channels, channel => channel.primaryBroadcaster = getBestBroadcaster(channel)); // this doesn't seem right
 
     emit('broadcaster remove', {id: id});
   }
 
-  function recieveStats(socket, data) {
+  function receiveStats(socket, data) {
     var broadcaster = broadcasters[socket.id];
 
     if (!broadcaster) {
       log.warn('Tried to access non-existent broadcaster!');
       return;
     }
+
+    broadcaster
+      .log
+      .then(fd => {
+        var buffer = new Buffer(JSON.stringify(data));
+        fs.write(fd, buffer, 0, buffer.length, null, (err, written, buffer) => {
+          if (err) log.error(err);
+          log(written);
+        });
+      })
+      .catch(error => log.error(error));
 
     _.extend(broadcaster.stats, data);
   }
@@ -122,11 +149,11 @@ module.exports = (log, io) => {
       log.warn('Adding source with no pending record', channelName, peerID);
       return;
     }
-console.log(pendingChannelSources);
+
     var fns = pendingChannelSources[peerID];
 
     delete pendingChannelSources[peerID];
-console.log('resolving', peerID, fns);
+
     fns.resolve(socket.broadcaster);
   }
 
@@ -191,5 +218,6 @@ console.log('resolving', peerID, fns);
       idleBroadcasterCount--;
       return broadcaster;
     }
+    else log('no broadcaster found!');
   }
 };

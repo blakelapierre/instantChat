@@ -143,9 +143,9 @@ module.exports = [
 
   }
 
-  function broadcast() {
+  function broadcast(roomName) {
     return new Promise((resolve, reject) => {
-      instantChat.signal.adminRoom({command: 'broadcast'});
+      instantChat.signal.adminRoom(roomName, {command: 'broadcast'});
       broadcastPromiseFns.resolve = resolve;
       broadcastPromiseFns.reject = reject;
       console.log(broadcastPromiseFns);

@@ -64,7 +64,7 @@ module.exports = () => {
         },
 
         broadcast() {
-          instantChat.broadcast().then(peer => console.log('got broadcaster', peer), error => console.log('broadcast error!', error));
+          instantChat.broadcast($scope.currentRoom.name).then(peer => console.log('got broadcaster', peer), error => console.log('broadcast error!', error));
         }
       });
 

@@ -25,17 +25,9 @@ module.exports = (rooms, log, broadcastController) => {
       rooms.push(room);
     }
 
-    if (room._broadcaster) {
-      socket.emit('peer list', {roomName, peerIDs: [room._broadcaster.id]});
-    }
-    else {
-      room.forEach(peerSocket => peerSocket.emit('peer join', {room: roomName, id: socket.id}));
+    room.forEach(peerSocket => peerSocket.emit('peer join', {room: roomName, id: socket.id})); // Probably need to rate limit this in some cases (thousands/millions!)
 
-      socket.emit('peer list', {
-        roomName: roomName,
-        peerIDs: _.pluck(room.asList(), 'id')
-      });
-    }
+    sendRoom(socket, room);
 
     room.push(socket);
 
@@ -85,7 +77,8 @@ module.exports = (rooms, log, broadcastController) => {
         broadcastController
           .broadcastSource({channelName: roomName, peerID: socket.id})
           .then(broadcaster => {
-            room._broadcaster = broadcaster;
+            room._broadcasterID = broadcaster.id;
+            room.forEach(peerSocket => sendRoom(peerSocket, room));
             socket.emit('broadcast ready', {broadcasterID: broadcaster.id});
           })
           .catch(error => {
@@ -95,6 +88,17 @@ module.exports = (rooms, log, broadcastController) => {
           });
         break;
     }
+  }
+
+  function sendRoom(socket, room) {
+    socket.emit('room', {
+      name: room._roomName,
+      creator: room._creator,
+      createdAt: room._createdAt,
+      admin: room._admin,
+      broadcasterID: room._broadcasterID,
+      peerIDs: _.pluck(room.asList(), 'id')
+    });
   }
 
   function disconnect(socket) {

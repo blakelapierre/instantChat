@@ -202,8 +202,19 @@ class Peer {
     return localStream;
   }
 
+  forwardStream(stream) {
+    this._localStreams.push(stream);
+    this._addLocalStream(stream.stream);
+  }
+
   close() {
     if (this._connection && this._connection.iceConnectionState != 'closed') this._connection.close();
+  }
+
+  getStats() {
+    return new Promise((resolve, reject) => {
+      this._connection.getStats(resolve, reject);
+    });
   }
 
   get id() { return this._id; }

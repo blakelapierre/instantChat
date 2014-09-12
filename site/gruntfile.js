@@ -15,7 +15,8 @@ module.exports = function(grunt) {
     },
     watch: {
       prod: {
-        files: ['src/app.js']
+        files: ['src/app.js'],
+        tasks: ['express:prod']
       },
       less: {
         files: ['src/**/*.less'],

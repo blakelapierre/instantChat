@@ -1,6 +1,6 @@
 var Peer = require('../util/rtc/peer').Peer,
     Signaler = require('../util/rtc/signaler')(),
-    Broadcaster = require('../util/broadcaster/broadcaster'),
+    Broadcaster = require('../util/broadcaster/broadcaster')(),
     log = require('../util/log')(),
     emitter = require('../util/emitter')(),
     io = require('socket.io');
@@ -18,29 +18,49 @@ var signaler = Signaler({
   on: signalerEmitter.on
 });
 
-signal.on('peer offer', data => {
-  if (!signaler.managesPeer(data.peerID)) {
-    var peer = new Peer(data.peerID);
+on(signal, {
+  'peer offer':      offer      => receiveOffer(offer),
+  'peer answer':     answer     => signalerEmitter.emit('answer', answer),
+  'peer candidates': candidates => signalerEmitter.emit('candidates', candidates)
+});
+
+on(socket, {
+  'connect':    ()   => connected(),
+  'your_id':    myID => recieveID(myID),
+  'add source': data => addSource(data)
+});
+
+function on(obj, handlers) {
+  _.each(handlers, (handler, name) => obj.on(name, handler));
+}
+
+function receiveOffer(offer) {
+  if (!signaler.managesPeer(offer.peerID)) {
+    var peer = new Peer(offer.peerID);
 
     signaler.managePeer(peer); // terrible placement here, but it gets the job done for now
 
-    Broadcaster.addChannelListener(channelName, peer);
+    var firstChannel;
+    for (var channel in Broadcaster.channels) {
+      firstChannel = channel;
+      break;
+    }
+    Broadcaster.addChannelListener(firstChannel, peer);
   }
-  signalerEmitter.emit('offer', data);
-});
-signal.on('peer answer', data => signalerEmitter.emit('answer', data));
-signal.on('peer candidates', data => signalerEmitter.emit('candidates', data));
+  signalerEmitter.emit('offer', offer);
+}
 
-socket.on('connect', () => {
+
+function connected() {
   log('connected!');
   emit('register', {token: '9999'});
-});
+}
 
-socket.on('your_id', myID => {
+function recieveID(myID) {
   log('myID:', myID);
-});
+}
 
-socket.on('add source', data => {
+function addSource(data) {
   log('add source', data);
 
   var {channelName, peerID} = data;
@@ -50,7 +70,26 @@ socket.on('add source', data => {
   signaler.managePeer(peer);
   Broadcaster.addChannelSource(channelName, peer);
 
-  peer.connect().then(peer => log(peer), error => log.error(error));
+  peer
+    .connect()
+      .then(peer => {
+        setInterval(() => {
+          peer.getStats().then(report => {
+            var result = report.result();
+
+            var final = _.reduce(result, (_r, r) => {
+              _r[r.id] = _.reduce(r.names(), (stat, name) => {
+                stat[name] = r.stat(name);
+                return stat;
+              }, {});
+              return _r;
+            }, {});
+
+            socket.emit('stats', final);
+          }).catch(error => log.error(error));
+        }, 1000);
+      })
+      .catch(error => log.error(error));
 
   emit('source add', data);
-});
+}
