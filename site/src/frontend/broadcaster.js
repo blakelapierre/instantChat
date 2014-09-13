@@ -18,6 +18,8 @@ var signaler = Signaler({
   on: signalerEmitter.on
 });
 
+var token = window.location.search.split('=')[1];
+
 on(signal, {
   'peer offer':      offer      => receiveOffer(offer),
   'peer answer':     answer     => signalerEmitter.emit('answer', answer),
@@ -53,7 +55,7 @@ function receiveOffer(offer) {
 
 function connected() {
   log('connected!');
-  emit('register', {token: '9999'});
+  emit('register', {token: token});
 }
 
 function recieveID(myID) {
