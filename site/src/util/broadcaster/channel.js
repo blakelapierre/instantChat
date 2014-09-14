@@ -46,18 +46,21 @@ module.exports = name => {
     source.on({
       'data_channel':  dataChannelListener,
       'add_stream':    addStreamListener,
-      'remove_stream': removeStreamListener
+      'remove_stream': removeStreamListener,
+      'disconnected':  removeSource
     });
 
     // need to handle disconnected sources
   }
 
   function removeSource(source) {
-    var index = sources.indexOf(source);
+    console.log('source disconnected');
 
-    if (index == -1) return;
+    delete sources[source.id];
 
-    source.splice(index, 1);
+    _.each(channel.listeners, function(listener) {
+
+    });
   }
 
   // Not complete!!
@@ -72,7 +75,7 @@ module.exports = name => {
     dataChannelCount++;
 
     _.each(channel.listeners, function(listener) {
-      listener.peerConnection.addDataChannel(dataChannel);
+      listener.peer.addDataChannel(dataChannel);
     });
   }
 
@@ -84,7 +87,7 @@ module.exports = name => {
       channel.streamCount++;
 
       _.each(channel.listeners, function (listener) {
-        listener.peerConnection.addStream(stream); // Probably need something more complex here :(
+        listener.peer.addStream(stream); // Probably need something more complex here :(
       });
     }
   }
@@ -99,7 +102,7 @@ module.exports = name => {
 
       _.each(channel.listeners, function(listener) {
         _.each(removed, function(stream) {
-          listener.peerConnection.removeStream(stream);
+          listener.peer.removeStream(stream);
         });
       });
     }
@@ -108,6 +111,12 @@ module.exports = name => {
   function addListener(listenerPeer) {
     var listener = Listener(channel, listenerPeer);
     channel.listeners.push(listener);
+
+    listenerPeer.on('disconnect', () => {
+      console.log('listener disconnected');
+      var index = channel.listeners.indexOf(listener);
+      if (index != -1) channel.listeners.splice(index, 1);
+    });
     return listener;
   }
 };

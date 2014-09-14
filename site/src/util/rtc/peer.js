@@ -202,6 +202,14 @@ class Peer {
     return localStream;
   }
 
+  removeStream(stream) {
+    var index = this._localStreams.indexOf(stream);
+    if (index != 1) {
+      this._localStreams.splice(index, 1);
+      this._connection.removeStream(stream.stream);
+    }
+  }
+
   forwardStream(stream) {
     this._localStreams.push(stream);
     this._addLocalStream(stream.stream);

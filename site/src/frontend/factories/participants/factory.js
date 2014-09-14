@@ -92,7 +92,13 @@ module.exports = ['$timeout', 'rtc', 'emitter', 'streams', 'instantChatChannelHa
     participantsMap[participant.id] = participant;
 
     listenTo(participant.streams, {
-      'add':    stream => emit('stream add', participant, stream),
+      'add':    stream => {
+        if (participant.peer.remoteStreams.indexOf(stream) == -1 &&
+            participant.peer.localStreams.indexOf(stream) == -1) {
+          participant.peer.addLocalStream(stream);
+        }
+        emit('stream add', participant, stream);
+      },
       'remove': stream => emit('stream remove', participant, stream)
     });
 

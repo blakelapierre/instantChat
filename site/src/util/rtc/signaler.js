@@ -32,6 +32,7 @@ module.exports = emitter => {
 
       peer.on({
         'offer ready': offer => {
+          console.log('offer ready');
           send('offer', {peerID, offer});
           emit('send offer', peer, offer);
         },
