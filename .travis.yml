@@ -13,4 +13,6 @@ before_install:
   - sudo apt-get install lxc-docker
 
 script:
+  - pwd
+  - ls -al
   - sudo docker build ./services/stun_turn/docker-turnserver
