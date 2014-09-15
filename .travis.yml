@@ -13,4 +13,4 @@ before_install:
   - sudo apt-get install lxc-docker
 
 script:
-  - sudo docker build blakelapierre/instantChat/services/stun_turn/docker-turnserver
+  - sudo docker build services/stun_turn/docker-turnserver
