@@ -1,13 +1,27 @@
-install:
+before_script:
   - sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
   - sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
-  - sudo apt-get update -qq
-  - sudo mkdir -p /var/lib/docker
+  - sudo apt-get update
   - echo exit 101 | sudo tee /usr/sbin/policy-rc.d
   - sudo chmod +x /usr/sbin/policy-rc.d
-  - sudo apt-get install -y slirp lxc lxc-docker aufs-tools cgroup-lite
-  - curl -sLo uml https://github.com/jpetazzo/sekexe/raw/master/uml
-  - chmod +x uml
+  - sudo apt-get install -qy slirp lxc lxc-docker
+  - git clone git://github.com/jpetazzo/sekexe
 
 script:
-  - sudo ./run "env ; exit 42"
+  # Exit on first error
+  - set -e
+
+  # Mount rount
+  - mount -t tmpfs none /root
+
+  # Kill background processes on exit
+  - trap 'kill $(jobs -p)' SIGINT SIGTERM EXIT
+
+  # Workaround with cgroup for recent version of docker
+  - cgroups-umount
+  - cgroups-mount
+
+  # Start docker daemon
+  - docker -d -H 0.0.0.0:4243 -H unix:///var/run/docker.sock 2>> /dev/null >> /dev/null &
+  - sleep 2
+  - docker build services/broadcaster
