@@ -16,4 +16,4 @@ cgroups-mount
 # Start docker daemon
 docker -d -H 0.0.0.0:4243 -H unix:///var/run/docker.sock 2>> /dev/null >> /dev/null &
 sleep 2
-docker build services/broadcaster
+docker build $(dirname $init)/services/broadcaster
