@@ -9,4 +9,5 @@ KillMode=none
 EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill apache%i
 ExecStartPre=-/usr/bin/docker rm apache%i
+ExecStartPre=/usr/bin/docker pull blakelapierre/broadcaster_
 ExecStart=/usr/bin/docker run --privileged blakelapierre/broadcaster_
