@@ -10,4 +10,4 @@ install:
   - chmod +x uml
 
 script:
-  - ./run "env ; exit 42"
+  - sudo ./run "env ; exit 42"
