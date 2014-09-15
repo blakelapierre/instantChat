@@ -1,0 +1,12 @@
+[Unit]
+Description=instachat.io broadcaster
+After=etcd.service
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill apache%i
+ExecStartPre=-/usr/bin/docker rm apache%i
+ExecStartPre=/usr/bin/docker pull blakelapierre/broadcaster_
