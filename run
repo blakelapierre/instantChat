@@ -23,9 +23,9 @@ mkdir $LOGDIR
 if [ "$1" ]
 then
   CMD="$1"
-  STDIN=/dev/null
-  STDOUT=/dev/null
-  STDERR=/dev/null
+  STDIN=/dev/stdin
+  STDOUT=/dev/stdout
+  STDERR=/dev/stderr
   touch $LOGDIR/output
   tail -f $LOGDIR/output &
   TAILPID=$!
