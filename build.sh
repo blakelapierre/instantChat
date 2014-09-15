@@ -4,16 +4,16 @@
 set -e
 
 # Mount rount
-sudo mount -t tmpfs none /root
+mount -t tmpfs none /root
 
 # Kill background processes on exit
-sudo trap 'kill $(jobs -p)' SIGINT SIGTERM EXIT
+trap 'kill $(jobs -p)' SIGINT SIGTERM EXIT
 
 # Workaround with cgroup for recent version of docker
-sudo cgroups-umount
-sudo cgroups-mount
+cgroups-umount
+cgroups-mount
 
 # Start docker daemon
-sudo docker -d -H 0.0.0.0:4243 -H unix:///var/run/docker.sock 2>> /dev/null >> /dev/null &
+docker -d -H 0.0.0.0:4243 -H unix:///var/run/docker.sock 2>> /dev/null >> /dev/null &
 sleep 2
 docker build services/broadcaster
