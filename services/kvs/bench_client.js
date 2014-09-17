@@ -74,6 +74,7 @@ function runBenchmark() {
         }
       }
     }
+    else setTimeout(send, 100);
 
     if (sent < num_keys) setImmediate(send);
     else {
