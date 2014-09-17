@@ -139,6 +139,8 @@ function showResults(completed) {
 
   console.log(results);
 
+  socket.end();
+
   process.exit();
 }
 

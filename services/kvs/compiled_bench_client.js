@@ -113,6 +113,7 @@ function showResults(completed) {
   results.us_spent_per_update = us_spent / num_keys;
   results.updates_per_second = num_keys / seconds_spent;
   console.log(results);
+  socket.end();
   process.exit();
 }
 function generateResults(response_times) {
