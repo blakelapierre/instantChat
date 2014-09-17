@@ -1,5 +1,6 @@
 var traceurRuntime = require('traceur-runtime');
 var net = require('net');
+var microtime = require('microtime');
 var LOOKUP = Symbol();
 var UPDATE = Symbol();
 var table = {};
@@ -15,6 +16,7 @@ var server = net.createServer((function(socket) {
       updateCount = 0;
   var open = true;
   socket.on('data', (function(data) {
+    var start = microtime.now();
     for (var i = 0; i < data.length; i++) {
       var c = data[$traceurRuntime.toProperty(i)];
       switch (c) {
@@ -47,6 +49,8 @@ var server = net.createServer((function(socket) {
             key += c;
       }
     }
+    var end = microtime.now();
+    console.log('data of size', data.length, 'took', (end - start), 'micro seconds');
   }));
   socket.on('drain', (function() {
     console.log('drained');

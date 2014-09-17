@@ -9,6 +9,7 @@
 var traceurRuntime = require('traceur-runtime');
 
 var net = require('net');
+var microtime = require('microtime');
 
 var LOOKUP = Symbol();
 var UPDATE = Symbol();
@@ -29,6 +30,7 @@ var server = net.createServer(socket => {
   var open = true;
 
   socket.on('data', data => {
+    var start = microtime.now();
     for (var i = 0; i < data.length; i++) {
       var c = data[i];
 
@@ -60,6 +62,9 @@ var server = net.createServer(socket => {
           else key += c;
       }
     }
+    var end = microtime.now();
+
+    console.log('data of size', data.length, 'took', (end - start), 'micro seconds');
   });
 
   socket.on('drain', () => {
