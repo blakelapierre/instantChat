@@ -55,15 +55,24 @@ function runBenchmark() {
 
   var sent = 0;
 
+  var drained = true;
+
+  socket.on('drain', () => drained = true);
+
   function send() {
-    var stop = sent + 100;
+    if (drained) {
+      var stop = sent + 100;
 
-    //console.log('Sending', sent, '-', stop, 'of', num_keys);
+      //console.log('Sending', sent, '-', stop, 'of', num_keys);
 
-    if (stop > num_keys) stop = num_keys;
+      if (stop > num_keys) stop = num_keys;
 
-    for (sent; sent < stop; sent++ ) {
-      if (!add(sent, sent)) break;
+      for (sent; sent < stop; sent++ ) {
+        if (!add(sent, sent)) {
+          drained = false;
+          break;
+        }
+      }
     }
 
     if (sent < num_keys) setImmediate(send);
