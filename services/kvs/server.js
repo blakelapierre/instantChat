@@ -94,12 +94,24 @@ var previousLookupCount = 0,
     lookupsPerSecond = 0,
     updatesPerSecond = 0;
 
+var lastCall = new Date().getTime();
+
 var smoothingFactor = 0.9,
     threshold = 0.01;
 
 setInterval(() => {
+  var now = new Date(),
+      time = now.getTime(),
+      dt = time - lastCall;
+
+  lastCall = time;
+
+
   var lookupChange = globalLookupCount - previousLookupCount,
       updateChange = globalUpdateCount - previousUpdateCount;
+
+  lookupChange = lookupChange / (dt / 1000);
+  updateChange = updateChange / (dt / 1000);
 
   lookupsPerSecond = smoothingFactor * lookupChange + (1 - smoothingFactor) * lookupsPerSecond;
   updatesPerSecond = smoothingFactor * updateChange + (1 - smoothingFactor) * updatesPerSecond;
@@ -111,7 +123,7 @@ setInterval(() => {
   previousUpdateCount = globalUpdateCount;
 
   console.log(
-    new Date(),
+    now,
     'lookups', globalLookupCount,
     'updates', globalUpdateCount,
     'lrate', lookupsPerSecond,
