@@ -50,7 +50,7 @@ var server = net.createServer((function(socket) {
       }
     }
     var end = microtime.now();
-    console.log('data of size', data.length, 'took', (end - start), 'micro seconds');
+    console.log(socket.remoteAddress, 'data of size', data.length, 'took', (end - start), 'micro seconds');
   }));
   socket.on('drain', (function() {
     console.log('drained');
