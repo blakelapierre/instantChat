@@ -73,6 +73,7 @@ class Peer {
           case 'connected':
           case 'completed':
             this._connected = true;
+            console.log('connected!');
             break;
           case 'failed':
           case 'disconnected':

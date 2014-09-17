@@ -34,7 +34,7 @@ module.exports = ['$timeout', 'rtc', 'emitter', 'streams', 'instantChatChannelHa
       id: 'local',
       ordinal: nextOrdinal++,
       config: {},
-      peer: undefined,
+      peer: peer,
       isActive: !!config.isLocal,
       isLocal: false,
       streams: streams(participant),
@@ -92,10 +92,12 @@ module.exports = ['$timeout', 'rtc', 'emitter', 'streams', 'instantChatChannelHa
     participantsMap[participant.id] = participant;
 
     listenTo(participant.streams, {
-      'add':    stream => {
-        if (participant.peer.remoteStreams.indexOf(stream) == -1 &&
-            participant.peer.localStreams.indexOf(stream) == -1) {
-          participant.peer.addLocalStream(stream);
+      'add': stream => {
+        // This may be the local Participant, which doesn't have a peer...
+        // Probably not a good sign that we are having to check this here?
+        if (peer && peer.remoteStreams.indexOf(stream) == -1 &&
+            peer.localStreams.indexOf(stream) == -1) {
+          peer.addLocalStream(stream);
         }
         emit('stream add', participant, stream);
       },

@@ -2,16 +2,18 @@ var traceurRuntime = require('traceur-runtime');
 var net = require('net');
 var LOOKUP = Symbol();
 var UPDATE = Symbol();
-var globalLookupCount = 0;
-var globalUpdateCount = 0;
+var table = {};
+var globalLookupCount = 0,
+    globalUpdateCount = 0;
 var server = net.createServer((function(socket) {
   socket.setEncoding('ascii');
   var mode,
       seenKey,
       key,
       value;
-  var lookupCount = 0;
-  var updateCount = 0;
+  var lookupCount = 0,
+      updateCount = 0;
+  var open = true;
   socket.on('data', (function(data) {
     for (var i = 0; i < data.length; i++) {
       var c = data[$traceurRuntime.toProperty(i)];
@@ -32,7 +34,11 @@ var server = net.createServer((function(socket) {
           seenKey = true;
           break;
         case ';':
-          socket.write(mode == LOOKUP ? lookup(key) : update(key, value));
+          open = socket.write(mode == LOOKUP ? lookup(key) : update(key, value));
+          if (!open) {
+            console.log('filled');
+            socket.pause();
+          }
           break;
         default:
           if (seenKey)
@@ -42,19 +48,23 @@ var server = net.createServer((function(socket) {
       }
     }
   }));
+  socket.on('drain', (function() {
+    console.log('drained');
+    open = false;
+    socket.resume();
+  }));
   socket.on('error', (function(error) {
     console.log('socket error', error);
   }));
-  var table = {};
   function lookup(key) {
     globalLookupCount++;
     lookupCount++;
     return '>' + key + ':' + table[$traceurRuntime.toProperty(key)] + ';';
   }
   function update(key, value) {
+    $traceurRuntime.setProperty(table, key, value);
     globalUpdateCount++;
     updateCount++;
-    $traceurRuntime.setProperty(table, key, value);
     return '>' + key + ':' + value + ';';
   }
 }));

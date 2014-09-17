@@ -66,7 +66,7 @@ function runBenchmark() {
     if (drained) {
       var stop = sent + 100;
 
-      //console.log('Sending', sent, '-', stop, 'of', num_keys);
+      // console.log('Sending', sent, '-', stop, 'of', num_keys);
 
       if (stop > num_keys) stop = num_keys;
 

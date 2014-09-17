@@ -153,6 +153,9 @@ function cj() {
     throw 'what is this?';
   }
 
+  // A type is a list of (name, type) pairs
+  // [ ['name', ''], ['gender', ''] ]
+  // [ ['person', 0] ]
   function addType(typeDifference) {
     var typeID = typeMap.length;
     typeMap.push(typeDifference);
