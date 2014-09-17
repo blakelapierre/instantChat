@@ -13,7 +13,7 @@ var num_keys = process.env.NUM_KEYS || 100000;
 var socket = net.createConnection(port, host, () => runBenchmark());
 
 var seenKey, key, value;
-socket.on('data', keyValueEmitter((key, value) => got(key, value)));
+socket.on('data', keyValueEmitter(got));
 
 function keyValueEmitter(emit) {
   return data => {
@@ -56,9 +56,9 @@ function runBenchmark() {
   var sent = 0;
 
   function send() {
-    var stop = sent + 1000;
+    var stop = sent + 100;
 
-    console.log('Sending', sent, '-', stop, 'of', num_keys);
+    //console.log('Sending', sent, '-', stop, 'of', num_keys);
 
     if (stop > num_keys) stop = num_keys;
 
@@ -66,7 +66,7 @@ function runBenchmark() {
       add(sent, sent);
     }
 
-    if (sent < num_keys) setTimeout(send, 0);
+    if (sent < num_keys) setImmediate(send);
     else {
       end = microtime.now();
 
@@ -108,9 +108,17 @@ function calcTime(start, end) {
 function showResults(completed) {
   console.log('computing results');
 
+  var us_spent = end - start,
+      seconds_spent = us_spent / 1000000;
+
   var response_times = _.map(completed, entry => entry[2] - entry[1]);
 
-  console.log(generateResults(response_times));
+  var results = generateResults(response_times);
+
+  results.us_spent_per_update = us_spent / num_keys;
+  results.updates_per_second = num_keys / seconds_spent;
+
+  console.log(results);
 
   process.exit();
 }

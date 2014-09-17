@@ -12,9 +12,7 @@ var socket = net.createConnection(port, host, (function() {
 var seenKey,
     key,
     value;
-socket.on('data', keyValueEmitter((function(key, value) {
-  return got(key, value);
-})));
+socket.on('data', keyValueEmitter(got));
 function keyValueEmitter(emit) {
   return (function(data) {
     for (var i = 0; i < data.length; i++) {
@@ -53,15 +51,14 @@ function runBenchmark() {
   start = microtime.now();
   var sent = 0;
   function send() {
-    var stop = sent + 1000;
-    console.log('Sending', sent, '-', stop, 'of', num_keys);
+    var stop = sent + 100;
     if (stop > num_keys)
       stop = num_keys;
     for (sent; sent < stop; sent++) {
       add(sent, sent);
     }
     if (sent < num_keys)
-      setTimeout(send, 0);
+      setImmediate(send);
     else {
       end = microtime.now();
       console.log('Sent', sent, 'updates in', calcTime(start, end));
@@ -92,10 +89,15 @@ function calcTime(start, end) {
 }
 function showResults(completed) {
   console.log('computing results');
+  var us_spent = end - start,
+      seconds_spent = us_spent / 1000000;
   var response_times = _.map(completed, (function(entry) {
     return entry[2] - entry[1];
   }));
-  console.log(generateResults(response_times));
+  var results = generateResults(response_times);
+  results.us_spent_per_update = us_spent / num_keys;
+  results.updates_per_second = num_keys / seconds_spent;
+  console.log(results);
   process.exit();
 }
 function generateResults(response_times) {
