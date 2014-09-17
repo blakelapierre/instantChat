@@ -70,6 +70,7 @@ function runBenchmark() {
       for (sent; sent < stop; sent++ ) {
         if (!add(sent, sent)) {
           drained = false;
+          console.log('filled');
           break;
         }
       }
