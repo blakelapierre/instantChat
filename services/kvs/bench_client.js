@@ -63,7 +63,7 @@ function runBenchmark() {
     if (stop > num_keys) stop = num_keys;
 
     for (sent; sent < stop; sent++ ) {
-      if (!add(sent, sent)) console.log('filled');
+      if (!add(sent, sent)) break;
     }
 
     if (sent < num_keys) setImmediate(send);
