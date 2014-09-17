@@ -8,7 +8,8 @@ var net = require('net'),
 var port = process.env.PORT || 9337,
     host = process.env.HOST || 'localhost';
 
-var num_keys = process.env.NUM_KEYS || 100000;
+var num_keys = process.env.NUM_KEYS || 100000,
+    completed = 0;
 
 var socket = net.createConnection(port, host, () => runBenchmark());
 
@@ -45,8 +46,7 @@ socket.on('error', error => console.log('socket error', error));
 
 socket.setEncoding('ascii');
 
-var outstanding = [],
-    completed = [];
+var outstanding = [];
 
 var start, end;
 
@@ -55,15 +55,17 @@ function runBenchmark() {
 
   var sent = 0;
 
-  var drained = true;
+  var open = true;
 
   socket.on('drain', () => {
-    drained = true;
-    console.log('drained');
+    open = true;
+    console.log('open');
+
+    if (sent < num_keys) setImmediate(send);
   });
 
   function send() {
-    if (drained) {
+    if (open) {
       var stop = sent + 100;
 
       // console.log('Sending', sent, '-', stop, 'of', num_keys);
@@ -71,15 +73,17 @@ function runBenchmark() {
       if (stop > num_keys) stop = num_keys;
 
       for (sent; sent < stop; sent++ ) {
-        if (!add(sent, sent)) {
-          drained = false;
+        open = add(sent, sent);
+        if (!open) {
           console.log('filled');
           break;
         }
       }
     }
 
-    if (sent < num_keys) setImmediate(send);
+    if (sent < num_keys) {
+      if (open) setImmediate(send);
+    }
     else {
       var end = microtime.now();
 
@@ -105,13 +109,14 @@ function got(key, value) {
   }
 
   request.push(microtime.now());
-  completed.push(request);
 
-  if (completed.length % 10000 == 0) console.log('outstanding', outstanding.length, 'completed', completed.length);
+  completed++;
 
-  if (completed.length == num_keys) {
+  if (completed % 10000 == 0) console.log('outstanding', outstanding.length, 'completed', completed);
+
+  if (completed == num_keys) {
     end = microtime.now();
-    showResults(completed);
+    showResults();
   }
 }
 

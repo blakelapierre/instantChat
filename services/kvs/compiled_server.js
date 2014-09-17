@@ -74,8 +74,24 @@ server.on('error', (function(error) {
 server.on('close', (function() {
   return console.log('server close');
 }));
+var previousLookupCount = 0,
+    previousUpdateCount = 0,
+    lookupsPerSecond = 0,
+    updatesPerSecond = 0;
+var smoothingFactor = 0.9,
+    threshold = 0.01;
 setInterval((function() {
-  return console.log(new Date(), 'lookups', globalLookupCount, 'updates', globalUpdateCount);
+  var lookupChange = globalLookupCount - previousLookupCount,
+      updateChange = globalUpdateCount - previousUpdateCount;
+  lookupsPerSecond = smoothingFactor * lookupChange + (1 - smoothingFactor) * lookupsPerSecond;
+  updatesPerSecond = smoothingFactor * updateChange + (1 - smoothingFactor) * updatesPerSecond;
+  if (lookupsPerSecond < threshold)
+    lookupsPerSecond = 0;
+  if (updatesPerSecond < threshold)
+    updatesPerSecond = 0;
+  previousLookupCount = globalLookupCount;
+  previousUpdateCount = globalUpdateCount;
+  console.log(new Date(), 'lookups', globalLookupCount, 'updates', globalUpdateCount, 'lrate', lookupsPerSecond, 'urate', updatesPerSecond, 'dl', lookupChange, 'du', updateChange);
 }), 1000);
 var port = process.env.PORT || 9337;
 server.listen(port);

@@ -5,7 +5,8 @@ var net = require('net'),
     ss = require('simple-statistics');
 var port = process.env.PORT || 9337,
     host = process.env.HOST || 'localhost';
-var num_keys = process.env.NUM_KEYS || 100000;
+var num_keys = process.env.NUM_KEYS || 100000,
+    completed = 0;
 var socket = net.createConnection(port, host, (function() {
   return runBenchmark();
 }));
@@ -43,34 +44,36 @@ socket.on('error', (function(error) {
   return console.log('socket error', error);
 }));
 socket.setEncoding('ascii');
-var outstanding = [],
-    completed = [];
+var outstanding = [];
 var start,
     end;
 function runBenchmark() {
   start = microtime.now();
   var sent = 0;
-  var drained = true;
+  var open = true;
   socket.on('drain', (function() {
-    drained = true;
-    console.log('drained');
+    open = true;
+    console.log('open');
+    if (sent < num_keys)
+      setImmediate(send);
   }));
   function send() {
-    if (drained) {
+    if (open) {
       var stop = sent + 100;
       if (stop > num_keys)
         stop = num_keys;
       for (sent; sent < stop; sent++) {
-        if (!add(sent, sent)) {
-          drained = false;
+        open = add(sent, sent);
+        if (!open) {
           console.log('filled');
           break;
         }
       }
     }
-    if (sent < num_keys)
-      setImmediate(send);
-    else {
+    if (sent < num_keys) {
+      if (open)
+        setImmediate(send);
+    } else {
       var end = microtime.now();
       console.log('Sent', sent, 'updates in', calcTime(start, end));
     }
@@ -88,12 +91,12 @@ function got(key, value) {
     process.exit();
   }
   request.push(microtime.now());
-  completed.push(request);
-  if (completed.length % 10000 == 0)
-    console.log('outstanding', outstanding.length, 'completed', completed.length);
-  if (completed.length == num_keys) {
+  completed++;
+  if (completed % 10000 == 0)
+    console.log('outstanding', outstanding.length, 'completed', completed);
+  if (completed == num_keys) {
     end = microtime.now();
-    showResults(completed);
+    showResults();
   }
 }
 function calcTime(start, end) {
