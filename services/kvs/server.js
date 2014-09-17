@@ -108,13 +108,13 @@ setInterval(() => {
 
 
   var lookupChange = globalLookupCount - previousLookupCount,
-      updateChange = globalUpdateCount - previousUpdateCount;
+      updateChange = globalUpdateCount - previousUpdateCount,
+      lookupChangePerSecond = lookupChange / (dt / 1000);
+      updateChangePerSecond = updateChange / (dt / 1000);
 
-  lookupChange = lookupChange / (dt / 1000);
-  updateChange = updateChange / (dt / 1000);
-
-  lookupsPerSecond = smoothingFactor * lookupChange + (1 - smoothingFactor) * lookupsPerSecond;
-  updatesPerSecond = smoothingFactor * updateChange + (1 - smoothingFactor) * updatesPerSecond;
+d
+  lookupsPerSecond = smoothingFactor * lookupChangePerSecond + (1 - smoothingFactor) * lookupsPerSecond;
+  updatesPerSecond = smoothingFactor * updateChangePerSecond + (1 - smoothingFactor) * updatesPerSecond;
 
   if (lookupsPerSecond < threshold) lookupsPerSecond = 0;
   if (updatesPerSecond < threshold) updatesPerSecond = 0;
@@ -124,6 +124,7 @@ setInterval(() => {
 
   console.log(
     now,
+    'dt', dt,
     'lookups', globalLookupCount,
     'updates', globalUpdateCount,
     'lrate', lookupsPerSecond,

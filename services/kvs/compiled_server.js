@@ -87,18 +87,18 @@ setInterval((function() {
       dt = time - lastCall;
   lastCall = time;
   var lookupChange = globalLookupCount - previousLookupCount,
-      updateChange = globalUpdateCount - previousUpdateCount;
-  lookupChange = lookupChange / (dt / 1000);
-  updateChange = updateChange / (dt / 1000);
-  lookupsPerSecond = smoothingFactor * lookupChange + (1 - smoothingFactor) * lookupsPerSecond;
-  updatesPerSecond = smoothingFactor * updateChange + (1 - smoothingFactor) * updatesPerSecond;
+      updateChange = globalUpdateCount - previousUpdateCount,
+      lookupChangePerSecond = lookupChange / (dt / 1000);
+  updateChangePerSecond = updateChange / (dt / 1000);
+  lookupsPerSecond = smoothingFactor * lookupChangePerSecond + (1 - smoothingFactor) * lookupsPerSecond;
+  updatesPerSecond = smoothingFactor * updateChangePerSecond + (1 - smoothingFactor) * updatesPerSecond;
   if (lookupsPerSecond < threshold)
     lookupsPerSecond = 0;
   if (updatesPerSecond < threshold)
     updatesPerSecond = 0;
   previousLookupCount = globalLookupCount;
   previousUpdateCount = globalUpdateCount;
-  console.log(now, 'lookups', globalLookupCount, 'updates', globalUpdateCount, 'lrate', lookupsPerSecond, 'urate', updatesPerSecond, 'dl', lookupChange, 'du', updateChange);
+  console.log(now, 'dt', dt, 'lookups', globalLookupCount, 'updates', globalUpdateCount, 'lrate', lookupsPerSecond, 'urate', updatesPerSecond, 'dl', lookupChange, 'du', updateChange);
 }), 1000);
 var port = process.env.PORT || 9337;
 server.listen(port);
