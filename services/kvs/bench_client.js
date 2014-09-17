@@ -57,7 +57,10 @@ function runBenchmark() {
 
   var drained = true;
 
-  socket.on('drain', () => drained = true);
+  socket.on('drain', () => {
+    drained = true;
+    console.log('drained');
+  });
 
   function send() {
     if (drained) {
