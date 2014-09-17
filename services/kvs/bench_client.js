@@ -63,12 +63,12 @@ function runBenchmark() {
     if (stop > num_keys) stop = num_keys;
 
     for (sent; sent < stop; sent++ ) {
-      add(sent, sent);
+      if (!add(sent, sent)) console.log('filled');
     }
 
     if (sent < num_keys) setImmediate(send);
     else {
-      end = microtime.now();
+      var end = microtime.now();
 
       console.log('Sent', sent, 'updates in', calcTime(start, end));
     }
@@ -97,6 +97,7 @@ function got(key, value) {
   if (completed.length % 10000 == 0) console.log('outstanding', outstanding.length, 'completed', completed.length);
 
   if (completed.length == num_keys) {
+    end = microtime.now();
     showResults(completed);
   }
 }
