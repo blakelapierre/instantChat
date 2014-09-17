@@ -112,7 +112,6 @@ setInterval(() => {
       lookupChangePerSecond = lookupChange / (dt / 1000);
       updateChangePerSecond = updateChange / (dt / 1000);
 
-d
   lookupsPerSecond = smoothingFactor * lookupChangePerSecond + (1 - smoothingFactor) * lookupsPerSecond;
   updatesPerSecond = smoothingFactor * updateChangePerSecond + (1 - smoothingFactor) * updatesPerSecond;
 
