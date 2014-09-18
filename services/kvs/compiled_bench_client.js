@@ -62,12 +62,13 @@ function runBenchmark() {
       var stop = sent + 100;
       if (stop > num_keys)
         stop = num_keys;
-      for (sent; sent < stop; sent++) {
-        open = add(sent, sent);
+      while (sent < stop) {
+        open = add(sent << 10, sent << 10);
         if (!open) {
           console.log('filled');
           break;
         }
+        sent++;
       }
     }
     if (sent < num_keys) {

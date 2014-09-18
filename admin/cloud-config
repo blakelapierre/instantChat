@@ -1,0 +1,38 @@
+#cloud-config
+
+coreos:
+  etcd:
+    discovery: {{discovery_url}}
+    addr: $public_ipv4:4001
+    peer-addr: $public_ipv4:7001
+  fleet:
+    public-ip: $public_ipv4
+    metadata: {{metadata}}
+  units:
+    - name: etcd.service
+      command: start
+
+    - name: fleet.service
+      command: start
+
+    - name: monitor.service
+      command: start
+      content: |
+        [Unit]
+        Description=monitor
+        After=etcd,fleet
+
+        [Service]
+        ExecStart=docker run -d -v /etc/localtime:/etc/localtime:ro -p 80:80 -p 8125:8125/udp -p 8126:8126 --name kamon-grafana-dashboard kamon/grafana_graphite
+        ExecStop=docker stop kamon-grafana-dashboard
+
+    # - name: instantChat.service
+    #   command: start
+    #   content: |
+    #     [Unit]
+    #     Description=instantChat
+    #     After=etcd,fleet
+
+    #     [Service]
+    #     ExecStart=docker start blakelapierre/instantChat-monitor
+    #     ExecStop=docker stop blakelapierre/instantChat-monitor
