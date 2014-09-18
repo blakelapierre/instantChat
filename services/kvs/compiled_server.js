@@ -8,49 +8,70 @@ var globalLookupCount = 0,
     globalUpdateCount = 0;
 var server = net.createServer((function(socket) {
   socket.setEncoding('ascii');
-  var mode,
-      seenKey,
-      key,
-      value;
+  var mode;
+  var partialKey = '',
+      partialValue = '';
   var lookupCount = 0,
       updateCount = 0;
   var open = true;
   socket.on('data', (function(data) {
-    var start = microtime.now();
+    var keyStart,
+        valueStart;
     for (var i = 0; i < data.length; i++) {
       var c = data[$traceurRuntime.toProperty(i)];
       switch (c) {
         case '<':
           mode = LOOKUP;
-          key = '';
-          value = '';
-          seenKey = false;
+          keyStart = i + 1;
+          valueStart = -1;
           break;
         case '>':
           mode = UPDATE;
-          key = '';
-          value = '';
-          seenKey = false;
+          keyStart = i + 1;
+          valueStart = -1;
           break;
         case ':':
-          seenKey = true;
+          valueStart = i + 1;
           break;
         case ';':
-          open = socket.write(mode == LOOKUP ? lookup(key) : update(key, value));
+          if (mode == LOOKUP) {
+            var key = data.substring(keyStart, i);
+            if (partialKey)
+              key = partialKey + key;
+            open = socket.write(lookup(key));
+          } else {
+            var key = data.substring(keyStart, valueStart - 1);
+            if (partialKey)
+              key = partialKey + key;
+            var value = data.substring(valueStart, i);
+            if (partialValue)
+              value = partialValue + value;
+            open = socket.write(update(key, value));
+          }
           if (!open) {
             console.log('filled');
             socket.pause();
           }
+          keyStart = -1;
+          valueStart = -1;
+          partialKey = null;
+          partialValue = null;
           break;
         default:
-          if (seenKey)
-            value += c;
-          else
-            key += c;
+          break;
       }
     }
-    var end = microtime.now();
-    console.log(socket.remoteAddress, 'data of size', data.length, 'took', (end - start), 'micro seconds');
+    if (valueStart > -1) {
+      if (valueStart < data.length)
+        partialValue = data.substr(valueStart);
+      else
+        partialValue = '';
+    } else if (keyStart > -1) {
+      if (keyStart < data.length)
+        partialKey = data.substr(keyStart);
+      else
+        partialKey = '';
+    }
   }));
   socket.on('drain', (function() {
     console.log('drained');
