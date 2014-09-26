@@ -1,0 +1,19 @@
+[Unit]
+Description=collectd-influxdb-proxy.service
+
+Requires=etcd.service
+Requires=fleet.service
+Requires=docker.service
+
+After=etcd.service
+After=fleet.service
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull instantchat/collectd-influxdb-proxy
+ExecStart=/usr/bin/docker run --rm --name %n -p ${COREOS_PUBLIC_IPV4}::8079 instantchat/collectd-influxdb-proxy
+ExecStop=/usr/bin/docker stop -t 3 %n

@@ -8,31 +8,48 @@ coreos:
   fleet:
     public-ip: $public_ipv4
     metadata: {{metadata}}
+
   units:
     - name: etcd.service
       command: start
 
+    - name: fleet.socket
+      command: start
+      content: |
+        [Socket]
+        ListenStream=/var/run/fleet.socket
+        Service=fleet.service
+
+        [Install]
+        WantedBy=sockets.target
+
     - name: fleet.service
       command: start
 
-    - name: monitor.service
+    - name: bootstrap.service
       command: start
       content: |
         [Unit]
-        Description=monitor
-        After=etcd,fleet
+        Description=boostraps us
+
+        Requires=etcd.service
+        Requires=fleet.socket
+        Requires=fleet.service
+        Requires=docker.service
+
+        After=etcd.service
+        After=fleet.socket
+        After=fleet.service
+        After=docker.service
 
         [Service]
-        ExecStart=docker run -d -v /etc/localtime:/etc/localtime:ro -p 80:80 -p 8125:8125/udp -p 8126:8126 --name kamon-grafana-dashboard kamon/grafana_graphite
-        ExecStop=docker stop kamon-grafana-dashboard
+        ExecStart=/home/core/bootstrap.sh
 
-    # - name: instantChat.service
-    #   command: start
-    #   content: |
-    #     [Unit]
-    #     Description=instantChat
-    #     After=etcd,fleet
-
-    #     [Service]
-    #     ExecStart=docker start blakelapierre/instantChat-monitor
-    #     ExecStop=docker stop blakelapierre/instantChat-monitor
+write_files:
+{{#files}}
+  - path: {{path}}
+    owner: {{owner}}
+    permissions: {{permissions}}
+    content: |
+{{content}}
+{{/files}}

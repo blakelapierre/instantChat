@@ -1,0 +1,17 @@
+[Unit]
+Description=influxdb.service
+
+After=etcd.service
+After=fleet.service
+After=docker.service
+
+After=collectd.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull tutum/influxdb
+ExecStart=/usr/bin/docker run --name %n -p 8083:8083 -p ${COREOS_PUBLIC_IPV4}::8086 --expose 8090 --expose 8099 -e PRE_CREATE_DB=collectd tutum/influxdb
+ExecStop=/usr/bin/docker stop

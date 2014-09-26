@@ -1,0 +1,15 @@
+[Unit]
+Description=broadcaster
+After=etcd.service
+After=fleet.service
+After=docker.service
+After=collectd.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/docker run --name %n instantchat/broadcaster
+
+[X-Fleet]
+MachineMetadata=role=broadcaster

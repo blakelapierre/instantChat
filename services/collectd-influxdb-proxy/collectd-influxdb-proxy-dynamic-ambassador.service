@@ -1,0 +1,18 @@
+[Unit]
+Description=collectd-influxdb-proxy-dynamic-ambassador.service
+
+Requires=etcd-ambassador.service
+
+After=etcd-ambassador.service
+After=influxdb.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull polvi/dynamic-etcd-amb
+ExecStart=/usr/bin/docker run --link etcd-ambassador.service:etcd --rm --name %n -p 127.0.0.1::8086 polvi/dynamic-etcd-amb influxdb 8086
+ExecStop=/usr/bin/docker stop -t 3 %n
+
+[X-Fleet]
+MachineOf=etcd-ambassador.service

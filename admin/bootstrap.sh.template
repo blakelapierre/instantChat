@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd /home/core
+
+# {{#services}}
+# fleetctl submit {{name}}.service
+# {{/services}}
+
+# {{#services}}
+# fleetctl start {{name}}.service
+# {{/services}}
+
+fleetctl submit *
+
+fleetctl start *

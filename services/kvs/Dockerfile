@@ -8,3 +8,5 @@ RUN npm install -g traceur
 
 RUN git clone https://github.com/blakelapierre/instantChat
 RUN cd instantChat && git checkout feature/broadcast && cd services/kvs && npm install
+
+
