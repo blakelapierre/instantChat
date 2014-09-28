@@ -2,11 +2,44 @@ var _ = require('lodash'),
     hogan = require('hogan.js'),
     templates = require('./templates');
 
+function launchMachines(provider, machines) {
+  var concurrentLaunches = 2,
+      launches = {inProgress: 0, next: 0};
+
+  function launchNext() {
+    if (launches.next >= machines.length) return false;
+
+    var machine = machines[launches.next];
+
+    launchMachine(machine).then(data => {
+      launches.next++;
+      launches.inProgress--;
+      launchNext();
+    }).error(error => {
+      launches.inProgress--;
+      launchNext();
+    });
+
+    launches.inProgress++;
+  }
+
+  function launchMachine(machine) {
+    return new Promise((resolve, reject), () => {
+      provider.createMachine(machine, resolve, reject);
+    });
+  }
+}
 
 
 
 
 var containers = [{
+  container: 'google/cadvisor',
+  linkTo: ['influxdb']
+
+}];
+
+
   container: 'collectd',
   linkTo: ['collectd-influxdb-proxy:proxy']
 },{
@@ -46,10 +79,10 @@ var containers = [{
 
 var config = {
   name: 'instantchat',
-  all: ['collectd'],
+  all: ['cadvisor'],
   machines: [{
     count: 1,
-    service: 'collectd-influxdb-proxy'
+    service: 'grafana'
   },{
     count: 1,
     service: 'influxdb'

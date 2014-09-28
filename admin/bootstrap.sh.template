@@ -12,6 +12,8 @@ cd /home/core
 # fleetctl start {{name}}.service
 # {{/services}}
 
+until fleetctl list-units; do echo 'fleet not ready...sleeping' && sleep 1; done
+
 fleetctl submit *
 
 fleetctl start *

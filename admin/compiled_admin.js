@@ -4,10 +4,10 @@ var fs = require('fs'),
     request = require('request'),
     traceur = require('traceur-runtime');
 var doWrapper = require('do-wrapper');
+var DOProvider = require('./DOProvider')(process.env.DO_TOKEN);
 var hogan = require('hogan.js');
 var uuid = require('node-uuid');
 var _ = require('lodash');
-var api = new doWrapper(process.env.DO_TOKEN);
 var keys = ['40:85:f0:9b:28:ad:5d:25:b5:51:2e:ad:f3:b3:31:98'];
 var cloud_config = fs.readFileSync(path.join(__dirname, 'cloud-config')).toString();
 var bootstrapTemplate = fs.readFileSync(path.join(__dirname, 'bootstrap.sh.template')).toString();
@@ -31,42 +31,54 @@ function launchCluster() {
       console.log('Error getting discovery url!');
       return false;
     }
-    create(1, 'core,collectd-influxdb-proxy,influxdb').at('sfo1');
-    function create(count, roles) {
+    console.log(discovery_url);
+    var create = (function(count, roles) {
       var location = 'sfo1',
           size = '512mb',
-          image = 'coreos-beta';
-      var metadata = {roles: roles};
-      function launch() {
+          image = 'coreos-alpha',
+          then = (function() {});
+      var launch = (function() {
         for (var i = 0; i < count; i++) {
-          var name = uuid.v4();
-          metadata.droplet_name = name;
-          metadata.provider = 'digitalocean';
-          metadata.location = location;
-          metadata.image = image;
-          metadata.size = size;
-          metadata = _.map(metadata, (function(value, key) {
+          var id = uuid.v4();
+          var metadataObj = {
+            roles: roles,
+            droplet_id: id,
+            provider: 'digitalocean',
+            location: location,
+            image: image,
+            size: size
+          };
+          var metadata = _.map(metadataObj, (function(value, key) {
             return key + '=' + value;
           })).join(',');
-          var files = getFiles(roles.split(','));
+          var files = getFiles(roles.split('|'));
           var user_data = cloud_config.render({
             'discovery_url': discovery_url,
             'metadata': metadata,
             'files': files
           });
-          console.log(user_data);
-          api.dropletsCreateNewDroplet(name, location, size, image, {
-            ssh_keys: keys,
-            user_data: user_data
+          DOProvider.createMachine({
+            id: id,
+            location: location,
+            size: size,
+            image: image,
+            keys: keys,
+            userData: userData
           }, (function(error, data) {
-            if (error)
-              console.log('error', error);
-            console.log(data);
+            return console.log(error, data);
+          }), (function(data) {
+            return console.log(data);
           }));
-          console.log('launching', name);
+          console.log('launching', id, 'at', location, 'wtih', image, '@', size, user_data);
         }
-      }
+      });
       setImmediate(launch);
+      var chain = ((function() {
+        return (function(fn) {
+          fn();
+          return chain;
+        });
+      }))();
       chain.at = (function(l) {
         return chain((function() {
           return location = l;
@@ -77,18 +89,21 @@ function launchCluster() {
           return size = s;
         }));
       });
+      chain.then = (function(t) {
+        return chain((function() {
+          return then = t;
+        }));
+      });
+      chain.launch = launch;
       return chain;
-      function chain(fn) {
-        fn();
-        return chain;
-      }
-    }
+    });
+    create(1, 'influxdb').at('sfo1');
   }));
 }
 var roleServices = {
-  'core': ['etcd-ambassador', 'collectd', 'collectd-dynamic-ambassador'],
-  'collectd-influxdb-proxy': ['collectd-influxdb-proxy', 'collectd-influxdb-proxy-docker-register', 'collectd-influxdb-proxy-dynamic-ambassador'],
-  'influxdb': ['influxdb', 'influxdb-docker-register']
+  'core': ['cadvisor'],
+  'influxdb': ['cadvisor', 'influxdb'],
+  'grafana': ['cadvisor', 'grafana']
 };
 function getFiles(roles) {
   var services = _.flatten(_.map(roles, (function(role) {
