@@ -19,7 +19,6 @@ module.exports = (function(config) {
       ssh_keys: keys,
       user_data: userData
     }, (function(error, data) {
-      console.log(error, data);
       if (error)
         reject(error, data);
       else

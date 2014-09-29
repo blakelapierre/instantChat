@@ -7,11 +7,11 @@ After=bootstrap.service
 TimeoutStartSec=0
 Restart=always
 EnvironmentFile=/etc/environment
-ExecStartPre=-/usr/bin/docker kill %n
-ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull tutum/influxdb:latest
-ExecStart=/usr/bin/bash -c "/usr/bin/etcdctl set /services/influxdb/influxdb.service ${COREOS_PUBLIC_IPV4}:8086 && /usr/bin/docker run --rm --name %n -p 8083:8083 -p 8086:8086 --expose 8090 --expose 8099 -e PRE_CREATE_DB=cadvisor tutum/influxdb:latest"
-ExecStop=/usr/bin/docker stop %n
+ExecStart=/usr/bin/bash -c "/usr/bin/etcdctl set /services/influxdb/influxdb.service ${COREOS_PUBLIC_IPV4}:8086 && /usr/bin/docker run --rm --name %p -p 8083:8083 -p 8086:8086 --expose 8090 --expose 8099 -e PRE_CREATE_DB=cadvisor tutum/influxdb:latest"
+ExecStop=/usr/bin/docker stop %p
 ExecStopPost=/usr/bin/etcdctl rm /services/influxdb/influxdb.service
 
 [X-Fleet]

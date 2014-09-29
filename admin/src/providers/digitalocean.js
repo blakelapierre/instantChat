@@ -11,7 +11,6 @@ module.exports = config => {
     api.dropletsCreateNewDroplet(id, location, size, image,
       {ssh_keys: keys, user_data: userData},
       (error, data) => {
-        console.log(error, data);
       if (error) reject(error, data);
       else resolve(data);
     });

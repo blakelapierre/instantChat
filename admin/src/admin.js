@@ -43,7 +43,6 @@ var services = _.reduce(service_files, (result, fileName) => {
   return result;
 }, {});
 
-
 var log = (...args) => console.log(...args);
 
 // launchCluster(doProvider);
@@ -72,22 +71,20 @@ function launchCluster(provider, log) {
 
             var id = uuid.v4();
 
-            var metadata = _.map({
+            var machine = {
               provider: provider.name,
               location,
               role,
               image,
               size,
               id
-            }, (value, key) => key + '=' + value).join(',');
+            };
 
-            var files = getFiles(role.split('|'));
+            var metadata = _.map(machine, (value, key) => key + '=' + value).join(',');
 
-            var userData = cloud_config.render({
-              'discovery_url': discovery_url,
-              'metadata': metadata,
-              'files': files
-            });
+            var files = getFiles(machine);
+
+            var userData = cloud_config.render({discovery_url, metadata, files});
 
             return {
               id,
@@ -122,12 +119,12 @@ function launchCluster(provider, log) {
       var machines = _.flatten([
         create(1, 'influxdb').at('sfo1').launch(),
         create(1, 'grafana').at('sfo1').launch(),
-        create(2, 'broadcaster').at('sfo1').launch()
+        create(48, 'broadcaster').at('sfo1').launch()
       ]);
 
       // how do we generate the machines on demand instead of all up front?
       launcher.launch(machines).then(machines => {
-        console.log('All machines launched', machines);
+        console.log('All machines launched!');
         fs.writeFileSync(path.join(baseDir, 'cloud.machines'), JSON.stringify(machines));
         resolve(machines);
       }, error => reject(error))
@@ -154,14 +151,16 @@ var roleServices = {
   ]
 };
 
-function getFiles(roles) {
-  var services = _.flatten(_.map(roles, role => roleServices[role]));
+function getFiles(machine) {
+  var {id, role} = machine;
+
+  var services = roleServices[role];
 
   var bootstrap = {
     path: '/home/core/bootstrap.sh',
     owner: 'core',
     permissions: '0700',
-    content: indent(bootstrapTemplate.render({services: _.map(services, serviceName => {return {name: serviceName};})}), '      ')
+    content: indent(bootstrapTemplate.render({services: _.map(services, serviceName => {return {fileName: serviceName + '.service', name: serviceName + (serviceName.indexOf('@') >= 0 ? id : '')};})}), '      ')
   };
 
   return [bootstrap].concat(_.map(services, makeFileRecord));

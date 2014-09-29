@@ -1,19 +1,18 @@
 [Unit]
-Description=cadvisor@%i.service
+Description=cadvisor
 
 After=etcd.service
 After=fleet.service
 After=docker.service
-After=influxdb.service
 
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStartPre=-/usr/bin/docker kill %n
-ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull google/cadvisor:latest
-ExecStart=/usr/bin/bash -c "INFLUXDB=$(/usr/bin/etcdctl get /services/influxdb/influxdb.service) && /usr/bin/docker run --rm --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --name=%n google/cadvisor:latest -storage_driver=influxdb -log_dir=/ -storage_driver_host=$INFLUXDB"
-ExecStop=/usr/bin/docker stop %n
+ExecStart=/usr/bin/bash -c "until INFLUXDB=$(/usr/bin/etcdctl get /services/influxdb/influxdb.service); do echo 'influxdb not found...retrying' && sleep 1; done && /usr/bin/docker run --rm --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --name=%p google/cadvisor:latest -storage_driver=influxdb -log_dir=/ -storage_driver_host=$INFLUXDB"
+ExecStop=/usr/bin/docker stop %p
 
 [X-Fleet]
 Global=true

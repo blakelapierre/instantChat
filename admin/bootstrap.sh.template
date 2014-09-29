@@ -4,16 +4,26 @@
 
 cd /home/core
 
-# {{#services}}
-# fleetctl submit {{name}}.service
-# {{/services}}
 
-# {{#services}}
-# fleetctl start {{name}}.service
-# {{/services}}
+(
+  SWAPSIZE=4G
+  SWAPFILE=/${SWAPSIZE}iB.swap
+  sudo /usr/bin/fallocate -l ${SWAPSIZE} ${SWAPFILE};
+  sudo /usr/bin/chmod 600 ${SWAPFILE};
+  sudo /usr/bin/chattr +C ${SWAPFILE};
+  sudo /usr/sbin/mkswap ${SWAPFILE};
+  sudo /usr/sbin/losetup -f ${SWAPFILE};
+  sudo /usr/sbin/swapon $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1);
+) &
+
+until etcdctl set /machines/$(hostname)/"$(date)" 1; do echo 'etcd not ready...sleeping' && sleep 1; done
 
 until fleetctl list-units; do echo 'fleet not ready...sleeping' && sleep 1; done
 
-fleetctl submit *
+{{#services}}
+until fleetctl submit {{fileName}}; do echo 'fleet not ready...sleeping' && sleep 1; done
+{{/services}}
 
-fleetctl start *
+{{#services}}
+until fleetctl start {{name}}; do echo 'fleect not ready...sleeping' && sleep 1; done
+{{/services}}

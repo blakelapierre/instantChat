@@ -9,11 +9,11 @@ var doProvider = require('./providers/digitalocean')({token: process.env.DO_TOKE
 var dummyProvider = require('./providers/dummy')();
 var provider = doProvider;
 var launcher = require('./launcher')(provider, (function() {
-  var $__2;
+  var $__3;
   for (var args = [],
       $__0 = 0; $__0 < arguments.length; $__0++)
     args[$__0] = arguments[$__0];
-  return ($__2 = console).log.apply($__2, $traceurRuntime.spread([new Date()], args));
+  return ($__3 = console).log.apply($__3, $traceurRuntime.spread([new Date()], args));
 }));
 var hogan = require('hogan.js');
 var uuid = require('node-uuid');
@@ -35,11 +35,11 @@ var services = _.reduce(service_files, (function(result, fileName) {
   return result;
 }), {});
 var log = (function() {
-  var $__2;
+  var $__3;
   for (var args = [],
       $__1 = 0; $__1 < arguments.length; $__1++)
     args[$__1] = arguments[$__1];
-  return ($__2 = console).log.apply($__2, $traceurRuntime.spread(args));
+  return ($__3 = console).log.apply($__3, $traceurRuntime.spread(args));
 });
 launchCluster(provider, log).then((function(machines) {
   return console.log('launched', machines.length, 'machines');
@@ -62,21 +62,22 @@ function launchCluster(provider, log) {
         var launch = (function() {
           return _.map(_.range(count), (function(i) {
             var id = uuid.v4();
-            var metadata = _.map({
+            var machine = {
               provider: provider.name,
               location: location,
               role: role,
               image: image,
               size: size,
               id: id
-            }, (function(value, key) {
+            };
+            var metadata = _.map(machine, (function(value, key) {
               return key + '=' + value;
             })).join(',');
-            var files = getFiles(role.split('|'));
+            var files = getFiles(machine);
             var userData = cloud_config.render({
-              'discovery_url': discovery_url,
-              'metadata': metadata,
-              'files': files
+              discovery_url: discovery_url,
+              metadata: metadata,
+              files: files
             });
             return {
               id: id,
@@ -113,9 +114,9 @@ function launchCluster(provider, log) {
         chain.launch = launch;
         return chain;
       });
-      var machines = _.flatten([create(1, 'influxdb').at('sfo1').launch(), create(1, 'grafana').at('sfo1').launch(), create(2, 'broadcaster').at('sfo1').launch()]);
+      var machines = _.flatten([create(1, 'influxdb').at('sfo1').launch(), create(1, 'grafana').at('sfo1').launch(), create(48, 'broadcaster').at('sfo1').launch()]);
       launcher.launch(machines).then((function(machines) {
-        console.log('All machines launched', machines);
+        console.log('All machines launched!');
         fs.writeFileSync(path.join(baseDir, 'cloud.machines'), JSON.stringify(machines));
         resolve(machines);
       }), (function(error) {
@@ -132,16 +133,20 @@ var roleServices = {
   'grafana': ['cadvisor', 'grafana'],
   'broadcaster': ['cadvisor', 'broadcaster@']
 };
-function getFiles(roles) {
-  var services = _.flatten(_.map(roles, (function(role) {
-    return roleServices[role];
-  })));
+function getFiles(machine) {
+  var $__2 = machine,
+      id = $__2.id,
+      role = $__2.role;
+  var services = roleServices[role];
   var bootstrap = {
     path: '/home/core/bootstrap.sh',
     owner: 'core',
     permissions: '0700',
     content: indent(bootstrapTemplate.render({services: _.map(services, (function(serviceName) {
-        return {name: serviceName};
+        return {
+          fileName: serviceName + '.service',
+          name: serviceName + (serviceName.indexOf('@') >= 0 ? id : '')
+        };
       }))}), '      ')
   };
   return [bootstrap].concat(_.map(services, makeFileRecord));
