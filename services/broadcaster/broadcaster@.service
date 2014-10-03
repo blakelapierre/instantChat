@@ -10,7 +10,7 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %p.%i
 ExecStartPre=-/usr/bin/docker rm %p.%i
-ExecStartPre=-/usr/bin/docker pull instantchat/broadcaster
+ExecStartPre=/bin/sh -c "until etcdctl set /machines/$(hostname)/stats/broadcasterPull $(date -Ins); do sleep 1; done && /usr/bin/docker pull instantchat/broadcaster && until etcdctl set /machines/$(hostname)/stats/broadcasterPulled $(date -Ins); do sleep 1; done"
 ExecStart=/usr/bin/docker run --name=%p.%i --rm --privileged instantchat/broadcaster
 ExecStop=/usr/bin/docker stop %p.%i
 

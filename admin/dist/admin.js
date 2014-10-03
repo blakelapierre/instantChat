@@ -114,7 +114,7 @@ function launchCluster(provider, log) {
         chain.launch = launch;
         return chain;
       });
-      var machines = _.flatten([create(1, 'influxdb').at('sfo1').launch(), create(1, 'grafana').at('sfo1').launch(), create(48, 'broadcaster').at('sfo1').launch()]);
+      var machines = _.flatten([create(1, 'influxdb').at('sfo1').launch(), create(1, 'grafana').at('sfo1').launch(), create(1, 'benchmarker').at('sfo1').launch(), create(7, 'broadcaster').at('sfo1').launch()]);
       launcher.launch(machines).then((function(machines) {
         console.log('All machines launched!');
         fs.writeFileSync(path.join(baseDir, 'cloud.machines'), JSON.stringify(machines));
@@ -131,7 +131,8 @@ var roleServices = {
   'core': ['cadvisor'],
   'influxdb': ['cadvisor', 'influxdb'],
   'grafana': ['cadvisor', 'grafana'],
-  'broadcaster': ['cadvisor', 'broadcaster@']
+  'broadcaster': ['cadvisor', 'broadcaster@'],
+  'benchmarker': ['cadvisor', 'benchmarker']
 };
 function getFiles(machine) {
   var $__2 = machine,

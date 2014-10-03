@@ -16,7 +16,13 @@ cd /home/core
   sudo /usr/sbin/swapon $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1);
 ) &
 
-until etcdctl set /machines/$(hostname)/"$(date)" 1; do echo 'etcd not ready...sleeping' && sleep 1; done
+function set {
+  until etcdctl set $1 $2; do echo 'etcd not ready...sleeping' && sleep 1; done
+}
+
+set /machines/$(hostname)/stats/on $(TIME="@$(grep btime /proc/stat | cut -d ' ' -f2)" && date --date=$TIME -Ins)
+set /machines/$(hostname)/stats/joindate $(date -Ins)
+#until etcdctl set /machines/$(hostname)/"$(date)" 1; do echo 'etcd not ready...sleeping' && sleep 1; done
 
 until fleetctl list-units; do echo 'fleet not ready...sleeping' && sleep 1; done
 

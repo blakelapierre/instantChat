@@ -119,7 +119,8 @@ function launchCluster(provider, log) {
       var machines = _.flatten([
         create(1, 'influxdb').at('sfo1').launch(),
         create(1, 'grafana').at('sfo1').launch(),
-        create(48, 'broadcaster').at('sfo1').launch()
+        create(1, 'benchmarker').at('sfo1').launch(),
+        create(7, 'broadcaster').at('sfo1').launch()
       ]);
 
       // how do we generate the machines on demand instead of all up front?
@@ -148,6 +149,10 @@ var roleServices = {
   'broadcaster': [
     'cadvisor',
     'broadcaster@'
+  ],
+  'benchmarker': [
+    'cadvisor',
+    'benchmarker'
   ]
 };
 
