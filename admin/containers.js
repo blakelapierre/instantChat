@@ -33,11 +33,41 @@ function launchMachines(provider, machines) {
 
 
 
-var containers = [{
-  container: 'google/cadvisor',
-  linkTo: ['influxdb']
+var clusterManifest = {
+  id: 'random id here',
+  location: ,
+  machines: []
+}
 
-}];
+function startCloud(definition) {
+  var cloudManifest = createCloudManifest(definition);
+  launch(cloudManifest);
+}
+
+function createCloudManifest(cloudDefinition) {
+  var machines = generateMachineDefinitions(cloudDefinition);
+
+  var containerManifest = _.map(containers, parseContainer);
+}
+
+function parseService(containerDefinition) {
+  // should generate a function to operate on a container
+  return container => {
+    if (linkTo) {
+
+    }
+  };
+}
+
+function parseLinkTo(linkToDefinition) {
+
+}
+
+function launch(cloudManifest) {
+
+  var clusterMachines = _.map(cloudManifest.clusters, cluster => { return cluster.machines; });
+  launchMachines(_.zip(clusterMachines));
+}
 
 
   container: 'collectd',

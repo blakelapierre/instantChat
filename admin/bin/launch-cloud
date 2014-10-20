@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+process.title = 'launch-cloud';
+
+console.log(process.argv);
+
+
+
+// /instachat.io
+// /instachat.io/active
+// /instachat.io/active/uuid
+// /instachat.io/historical/uuid

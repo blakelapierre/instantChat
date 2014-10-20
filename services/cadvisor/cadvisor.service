@@ -10,7 +10,7 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %p
 ExecStartPre=-/usr/bin/docker rm %p
-ExecStartPre=/bin/sh -c "until etcdctl set /machines/$(hostname)/stats/cadvisorPull $(date -Ins); do sleep 1; done && /usr/bin/docker pull google/cadvisor:latest && until etcdctl set /machines/$(hostname)/stats/cadvisorPulled $(date -Ins); do sleep 1; done"
+ExecStartPre=/bin/sh -c "until etcdctl set /machines/$(hostname)/stats/cadvisorPull $(date -Is); do sleep 1; done && /usr/bin/docker pull google/cadvisor:latest && until etcdctl set /machines/$(hostname)/stats/cadvisorPulled $(date -Is); do sleep 1; done"
 ExecStart=/usr/bin/bash -c "until INFLUXDB=$(/usr/bin/etcdctl get /services/influxdb/influxdb.service); do echo 'influxdb not found...retrying' && sleep 1; done && /usr/bin/docker run --rm --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --name=%p google/cadvisor:latest -storage_driver=influxdb -log_dir=/ -storage_driver_host=$INFLUXDB"
 ExecStop=/usr/bin/docker stop %p
 

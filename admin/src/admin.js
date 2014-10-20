@@ -1,5 +1,6 @@
 var fs = require('fs'),
     path = require('path'),
+    repl = require('repl'),
     glob = require('glob'),
     request = require('request'),
     traceur = require('traceur-runtime');
@@ -7,7 +8,7 @@ var fs = require('fs'),
 var doWrapper = require('do-wrapper');
 
 var doProvider = require('./providers/digitalocean')({token: process.env.DO_TOKEN});
-var dummyProvider = require('./providers/dummy')();
+//var dummyProvider = require('./providers/dummy');
 
 var provider = doProvider;
 // var provider = dummyProvider;
@@ -51,6 +52,7 @@ launchCluster(provider, log)
         error => console.log('error', error));
 
 function launchCluster(provider, log) {
+  console.log(provider);
   return new Promise((resolve, reject) => {
     request('https://discovery.etcd.io/new', (error, response, discovery_url) => {
       if (error) {
@@ -77,7 +79,8 @@ function launchCluster(provider, log) {
               role,
               image,
               size,
-              id
+              id,
+              requested: new Date().getTime()
             };
 
             var metadata = _.map(machine, (value, key) => key + '=' + value).join(',');
@@ -117,10 +120,11 @@ function launchCluster(provider, log) {
       };
 
       var machines = _.flatten([
-        create(1, 'influxdb').at('sfo1').launch(),
-        create(1, 'grafana').at('sfo1').launch(),
-        create(1, 'benchmarker').at('sfo1').launch(),
-        create(7, 'broadcaster').at('sfo1').launch()
+        create(1, 'core').at('sfo1').launch(),
+        create(0, 'benchmarker').at('sfo1').launch(),
+        create(0, 'influxdb').at('sfo1').size('2gb').launch(),
+        create(0, 'grafana').at('sfo1').launch(),
+        create(0, 'broadcaster').at('sfo1').launch()
       ]);
 
       // how do we generate the machines on demand instead of all up front?
@@ -168,7 +172,14 @@ function getFiles(machine) {
     content: indent(bootstrapTemplate.render({services: _.map(services, serviceName => {return {fileName: serviceName + '.service', name: serviceName + (serviceName.indexOf('@') >= 0 ? id : '')};})}), '      ')
   };
 
-  return [bootstrap].concat(_.map(services, makeFileRecord));
+  var util = {
+    path: '/home/core/util.sh',
+    owner: 'core',
+    permissiosn: '0700',
+    content: indent()
+  }
+
+  return [bootstrap, util].concat(_.map(services, makeFileRecord));
 }
 
 function makeFileRecord(serviceName) {

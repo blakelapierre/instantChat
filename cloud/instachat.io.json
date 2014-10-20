@@ -1,0 +1,79 @@
+{
+  domain: 'instachat.io',
+  locations:{
+    digitalocean: ['sfo1', 'nyc3', 'sgp1', 'lon1', 'ams3']
+  },
+  configuration: {
+    website: 1,
+    benchmarker: 1,
+    mapper: 0,
+    influxdb: 1,
+    grafana: 1,
+    elasticsearch: 0,
+    broadcaster: 97,
+    stunturn: 0
+  },
+  roles: {
+    all: [{
+      container: 'cadvisor',
+      linkTo: 'influxdb'
+    }],
+    website: [{
+      container: 'site',
+      ports: {
+        'http': 80,
+        'https': 443
+      }
+    }],
+    influxdb: [{
+      container: 'influxdb'
+    }],
+    grafana: [{
+      container: 'grafana',
+      linkTo: 'influxdb'
+    }]
+  },
+  defaultSize: {
+    // by role
+    influxdb: '2gb'
+  },
+  containers:{
+    cadvisor: {
+      dockerRepo: 'instantchat/cadvisor',
+      linkTo: [{
+        'influxdb': {
+          'to_influxdb': 'ipv4:data_in'
+        }
+      }],
+      env:
+    },
+    benchmarker: {
+      dockerRepo: 'instantchat/benchmarker'
+    },
+    mapper: {
+      dockerRepo: 'instantchat/mapper'
+    },
+    site: {
+      dockerRepo: 'instantchat/site'
+    },
+    grafana: {
+      dockerRepo: 'instantchat/grafana',
+      linkTo: [{
+        'influxdb': {
+          'grafana_influxdb_in': ':data_out'
+        }
+      }],
+      env: {
+        'INFLUXDB_HOST': '@influxdb:grafana_influxdb_in'
+      }
+    },
+    influxdb: {
+      dockerRepo: 'instantchat/influxdb',
+      ports: {
+        'data_in': 8086,
+        'data_out': 8086,
+        'site': 8083
+      }
+    }
+  }
+}

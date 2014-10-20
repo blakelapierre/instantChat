@@ -8,7 +8,9 @@ module.exports = function(grunt) {
     traceur: {
       options: {
         modules: 'commonjs',
-        sourceMaps: true
+        sourceMaps: true,
+        includeRuntime: true,
+        generators: 'parse'
       },
       src: {
         files: [{
@@ -21,10 +23,19 @@ module.exports = function(grunt) {
     },
     execute: {
       launch: {
+        options: {
+          args: ['arg1']
+        },
         src: ['dist/admin.js']
       },
       destroy: {
         src: ['dist/destroy.js']
+      },
+      test: {
+        options: {
+          nodeargs: ['--harmony']
+        },
+        src: ['dist/test/gen.js']
       }
     }
   });
@@ -39,5 +50,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('destroy', function() {
     grunt.task.run('traceur:src', 'execute:destroy');
+  });
+
+  grunt.registerTask('test', function() {
+    grunt.task.run('traceur:src', 'execute:test');
   });
 };

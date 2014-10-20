@@ -5,6 +5,14 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: pkg,
+    copy: {
+      frontend: {
+        files: [
+          {expand: true, flatten: true, src: ['./src/frontend/**/*.html', './src/frontend/**/*.css'], dest: './dist/frontend/'},
+          {expand: true, flatten: true, src: ['./src/frontend/lib/**/*'], dest: './dist/frontend/lib'}
+        ]
+      }
+    },
     traceur: {
       options: {
         modules: 'commonjs',
@@ -14,23 +22,36 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'src',
-          src: ['**/*.js'],
+          src: ['server/**/*.js'],
           dest: 'dist'
         }]
       }
     },
     execute: {
       launch: {
-        src: ['dist/app.js']
+        src: ['dist/server/app.js']
+      }
+    },
+    browserify: {
+      benchmarker: {
+        files: {
+          'dist/frontend/app.js': ['src/frontend/app.js']
+        }
+      }
+    },
+    watch: {
+      frontend: {
+        files: ['src/**/*'],
+        tasks: ['traceur:src', 'copy:frontend', 'browserify:benchmarker', 'execute:launch']
       }
     }
   });
 
   grunt.registerTask('default' , '', function() {
-    grunt.task.run('traceur:src', 'execute:launch');
+    grunt.task.run('traceur:src', 'copy:frontend', 'browserify:benchmarker', 'execute:launch', 'watch:frontend');
   });
 
   grunt.registerTask('build', function() {
-    grunt.task.run('traceur:src');
+    grunt.task.run('traceur:src', 'copy:frontend', 'browserify:benchmarker');
   });
 };
