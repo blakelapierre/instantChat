@@ -2,6 +2,7 @@
 
 module.exports = {
   depthFirst,
+  breadthFirst,
   gMap,
   toGenerator,
   loop,
@@ -12,7 +13,6 @@ module.exports = {
 function gMap(g, fn) {
   while (true) {
     var result = g.next();
-    console.log('gmap', result);
     fn(result.value);
     if (result.done) return;
   }
@@ -85,30 +85,63 @@ function* depthFirst(node) {
   if (!node) {
     console.log('undefined!');
   }
-  console.log('enter depthFirst', node);
-  var valueResult = node.next();
-  console.log('valueResult', valueResult);
 
-  if (valueResult.done) return valueResult.value;
-  else {
-    var i = 0;
+  var valueResult = node.next(),
+      value = valueResult.value;
+console.log('depthFirst', node, valueResult);
+  if (valueResult.done) return value;
+
+  while (true) {
+    var child = node.next();
+console.log('child', child);
+    var childGenerator = depthFirst(child.value);
     while (true) {
-      var childResult = node.next();
+      var childGeneratorResult = childGenerator.next();
+console.log('childGenResult', childGeneratorResult, value);
+      yield childGeneratorResult.value;
 
-      console.log('depthFirst yielding child', i, childResult);
-      var childGenerator = depthFirst(childResult.value);
-      while (true) {
-        var childGeneratorResult = childGenerator.next();
-
-        yield childGeneratorResult.value;
-        if (childGeneratorResult.done) break;
-      }
-      console.log('depthFirst yielding child', i, 'done');
-
-      i++;
-
-      if (childResult.done) return valueResult.value;
+      if (childGeneratorResult.done) break;
     }
+
+    if (child.done) return value;
+  }
+}
+
+function* breadthFirst(node) {
+  if (!node) {
+    console.log('undefined');
+  }
+
+  var valueResult = node.next(),
+      value = valueResult.value;
+
+  if (valueResult.done) return value;
+
+  yield value;
+
+  // how can we do this with only generators?
+  var children = toArray(transform(node, value => breadthFirst(value)));
+
+  for (var i = 0; i < children.length; i++) {
+    var result = children[i].next();
+    if (result.done) {
+      children.splice(i, 1);
+      i--;
+    }
+    if (children.length == 0) return result.value;
+    else yield result.value;
+  }
+
+
+  for (var i = 0; i < children.length - 1; i++) {
+    yield* children[i];
+  }
+
+  var generator = children[i];
+  while (true) {
+    var result = generator.next();
+    if (result.done) return result.value;
+    else yield result.value;
   }
 }
 
@@ -117,7 +150,6 @@ function* transform(generator, fn) {
     var result = generator.next();
         newValue = fn(result.value);
 
-    console.log('transform', result);
     if (result.done) return newValue;
     else yield (fn(result.value));
   }
@@ -130,11 +162,8 @@ function* makeNode(value, children) {
     if (children.length) children = toGenerator(children); // really we want to just do this for arrays
     if (typeof children == 'function') children = children();
 
-    console.log('yielded', value);
-    console.log('children', children);
     while (true) {
       var result = children.next();
-      console.log('makeNode', result);
       if (result.done) return result.value;
       else yield result.value;
     }
@@ -148,17 +177,21 @@ function* toGenerator(array) {
   if (length == 0) throw Error('What should we do here?');
   if (length == 1) return array[0];
 
-  console.log('toGenerator', length);
   var i;
   for (i = 0; i < length - 1; i++) yield array[i];
-  console.log('i', i, array);
-  console.log('returning', array[i]);
   return array[i];
 }
 
-function* node(value, childrenFunction) {
+function toArray(generator) {
+  var array = [];
 
+  while (true) {
+    var result = generator.next();
+    array.push(result.value);
+    if (result.done) return array;
+  }
 }
+
 
 
 // Implementing and Traversing Trees Using Generators in JavaScript [ECMAScript 6]
