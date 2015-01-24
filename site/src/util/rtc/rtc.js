@@ -75,7 +75,7 @@ module.exports = (log, emitter, signaler) => {
       'error': error => log.error(error)
     }, (handler, name) => socket.on(name, function() {
       handler.apply(this, arguments);
-      fire(name, ...arguments);
+      fire(name, ...arguments); //broadcast ready and broadcast error will fire twice!
     }));
 
     function gotID(myID) {
