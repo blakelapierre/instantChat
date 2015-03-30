@@ -1,7 +1,7 @@
 {
-  domain: 'instachat.io',
+  domain: "instachat.io",
   locations:{
-    digitalocean: ['sfo1', 'nyc3', 'sgp1', 'lon1', 'ams3']
+    digitalocean: ["sfo1", "nyc3", "sgp1", "lon1", "ams3"]
   },
   configuration: {
     website: 1,
@@ -15,64 +15,64 @@
   },
   roles: {
     all: [{
-      container: 'cadvisor',
-      linkTo: 'influxdb'
+      container: "cadvisor",
+      linkTo: "influxdb"
     }],
     website: [{
-      container: 'site',
+      container: "site",
       ports: {
-        'http': 80,
-        'https': 443
+        "http": 80,
+        "https": 443
       }
     }],
     influxdb: [{
-      container: 'influxdb'
+      container: "influxdb"
     }],
     grafana: [{
-      container: 'grafana',
-      linkTo: 'influxdb'
+      container: "grafana",
+      linkTo: "influxdb"
     }]
   },
   defaultSize: {
     // by role
-    influxdb: '2gb'
+    influxdb: "2gb"
   },
   containers:{
     cadvisor: {
-      dockerRepo: 'instantchat/cadvisor',
-      requires: ['influxdb:data_in']
+      dockerRepo: "instantchat/cadvisor",
+      requires: ["influxdb:data_in"]
       linkTo: [{
-        'influxdb': {
-          'to_influxdb': 'ipv4:data_in'
+        "influxdb": {
+          "to_influxdb": "ipv4:data_in"
         }
       }]
     },
     benchmarker: {
-      dockerRepo: 'instantchat/benchmarker'
+      dockerRepo: "instantchat/benchmarker"
     },
     mapper: {
-      dockerRepo: 'instantchat/mapper'
+      dockerRepo: "instantchat/mapper"
     },
     site: {
-      dockerRepo: 'instantchat/site'
+      dockerRepo: "instantchat/site"
     },
     grafana: {
-      dockerRepo: 'instantchat/grafana',
+      dockerRepo: "instantchat/grafana",
       linkTo: [{
-        'influxdb': {
-          'grafana_influxdb_in': ':data_out'
+        "influxdb": {
+          "grafana_influxdb_in": ":data_out"
         }
       }],
       env: {
-        'INFLUXDB_HOST': '@influxdb:grafana_influxdb_in'
+        "INFLUXDB_HOST": "@influxdb:grafana_influxdb_in"
       }
     },
     influxdb: {
-      dockerRepo: 'instantchat/influxdb',
+      dockerRepo: "instantchat/influxdb",
       ports: {
-        'data_in': 8086,
-        'data_out': 8086,
-        'site': 8083
+        "data_in": 8086,
+        "data_out": 8086,
+        "site": 8083
       }
     }
   }
