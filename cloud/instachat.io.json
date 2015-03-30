@@ -40,12 +40,12 @@
   containers:{
     cadvisor: {
       dockerRepo: 'instantchat/cadvisor',
+      requires: ['influxdb:data_in']
       linkTo: [{
         'influxdb': {
           'to_influxdb': 'ipv4:data_in'
         }
-      }],
-      env:
+      }]
     },
     benchmarker: {
       dockerRepo: 'instantchat/benchmarker'
