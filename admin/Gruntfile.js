@@ -24,7 +24,7 @@ module.exports = function(grunt) {
     execute: {
       launch: {
         options: {
-          args: ['arg1']
+          nodeargs: ['--harmony']
         },
         src: ['dist/admin.js']
       },

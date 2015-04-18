@@ -1,0 +1,18 @@
+function nowClock() {
+  return {
+    tick: new Date().getTime()
+  };
+}
+
+function intClock(time, step) {
+  time = time || 0;
+  step = step || 1;
+
+  return {
+    tick: function() {
+      var wasTime = time;
+      time = time + step;
+      return wasTime;
+    }
+  };
+}

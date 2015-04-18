@@ -143,6 +143,8 @@ module.exports = [
 
   }
 
+  // Careful, we are relying on adminRoom
+  // to eventually cause the promise to terminate
   function broadcast(roomName) {
     return new Promise((resolve, reject) => {
       instantChat.signal.adminRoom(roomName, {command: 'broadcast'});

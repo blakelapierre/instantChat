@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Example Emit app</title>
+  <link rel="stylesheet" type="text/css" href="http://augus.github.io/ngAnimate/css/ng-animation.css">
+</head>
+<body ng-app="emitApp">
+
+  <div ng-controller="MainController">
+    <span ng-repeat="toggle in toggles">
+        <input type="button" ng-channel="click:{{ 'channel'+$index }}" ng-emit="$index" value="Toggle {{ toggle }}" />
+    </span>
+    <button ng-click="add(toggles)">Add more</button>
+
+    <span class="slide-left"
+          ng-repeat="toggle in toggles"
+          ng-on="click:{{ 'channel'+$index }}"
+          ng-execute="callback"
+          toggle-section>
+        <p>This is section #{{ toggle }}</p>
+    </span>
+  </div>
+
+  <script>Error.stackTraceLimit = Infinity;</script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-animate.js"></script>
+  <script src="../angular-event-emitter.js"></script>
+  <script type="text/javascript">
+
+
+  !function(app, angular) {
+  'use strict';
+
+
+    app.controller('MainController', function($rootScope, $scope, $once, $on, $emit) {
+        function logger(event, args) {
+          console.log('$on', args);
+        }
+
+        $once('event', function(event, args) {
+          console.log('$once ', args);
+        });
+
+        $on('event', logger);
+
+        $scope.add = function(collection) {
+          var lastIndex = collection.length-1;
+          var count = collection[lastIndex];
+          collection.push(count+1);
+        };
+
+        $scope.toggle = true;
+        $scope.toggles = [1,2,3]; // should be names
+    //    $scope.triggerArgs = function() {};
+        $scope.callback = function(value) {
+          $emit('event', 'trigger event');
+          console.log('callback ', arguments);
+        };
+    })
+    .directive('toggleSection', function($animate) {
+      return function(scope, element, attrs) {
+        var toggle = true;
+        scope.$onRootScope('event:'+(attrs.ngOn || attrs.toggleSection), function(ev,num) {
+          toggle = !toggle;
+          var toggleHide = (toggle) ? 'removeClass' : 'addClass';
+          // var toggleShow = (toggle) ? 'addClass' : 'removeClass';
+          $animate[toggleHide](element, 'ng-hide');
+          // $animate[toggleShow](element, 'ng-show');
+        });
+      }
+    });
+
+
+
+  }(angular.module('emitApp', ['ngEventEmitter']), angular);
+
+  </script>
+</body>
+</html>

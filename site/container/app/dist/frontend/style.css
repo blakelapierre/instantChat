@@ -1,0 +1,1083 @@
+@-webkit-keyframes envelopeColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #ee6666;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@keyframes envelopeColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #ee6666;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@-webkit-keyframes mobileColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #33bb33;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@keyframes mobileColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #33bb33;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@-webkit-keyframes twitterColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #55acee;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@keyframes twitterColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #55acee;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@-webkit-keyframes facebookColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #4c66a4;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@keyframes facebookColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #4c66a4;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@-webkit-keyframes gplusColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #dd4b38;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+@keyframes gplusColor {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #dd4b38;
+    text-shadow: 0px 0px 7px #ffffff;
+  }
+  100% {
+    color: #fff;
+  }
+}
+chat-menu .menu-container {
+  position: fixed;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+  width: 30em;
+  max-width: 100%;
+  height: 100%;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-transition: top 0.4s ease, left 0.4s ease, bottom 0.4s ease, right 0.4s ease, -webkit-transform 0.4s ease-out, width 0.5s ease;
+  transition: top 0.4s ease, left 0.4s ease, bottom 0.4s ease, right 0.4s ease, transform 0.4s ease-out, width 0.5s ease;
+}
+chat-menu .menu-container .overlay {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(16, 16, 16, 0.85);
+  box-shadow: -5px 0px 10px rgba(16, 16, 16, 0.85);
+  -webkit-transition: background-color 0.4s ease, opacity 0.4s ease;
+  transition: background-color 0.4s ease, opacity 0.4s ease;
+}
+chat-menu .menu-container .menu-content {
+  position: absolute;
+  right: 0%;
+  top: 0%;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  text-shadow: 0px 0px 5px #aaa;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  -webkit-transition: left 0.5s ease, right 0.5s ease;
+  transition: left 0.5s ease, right 0.5s ease;
+}
+chat-menu .menu-container .menu-content .exit {
+  position: absolute;
+  top: 0.25em;
+  left: 0.25em;
+  font-size: 1.75em;
+  cursor: pointer;
+  color: #3d3;
+  text-shadow: 0px 0px 5px #3d3;
+}
+chat-menu .menu-container .menu-content .exit:hover {
+  color: #3f3;
+  text-shadow: 0px 0px 6px #3f3;
+}
+chat-menu .menu-container .menu-content .header {
+  height: 3em;
+  width: 100%;
+  text-align: center;
+}
+chat-menu .menu-container .menu-content .header .badge .room-name {
+  font-size: 3em;
+  line-height: 1em;
+}
+chat-menu .menu-container .menu-content .body {
+  position: absolute;
+  top: 3em;
+  bottom: 3em;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+chat-menu .menu-container .menu-content .body .panel {
+  display: block;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: -webkit-transform 0.33s ease;
+  transition: transform 0.33s ease;
+}
+chat-menu .menu-container .menu-content .body .panel.ng-enter,
+chat-menu .menu-container .menu-content .body .panel.ng-leave.ng-leave-active {
+  -webkit-transform: rotateY(-180deg);
+  transform: rotateY(-180deg);
+}
+chat-menu .menu-container .menu-content .body .panel.ng-leave,
+chat-menu .menu-container .menu-content .body .panel.ng-enter.ng-enter-active {
+  -webkit-transform: rotateY(0deg);
+  transform: rotateY(0deg);
+}
+chat-menu .menu-container .menu-content .body .main .menu-items {
+  margin-top: 2em;
+  text-align: center;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items .invite {
+  display: block;
+  font-size: 1.5em;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul {
+  margin: 0 auto;
+  padding: 0;
+  width: inherit;
+  list-style: none;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul li {
+  display: inline-block;
+  font-size: medium;
+  cursor: pointer;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul li a {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul li a .fa {
+  font-size: 3em;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul li:hover {
+  text-shadow: 0px 0px 25px #fff;
+}
+chat-menu .menu-container .menu-content .body .main .menu-items ul li:not(:last-child) {
+  margin-right: 2em;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list {
+  margin-top: 2em;
+  margin-left: 1em;
+  margin-right: 1em;
+  padding: 0.25em;
+  background-color: rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participants-count {
+  font-size: 0.9em;
+  line-height: 1em;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant {
+  display: table;
+  width: 100%;
+  margin-top: 0.5em;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .thumbnail,
+chat-menu .menu-container .menu-content .body .main .participants-list .participant video {
+  display: table-cell;
+  width: 7em;
+  float: left;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant video {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant {
+  display: table-cell;
+  margin-left: 1em;
+  width: auto;
+  line-height: 1em;
+  vertical-align: middle;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .name-input {
+  line-height: 1em;
+  color: #fff;
+  text-shadow: 0px 0px 5px #333;
+  background: transparent;
+  border: none;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .name-input[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: #dff;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .name-input:focus {
+  outline: none;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .permission {
+  display: inline-block;
+  width: auto;
+  margin-top: 1em;
+  font-size: 0.9em;
+  text-shadow: 0px 0px 5px #333;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .permission input,
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .permission span {
+  vertical-align: middle;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .permission .front-page,
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .local-participant .permission .front-page:visited {
+  color: #09f;
+  font-weight: bolder;
+  text-shadow: 0px 0px 5px #036;
+}
+chat-menu .menu-container .menu-content .body .main .participants-list .participant .remote-participant {
+  display: inline-block;
+  margin-left: 1em;
+}
+chat-menu .menu-container .menu-content .footer {
+  position: absolute;
+  bottom: 0%;
+  height: 3em;
+  width: 100%;
+}
+chat-menu .menu-container .menu-content .footer .trigger {
+  position: absolute;
+  height: 100%;
+  font-size: 2.25em;
+  line-height: 1em;
+  cursor: pointer;
+}
+chat-menu .menu-container .menu-content .footer .trigger span {
+  vertical-align: middle;
+}
+chat-menu .menu-container .menu-content .footer .trigger.settings-trigger {
+  left: 0%;
+  right: 66.66%;
+  padding-left: 1em;
+  text-align: left;
+  text-shadow: 0px 0px 5px #db0;
+}
+chat-menu .menu-container .menu-content .footer .trigger.settings-trigger:hover,
+chat-menu .menu-container .menu-content .footer .trigger.settings-trigger.settings-visible {
+  color: #db0;
+  text-shadow: 0px 0px 25px #db0;
+}
+chat-menu .menu-container .menu-content .footer .trigger.feedback-trigger {
+  left: 33.33%;
+  right: 33.33%;
+  text-align: center;
+  text-shadow: 0px 0px 5px #0fb;
+}
+chat-menu .menu-container .menu-content .footer .trigger.feedback-trigger:hover,
+chat-menu .menu-container .menu-content .footer .trigger.feedback-trigger.feedback-visible {
+  color: #0fb;
+  text-shadow: 0px 0px 25px #0fb;
+}
+chat-menu .menu-container .menu-content .footer .trigger.rooms-trigger {
+  left: 66.66%;
+  right: 0%;
+  padding-right: 1em;
+  text-align: right;
+  text-shadow: 0px 0px 5px #0bf;
+}
+chat-menu .menu-container .menu-content .footer .trigger.rooms-trigger:hover,
+chat-menu .menu-container .menu-content .footer .trigger.rooms-trigger.rooms-visible {
+  color: #0bf;
+  text-shadow: 0px 0px 25px #0bf;
+}
+chat-menu.expanded .menu-items ul li .fa {
+  -webkit-transition: -webkit-transform 1s ease;
+  transition: transform 1s ease;
+}
+chat-menu.expanded .menu-items ul li.activated .fa {
+  -webkit-transform: rotateY(720deg);
+  transform: rotateY(720deg);
+}
+chat-menu.expanded .menu-items ul li:hover .fa-envelope {
+  color: #ee6666;
+}
+chat-menu.expanded .menu-items ul li:hover .fa-mobile {
+  color: #33bb33;
+}
+chat-menu.expanded .menu-items ul li:hover .fa-twitter {
+  color: #55acee;
+}
+chat-menu.expanded .menu-items ul li:hover .fa-facebook {
+  color: #4c66a4;
+}
+chat-menu.expanded .menu-items ul li:hover .fa-google-plus {
+  color: #dd4b38;
+}
+chat-menu.expanded .menu-items ul li .fa-envelope {
+  -webkit-animation: envelopeColor 1.5s 1.5s ease;
+  animation: envelopeColor 1.5s 1.5s ease;
+}
+chat-menu.expanded .menu-items ul li .fa-mobile {
+  -webkit-animation: mobileColor 1.5s 2.25s ease;
+  animation: mobileColor 1.5s 2.25s ease;
+}
+chat-menu.expanded .menu-items ul li .fa-twitter {
+  -webkit-animation: twitterColor 1.5s 3s ease;
+  animation: twitterColor 1.5s 3s ease;
+}
+chat-menu.expanded .menu-items ul li .fa-facebook {
+  -webkit-animation: facebookColor 1.5s 3.75s ease;
+  animation: facebookColor 1.5s 3.75s ease;
+}
+chat-menu.expanded .menu-items ul li .fa-google-plus {
+  -webkit-animation: gplusColor 1.5s 4.5s ease;
+  animation: gplusColor 1.5s 4.5s ease;
+}
+chat-menu.collapsed .menu-container {
+  right: -100%;
+  bottom: -100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+}
+chat-menu.collapsed .menu-container .overlay {
+  background-color: #bddfff;
+  opacity: 0;
+}
+
+feedback .suggestions {
+  margin: 0 1em;
+  text-align: center;
+}
+feedback .suggestions .suggestion-list {
+  height: 50%;
+  width: inherit;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  list-style-type: none;
+}
+feedback .suggestions .suggestion-list .suggestion {
+  position: relative;
+  margin: 0.25em;
+  padding: 0.25em;
+  border: solid 1px #666;
+}
+feedback .suggestions .suggestion-list .suggestion .vote {
+  cursor: pointer;
+}
+feedback .suggestions .suggestion-list .suggestion .vote-down {
+  position: absolute;
+  left: 0%;
+  color: #f00;
+}
+feedback .suggestions .suggestion-list .suggestion .vote-up {
+  position: absolute;
+  right: 0%;
+  color: #0f0;
+}
+feedback .suggestions .input {
+  height: 50%;
+}
+feedback .suggestions .input textarea {
+  width: 75%;
+  height: 80%;
+  font-size: x-large;
+}
+feedback .suggestions .input button {
+  width: 75%;
+  height: 20%;
+  border: none;
+  background: transparent;
+  font-size: xx-large;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0px 0px 5px #333;
+}
+feedback .suggestions .input button:hover {
+  text-shadow: 0px 0px 25px #fff;
+}
+
+instant-chat {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+instant-chat .top-bar {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  height: 2em;
+  width: 100%;
+  overflow: visible;
+  -webkit-transition: top 0.5s ease;
+  transition: top 0.5s ease;
+}
+instant-chat .top-bar .full-screen {
+  display: inline-block;
+  padding-left: 0.2em;
+  font-size: 1.5em;
+  line-height: 1em;
+  text-shadow: 0px 0px 10px #fff;
+  cursor: pointer;
+}
+instant-chat .middle-bar {
+  position: absolute;
+  top: 2em;
+  bottom: 2em;
+  left: 0%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  -webkit-transition: top 0.5s ease, bottom 0.5s ease;
+  transition: top 0.5s ease, bottom 0.5s ease;
+}
+instant-chat .bottom-bar {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: 2em;
+  width: 100%;
+  overflow: visible;
+  text-align: center;
+  -webkit-transition: bottom 0.5s ease;
+  transition: bottom 0.5s ease;
+}
+instant-chat .bottom-bar .tool {
+  display: inline-block;
+  height: 100%;
+  cursor: pointer;
+  line-height: 1em;
+  font-size: 1.9em;
+}
+instant-chat .bottom-bar .tool:hover,
+instant-chat .bottom-bar .tool.is-active {
+  text-shadow: 0px 0px 5px #fff;
+}
+instant-chat .bottom-bar .tool.show-menu.is-active {
+  bottom: -100%;
+}
+instant-chat .bottom-bar .add-camera .plus {
+  position: absolute;
+  margin-top: -0.01em;
+  margin-left: 0.07em;
+  color: #000;
+}
+instant-chat .bottom-bar .show-menu {
+  position: absolute;
+  bottom: 0%;
+  right: 0.25em;
+  -webkit-transition: bottom 0.25s cubic-bezier(0, -0.7, 1, 1.7);
+  transition: bottom 0.25s cubic-bezier(0, -0.7, 1, 1.7);
+}
+instant-chat .hide-bars .top-bar {
+  top: -2em;
+}
+instant-chat .hide-bars .middle-bar {
+  top: 0%;
+  bottom: 0%;
+}
+instant-chat .hide-bars .bottom-bar {
+  bottom: -2em;
+}
+instant-chat .cameras {
+  position: absolute;
+  bottom: 2.5em;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
+}
+instant-chat .cameras .cameras-container {
+  display: inline-block;
+  padding: 2em;
+  background-color: rgba(0, 0, 0, 0.8);
+  text-align: left;
+}
+instant-chat .cameras .cameras-container .source {
+  cursor: pointer;
+}
+instant-chat .participants {
+  height: 100%;
+  width: 100%;
+}
+instant-chat .participants .participant .streams {
+  display: block;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+}
+instant-chat .participants .participant .streams .stream {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0%;
+  left: 0%;
+}
+instant-chat .participants .participant .streams.streams-count-1 .stream {
+  height: 100%;
+  width: 100%;
+}
+instant-chat .participants .participant .streams.streams-count-2 .stream {
+  width: 100%;
+  left: 0%;
+}
+instant-chat .participants .participant .streams.streams-count-2 .stream-0 {
+  height: 50%;
+  top: 0%;
+}
+instant-chat .participants .participant .streams.streams-count-2 .stream-1 {
+  height: 50%;
+  top: 50%;
+}
+instant-chat .participants-count-1 .participant {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+@media screen and (min-aspect-ratio: 15/10) {
+  instant-chat .participants-count-2 participant {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+  }
+  instant-chat .participants-count-2 .participant-0 {
+    top: 0%;
+    left: 0%;
+  }
+  instant-chat .participants-count-2 .participant-1 {
+    top: 0%;
+    left: 50%;
+  }
+  instant-chat .participants-count-3 participant {
+    position: absolute;
+    height: 100%;
+    width: 33.33%;
+  }
+  instant-chat .participants-count-3 .participant-0 {
+    top: 0%;
+    left: 0%;
+  }
+  instant-chat .participants-count-3 .participant-1 {
+    top: 0%;
+    left: 33.33%;
+  }
+  instant-chat .participants-count-3 .participant-2 {
+    top: 0%;
+    left: 66.66%;
+  }
+}
+@media screen and (max-aspect-ratio: 15/10) {
+  instant-chat .participants-count-2 participant {
+    position: absolute;
+    height: 50%;
+    width: 100%;
+  }
+  instant-chat .participants-count-2 .participant-0 {
+    top: 0%;
+    left: 0%;
+  }
+  instant-chat .participants-count-2 .participant-1 {
+    top: 50%;
+    left: 0%;
+  }
+  instant-chat .participants-count-3 participant {
+    position: absolute;
+    height: 33.33%;
+    width: 100%;
+  }
+  instant-chat .participants-count-3 .participant-0 {
+    top: 0%;
+    left: 0%;
+  }
+  instant-chat .participants-count-3 .participant-1 {
+    top: 33.33%;
+    left: 0%;
+  }
+  instant-chat .participants-count-3 .participant-2 {
+    top: 66.66%;
+    left: 0%;
+  }
+}
+instant-chat .participants-count-4 participant {
+  position: absolute;
+  height: 50%;
+  width: 50%;
+}
+instant-chat .participants-count-4 .participant-0 {
+  top: 0%;
+  left: 0%;
+}
+instant-chat .participants-count-4 .participant-1 {
+  top: 0%;
+  left: 50%;
+}
+instant-chat .participants-count-4 .participant-2 {
+  top: 50%;
+  left: 0%;
+}
+instant-chat .participants-count-4 .participant-3 {
+  top: 50%;
+  left: 50%;
+}
+instant-chat .participants-count-5 participant {
+  position: absolute;
+  height: 50%;
+  width: 33.33%;
+}
+instant-chat .participants-count-5 .participant-0 {
+  top: 0%;
+  left: 0%;
+}
+instant-chat .participants-count-5 .participant-1 {
+  top: 0%;
+  left: 33.33%;
+}
+instant-chat .participants-count-5 .participant-2 {
+  top: 0%;
+  left: 66.66%;
+}
+instant-chat .participants-count-5 .participant-3 {
+  top: 50%;
+  left: 16.665%;
+}
+instant-chat .participants-count-5 .participant-4 {
+  top: 50%;
+  left: 49.335%;
+}
+instant-chat .participants-count-6 participant {
+  position: absolute;
+  height: 59%;
+  width: 33.33%;
+}
+instant-chat .participants-count-6 .participant-0 {
+  top: 0%;
+  left: 0%;
+}
+instant-chat .participants-count-6 .participant-1 {
+  top: 0%;
+  left: 33.33%;
+}
+instant-chat .participants-count-6 .participant-2 {
+  top: 0%;
+  left: 66.66%;
+}
+instant-chat .participants-count-6 .participant-3 {
+  top: 50%;
+  left: 0%;
+}
+instant-chat .participants-count-6 .participant-4 {
+  top: 50%;
+  left: 33.33%;
+}
+instant-chat .participants-count-6 .participant-5 {
+  top: 50%;
+  left: 66.66%;
+}
+instant-chat .error-message {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  right: 0%;
+  height: 3em;
+  text-align: center;
+  font-size: xx-large;
+  font-weight: bold;
+  color: #fff;
+  background-color: #a33;
+}
+instant-chat .error-message .close {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  padding: 1em;
+  color: #000;
+}
+
+participant .streams {
+  height: 100%;
+  width: 100%;
+}
+
+room-list {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  font-size: large;
+  color: #fff;
+}
+room-list a,
+room-list a:visited {
+  text-decoration: none;
+  color: #ddf;
+}
+room-list .room {
+  display: inline-block;
+  padding: 0.5em;
+  margin: 0.5em;
+  background-color: #070707;
+  border: 1px solid #070707;
+  border-radius: 6px;
+  box-shadow: 0px 0px 5px #333;
+}
+room-list .room .room-name {
+  text-align: center;
+}
+room-list .room .room-name .hash {
+  font-family: 'Open Sans';
+}
+room-list .room .participant {
+  display: inline-block;
+  padding: 0.25em 0;
+}
+room-list .room .participant:not(:last-child) {
+  margin-right: 0.25em;
+}
+
+settings .sources {
+  margin: 0 1em;
+}
+settings .sources .audio-sources,
+settings .sources .video-sources {
+  width: inherit;
+  margin: 1em auto;
+  padding: 1em;
+  color: #000;
+  background-color: #fff;
+}
+
+@-webkit-keyframes appear {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes appear {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+stream {
+  display: block;
+}
+stream .stream-container {
+  width: 100%;
+  height: 100%;
+  display: table;
+  border: none;
+  border-spacing: 0;
+}
+stream .stream-container.has-votes .cell .stream-overlay {
+  opacity: 1;
+  -webkit-transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;
+}
+stream .stream-container .cell {
+  display: table-cell;
+  vertical-align: middle;
+  width: 100%;
+}
+stream .stream-container .cell .stream-video {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  bottom: 0%;
+  right: 0%;
+  width: 100%;
+  max-height: 100%;
+  margin: auto;
+  -webkit-animation: appear 0.5s ease;
+  animation: appear 0.5s ease;
+}
+stream .stream-container .cell .stream-overlay {
+  position: absolute;
+  opacity: 0;
+  -webkit-transition: opacity 0.5s 3s ease;
+  transition: opacity 0.5s 3s ease;
+}
+stream .stream-container .cell .stream-overlay:hover {
+  opacity: 1;
+  -webkit-transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;
+}
+stream .stream-container .cell .stream-overlay .stream-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1.5em;
+  line-height: 1em;
+}
+stream .stream-container .cell .stream-overlay .stream-controls {
+  position: absolute;
+  width: 100%;
+  left: 0%;
+  bottom: 0%;
+  font-size: 1.5em;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .volume {
+  margin-left: 0.5em;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .volume-off {
+  color: #ff6666;
+  text-shadow: 0px 0px 10px #330000;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .volume-on {
+  color: #66ff66;
+  text-shadow: 0px 0px 10px #003300;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .thumbs {
+  float: right;
+  margin-right: 0.5em;
+  cursor: pointer;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .thumbs-up {
+  padding-right: 3px;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .thumbs-up-selected {
+  padding-right: 0px;
+  color: #66ff66;
+  text-shadow: 0px 0px 10px #003300;
+}
+stream .stream-container .cell .stream-overlay .stream-controls .thumbs-down-selected {
+  padding-right: 0px;
+  color: #ff6666;
+  text-shadow: 0px 0px 10px #330000;
+}
+stream .stream-container .cell .stream-overlay .votes {
+  position: absolute;
+  right: 0%;
+  top: 0%;
+  height: 100%;
+  width: 100%;
+}
+stream .stream-container .cell .stream-overlay .votes .vote {
+  text-align: right;
+  -webkit-transition: all ease 0.33s;
+  transition: all ease 0.33s;
+}
+stream .stream-container .cell .stream-overlay .votes .vote span,
+stream .stream-container .cell .stream-overlay .votes .vote .video {
+  vertical-align: middle;
+}
+stream .stream-container .cell .stream-overlay .votes .vote .video {
+  width: 20%;
+  height: 100%;
+}
+stream .stream-container .cell .stream-overlay .votes .vote .thumbs {
+  font-size: 3em;
+}
+stream .stream-container .cell .stream-overlay .votes .vote .fa-thumbs-up {
+  color: #66ff66;
+}
+stream .stream-container .cell .stream-overlay .votes .vote .fa-thumbs-down {
+  color: #ff6666;
+}
+stream .stream-container .cell .stream-overlay .votes .vote.ng-enter,
+stream .stream-container .cell .stream-overlay .votes .vote.ng-leave.ng-leave-active {
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+}
+stream .stream-container .cell .stream-overlay .votes .vote.ng-leave,
+stream .stream-container .cell .stream-overlay .votes .vote.ng-enter-active {
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+
+teaser {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+teaser .intro {
+  margin: 0 1em;
+  margin-top: 2em;
+  text-align: center;
+}
+teaser .intro .site-name {
+  color: #bbf;
+}
+teaser .intro rotator {
+  display: block;
+  margin: 1em auto;
+}
+teaser .intro .channel-input {
+  display: block;
+  width: 100%;
+}
+teaser .intro .channel-input * {
+  vertical-align: middle;
+}
+teaser .intro .channel-input .hash {
+  font-family: 'Open Sans';
+  font-size: 2em;
+}
+teaser .intro .channel-input input {
+  width: auto;
+  font-size: 1em;
+  text-align: center;
+  color: #fff;
+  background-color: transparent;
+  border: none;
+}
+teaser .intro .channel-input input::-webkit-input-placeholder {
+  line-height: 1em;
+  text-align: center;
+}
+teaser .intro .channel-input input:-moz-placeholder {
+  line-height: 1em;
+  text-align: center;
+}
+teaser .intro .channel-input input::-moz-placeholder {
+  line-height: 1em;
+  text-align: center;
+}
+teaser .intro .channel-input input:-ms-input-placeholder {
+  line-height: 1em;
+  text-align: center;
+}
+
+rotator * {
+  display: none;
+}
+rotator .active {
+  display: block;
+}
+
+
+body {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-family: 'Open Sans';
+  font-size: 0.75em;
+}
+body .alpha {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: xx-small;
+}
+body .alpha a,
+body .alpha a:visited {
+  text-decoration: none;
+  color: #fff;
+}
+body input {
+  font-family: 'Open Sans';
+}
+body input::-webkit-input-placeholder {
+  font-family: 'Open Sans';
+}
+body input:-moz-placeholder {
+  font-family: 'Open Sans';
+}
+body input::-moz-placeholder {
+  font-family: 'Open Sans';
+}
+body input:-ms-input-placeholder {
+  font-family: 'Open Sans';
+}
+body input:focus,
+body textarea:focus {
+  outline: 0;
+  border: 3px solid #ccc;
+}

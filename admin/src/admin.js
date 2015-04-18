@@ -3,7 +3,23 @@ var fs = require('fs'),
     repl = require('repl'),
     glob = require('glob'),
     request = require('request'),
-    traceur = require('traceur-runtime');
+    traceur = require('traceur-runtime'),
+    g = require('generator-trees').g;
+
+console.log('generators', g);
+
+
+var interleaved = g.interleave(function* () {
+  var i = 99, a = 0;
+  for (a = 0; a < 10; a++) yield function*(a) { yield a.toString() + (++i); return a.toString() + (++i); }(a);
+  return function* (a) { yield a.toString() + (++i); return a.toString() + (++i); }(a);
+}());
+
+console.log(interleaved);
+
+console.log(g.toArray(interleaved));
+
+return;
 
 var doWrapper = require('do-wrapper');
 

@@ -20099,9 +20099,6 @@ console.log('started');
   var render = function(machines) {
     console.log(graphData);
     graph.update();
-    xAxis.render();
-    yAxis.render();
-    legend.render();
   };
 
   var throttledRender = _.throttle(render, 200);
