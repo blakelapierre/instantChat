@@ -62,6 +62,10 @@ gulp.task('dev', cb => {
 gulp.task('browser-sync',
   () => browserSync({
     server: paths.dev.$,
+    https: {
+      key: '../../debug/debug-key.pem',
+      cert: '../../debug/debug-cert.pem'
+    },
     ghostMode: false
   }));
 
@@ -203,8 +207,7 @@ const paths = {
     images: ['./src/**/*.{svg,gif,png,jpg}'],
     scripts: ['src/**/*.js'],
     templates: ['src/modules/**/template.html'],
-    vendor: ['!./node_modules/*/node_modules/**']
-            .concat(_.map(dependencies, (version, dependency) => { return `./node_modules/${dependency}/**/*.js`; } )),
+    vendor: _.map(dependencies, (version, dependency) => { return `./node_modules/${dependency}/.dist/*.js`; } )
   },
   dev: {
     $: './.dev',

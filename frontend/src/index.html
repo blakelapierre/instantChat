@@ -1,18 +1,47 @@
-<!DOCTYPE html>
-<html ng-app="base-angular">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Base Angular ES6 Project</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+<!doctype html>
+<html ng-app="instant-chat">
+<head>
+  <title>instachat.io - Encrypted P2P Hashtag Video Sharing</title>
 
-    <link rel="stylesheet" href="app.css">
-  </head>
-  <body>
-    <hello-world spinner center></hello-world>
+  <meta name="Description" content="Encrypted peer to peer (P2P) video chat via WebRTC.">
 
-    <script src="vendor.js"></script>
-    <script src="app.js"></script>
-  </body>
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <style type="text/css">
+  .splash {
+    color: #fff;
+  }
+
+  .splash .i {
+    animation
+  }
+  </style>
+
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <ng-view></ng-view>
+
+  <span class="alpha"><a href="https://github.com/instant-chat/site" target="_blank">Alpha</a></span>
+
+  <div class="splash"><span class="i">i</span><span class="c">c</span></div>
+
+  <script src="vendor.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-52028516-1', 'instachat.io');
+    ga('send', 'pageview');
+
+  </script>
+</body>
 </html>
