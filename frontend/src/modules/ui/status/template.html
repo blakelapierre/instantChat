@@ -1,0 +1,14 @@
+<div class="{{status}}">
+  <div class="status">
+    <div class="indicator"></div>
+    <div ng-if="status === 'not-connected'">
+      Not Connected
+      <rotator class="elipsis" interval="1500"><span>.</span><span>.</span><span>.</span></rotator>
+    </div>
+    <div ng-if="status === 'connecting'">
+      Connecting
+      <rotator class="elipsis" interval="1500"><span>.</span><span>.</span><span>.</span></rotator>
+    </div>
+    <div ng-if="status === 'connected'">Connected!</div>
+  </div>
+</div>

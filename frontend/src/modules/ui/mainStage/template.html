@@ -1,0 +1,14 @@
+<stage>
+  <generating></generating>
+  <contacts></contacts>
+  <network-status></network-status>
+  <ui-settings></ui-settings>
+</stage>
+<status></status>
+
+<div ng-if="hasTrigger('west')"
+     ng-click="clickTrigger('west')"
+     class="trigger west-trigger"><div class="text">{{getTriggerLabel('west')}}</div></div>
+<div ng-if="hasTrigger('east')"
+     ng-click="clickTrigger('east')"
+     class="trigger east-trigger"><div class="text">{{getTriggerLabel('east')}}</div></div>

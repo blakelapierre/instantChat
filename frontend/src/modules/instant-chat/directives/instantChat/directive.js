@@ -112,7 +112,7 @@ module.exports = () => {
           }
 
           instantChat
-            .connect(`https://${$location.host()}:2999`)
+            .connect(`https://${$location.host()}:3002`)
             .then(signal => {
               if ($scope.$$destroyed) {
                 stream.__doneWithStream();

@@ -63,8 +63,8 @@ gulp.task('browser-sync',
   () => browserSync({
     server: paths.dev.$,
     https: {
-      key: '../../debug/debug-key.pem',
-      cert: '../../debug/debug-cert.pem'
+      key: '../../debug/secrets/debug-localhost/key',
+      cert: '../../debug/secrets/debug-localhost/cert'
     },
     ghostMode: false
   }));

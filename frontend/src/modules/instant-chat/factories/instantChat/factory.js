@@ -7,6 +7,8 @@ module.exports = [
   var {emit, on, off} = emitter();
 
   var instantChat = {
+    status: 'not-connected',
+
     // Methods
     sendMessage: sendMessage,
     shareFile: shareFile,
@@ -29,22 +31,34 @@ module.exports = [
     roomName: undefined
   };
 
-  var {activeParticipants} = instantChat;
+  let {activeParticipants} = instantChat;
 
-  var connectPromise,
+  let connectPromise,
       broadcastPromiseFns = {};
+
+  const {location} = window,
+        {protocol, hostname} = location;
+
+  connect(`${protocol}//${hostname}:3006`);
+
+  return instantChat;
 
   // Should this be what we return as the factory?
   function connect(url) {
+    setStatus('connecting');
+
     connectPromise = connectPromise || new Promise((resolve, reject) => {
       identity
-        .getIdentity()
+        .get((...args) => console.log('notification', ...args))
         .then(fingerprint => {
           console.log('have fingerprint', fingerprint);
           var signal = instantChat.signal = rtc(url, fingerprint);
 
           signal.on({
             // Room Events
+            'connect':     connect,
+            'disconnect':  disconnect,
+
             'ready':       ready,
             'room join':   joinRoom,
             'room leave':  leaveRoom,
@@ -94,6 +108,14 @@ module.exports = [
         'stream remove': (participant, stream) => emit('stream remove', participant, stream)
       });
 
+      function connect(handle) {
+        setStatus('connected');
+      }
+
+      function disconnect() {
+        setStatus('not-connected');
+      }
+
       function ready(handle) {
         var localParticipant = instantChat.localParticipant = participants.add({id: handle, isLocal: true, config: config});
         instantChat.connected = true;
@@ -133,6 +155,11 @@ module.exports = [
     return connectPromise;
   }
 
+  function setStatus(status) {
+    instantChat.status = status;
+    emit('statusChange', status);
+  }
+
   function disconnect() {
     //Need to do more here
     connectPromise = null;
@@ -158,6 +185,4 @@ module.exports = [
       console.log(broadcastPromiseFns);
     });
   }
-
-  return instantChat;
 }];

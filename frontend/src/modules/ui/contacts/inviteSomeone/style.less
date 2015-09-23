@@ -1,0 +1,180 @@
+@shadowSize: 7px;
+
+.color-fade(@color, @shadowSize) {
+  0% {
+    color: saturate(@color, 100%);
+  }
+  50% {
+    color: @color;
+    text-shadow: 0px 0px @shadowSize saturate(@color, 100%);
+  }
+  100% {
+    color: desaturate(@color, 15%);
+  }
+}
+
+@envelopeColor: #fa3;
+@envelopeShadowColor: #a33;
+@keyframes envelopeColor {
+  .color-fade(@envelopeColor, @shadowSize);
+}
+
+@mobileColor: #3b3;
+@mobileShadowColor: #3f3;
+@keyframes mobileColor {
+  .color-fade(@mobileColor, @shadowSize);
+}
+
+@twitterColor: #55acee;
+@twitterShadowColor: #33f;
+@keyframes twitterColor {
+  .color-fade(@twitterColor, @shadowSize);
+}
+
+@facebookColor: #4c66a4;
+@facebookShadowColor: #33f;
+@keyframes facebookColor {
+  .color-fade(@facebookColor, @shadowSize);
+}
+
+@gplusColor: #dd4b38;
+@gplusShadowColor: #f33;
+@keyframes gplusColor {
+  .color-fade(@gplusColor, @shadowSize);
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@appearDuration: 1.5s;
+@appearInitialDelay: 0s;
+@appearDelayDuration: 0.4s;
+@appearTiming: ease-in-out;
+
+@highlightDuration: 1.5s;
+@highlightInitialDelay: 0s;
+@highlightDelayDuration: 0.4s;
+@highlightTiming: ease-in-out;
+
+invite-someone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .menu-items {
+    &.style ul {
+      li {
+        .fa {transition: transform 1s ease;}
+
+        &.activated {
+          .fa {
+            transform: rotateY(720deg);
+          }
+        }
+
+        &:hover {
+          .fa-envelope    { color: @envelopeColor; text-shadow: 0px 0px 25px saturate(@envelopeColor, 100%); }
+          .fa-mobile      { color: @mobileColor; text-shadow: 0px 0px 25px saturate(@mobileColor, 100%); }
+          .fa-twitter     { color: @twitterColor; text-shadow: 0px 0px 25px saturate(@twitterColor, 100%); }
+          .fa-facebook    { color: @facebookColor; text-shadow: 0px 0px 25px saturate(@facebookColor, 100%); }
+          .fa-google-plus { color: @gplusColor; text-shadow: 0px 0px 25px saturate(@gplusColor, 100%); }
+        }
+
+        .fa-envelope {
+          color: desaturate(@envelopeColor, 15%);
+
+          animation: appear @appearDuration @appearInitialDelay @appearTiming backwards,
+                     envelopeColor @highlightDuration @highlightInitialDelay @highlightTiming;
+        }
+
+        .fa-mobile {
+          color: desaturate(@mobileColor, 15%);
+
+          animation: appear @appearDuration (@appearInitialDelay + 1 * @appearDelayDuration) @appearTiming backwards,
+                     mobileColor @highlightDuration (@highlightInitialDelay + 1 * @highlightDelayDuration) @highlightTiming;
+        }
+
+        .fa-twitter {
+          color: desaturate(@twitterColor, 15%);
+
+          animation: appear @appearDuration (@appearInitialDelay + 2 * @appearDelayDuration) @appearTiming backwards,
+                     twitterColor @highlightDuration (@highlightInitialDelay + 2 * @highlightDelayDuration) @highlightTiming;
+        }
+
+        .fa-facebook {
+          color: desaturate(@facebookColor, 15%);
+
+          animation: appear @appearDuration (@appearInitialDelay + 3 * @appearDelayDuration) @appearTiming backwards,
+                     facebookColor @highlightDuration (@highlightInitialDelay + 3 * @highlightDelayDuration) @highlightTiming;
+        }
+
+        .fa-google-plus {
+          color: desaturate(@gplusColor, 15%);
+
+          animation: appear @appearDuration (@appearInitialDelay + 4 * @appearDelayDuration) @appearTiming backwards,
+                     gplusColor @highlightDuration (@highlightInitialDelay + 4 * @highlightDelayDuration) @highlightTiming;
+        }
+      }
+    }
+
+    margin-top: 2em;
+    text-align: center;
+
+    .invite {
+      display: block;
+
+      margin-top: 0.5em;
+
+      font-size: 3em;
+
+      font-weight: bold;
+
+      text-shadow: 0px 0px 2px #fff;
+
+      cursor: default;
+
+      user-select: none;
+
+      animation: appear @appearDuration (@appearInitialDelay + 5 * @appearDelayDuration) @appearTiming backwards;
+    }
+
+    ul {
+      margin: 0 auto;
+      padding: 0;
+
+      width: inherit;
+
+      list-style: none;
+
+      li {
+        display: inline-block;
+
+        font-size: medium;
+
+        cursor: pointer;
+
+        a {
+          display: inline-block;
+
+          text-decoration: none;
+          color: inherit;
+
+          .fa {
+            font-size: 10vw;
+          }
+        }
+
+        &:not(:last-child) {
+          margin-right: 2em;
+        }
+      }
+    }
+  }
+}

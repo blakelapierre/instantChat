@@ -1,0 +1,15 @@
+<div ng-if="!generated" class="generating">
+  <div>Generating Your</div>
+  <div class="key-size">{{numBits}}-bit</div>
+  <div>Private Key</div>
+  <rotator class="elipsis"><span>.</span><span>.</span><span>.</span><span>.</span></rotator>
+  <rotator class="disclaimer" interval="3000">
+    <div class="please-wait">Please Wait.</div>
+    <div class="new-identity">Your New Identity Is Being Created.</div>
+    <div class="few-moments">This May Take A Few Moments.</div>
+  </rotator>
+</div>
+<div ng-if="generated">
+  <div>Loading Your</div>
+  <div>Private Key</div>
+</div>

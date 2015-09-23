@@ -1,0 +1,134 @@
+main-stage {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: stretch;
+  justify-content: stretch;
+
+  flex: 1;
+
+  stage {
+    &>* {
+      &.ng-enter, &.ng-leave {
+        transition: all ease-in-out 0.5s;
+      }
+
+      &.ng-enter,
+      &.ng-leave.ng-leave-active {
+        opacity: 0;
+      }
+
+      &.ng-leave,
+      &.ng-enter.ng-enter-active {
+        opacity: 1;
+      }
+    }
+
+    &.east {
+      &>* {
+        &.ng-enter {
+          transform: translateX(50%) rotateY(60deg);
+        }
+
+        &.ng-enter.ng-enter-active {
+          transform: translateX(0) rotateY(0deg);
+        }
+
+        &.ng-leave {
+          transform: translateX(0%) rotateY(0deg);
+        }
+
+        &.ng-leave.ng-leave-active {
+          transform: translateX(-50%) rotateY(-60deg);
+        }
+      }
+    }
+
+    &.west {
+      &>* {
+        &.ng-enter {
+          transform: translateX(-50%) rotateY(-60deg);
+        }
+
+        &.ng-enter.ng-enter-active {
+          transform: translateX(0%) rotateY(0deg);
+        }
+
+        &.ng-leave {
+          transform: translateX(0%) rotateY(0deg);
+        }
+
+        &.ng-leave.ng-leave-active {
+          transform: translateX(50%) rotateY(60deg);
+        }
+      }
+    }
+
+    contacts {
+      flex: 1;
+    }
+
+    generating {
+      flex: 1 0 auto;
+    }
+  }
+
+  status {
+    flex: 0 0 auto;
+  }
+
+  .trigger {
+    user-select: none;
+  }
+
+  .west-trigger {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    width: 100vh;
+
+    overflow: visible;
+    white-space: nowrap;
+
+    font-size: 1em;
+
+    cursor: pointer;
+
+    text-align: center;
+
+    transform-origin: 0% 100%;
+    transform: rotate(90deg);
+
+    .text {
+      width: auto;
+    }
+  }
+
+  .east-trigger {
+    position: absolute;
+
+    right: 0;
+    top: 0;
+
+    width: 100vh;
+
+    overflow: visible;
+    white-space: nowrap;
+
+    font-size: 1em;
+
+    cursor: pointer;
+
+    text-align: center;
+
+    transform-origin: 100% 100%;
+    transform: rotate(-90deg);
+
+    .text {
+      width: auto;
+    }
+  }
+}

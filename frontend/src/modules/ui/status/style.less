@@ -1,0 +1,48 @@
+status {
+  .not-connected {
+    .indicator {
+      background-color: #f00;
+    }
+  }
+
+  .connecting {
+    .indicator {
+      background-color: #ff0;
+    }
+  }
+
+  .connected {
+    .indicator {
+      background-color: #0f0;
+    }
+  }
+  .status {
+    display: flex;
+
+    margin-left: 0.25em;
+
+    .indicator {
+      width: 1em;
+      height: 1em;
+
+      margin-right: 0.5em;
+    }
+
+    rotator.elipsis {
+      * {
+        display: initial;
+        visibility: hidden;
+
+        opacity: 0;
+      }
+
+      .active {
+        visibility: visible;
+
+        opacity: 1;
+
+        transition: opacity 0.05s linear;
+      }
+    }
+  }
+}

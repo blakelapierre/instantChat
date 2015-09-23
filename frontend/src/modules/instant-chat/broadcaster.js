@@ -37,8 +37,8 @@ function on(obj, handlers) {
 }
 
 function receiveOffer(offer) {
-  if (!signaler.managesPeer(offer.peerID)) {
-    var peer = new Peer(offer.peerID);
+  if (!signaler.managesPeer(offer.to)) {
+    var peer = new Peer(offer.to);
 
     signaler.managePeer(peer); // terrible placement here, but it gets the job done for now
 

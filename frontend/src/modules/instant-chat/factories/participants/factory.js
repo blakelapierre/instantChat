@@ -67,6 +67,7 @@ module.exports = ['$timeout', 'rtc', 'emitter', 'streams', 'instantChatChannelHa
         'disconnected': () => remove(participant)
       });
 
+console.log('*****', peer);
       if (peer.config.isExistingPeer) {
         var channel = peer.addChannel('instantChat', null, instantChatChannelHandler());
         peer.connect()

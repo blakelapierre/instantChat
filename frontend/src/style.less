@@ -4,9 +4,7 @@
 
 body {
   position: absolute;
-
-  top: 0%;
-  left: 0%;
+  display: flex;
 
   height: 100%;
   width: 100%;
@@ -27,7 +25,7 @@ body {
   .alpha {
     position: absolute;
     left: 0;
-    bottom: 0;
+    top: 0;
     font-size: xx-small;
 
     a,
@@ -49,5 +47,10 @@ body {
     outline: 0;
 
     border: 3px solid #ccc;
+  }
+
+  ng-view {
+    display: flex;
+    flex: 1;
   }
 }
