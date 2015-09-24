@@ -39,7 +39,7 @@ module.exports = [
   const {location} = window,
         {protocol, hostname} = location;
 
-  connect(`${protocol}//${hostname}:3006`);
+  connect(`${protocol}//${hostname}:3007`);
 
   return instantChat;
 
